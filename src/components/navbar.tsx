@@ -104,7 +104,7 @@ export function Navbar() {
           ))}
         </ul>
         <div className="hidden items-center gap-4 lg:flex">
-          <a href="https://www.material-tailwind.com/blocks" target="_blank">
+          <a href="" target="_blank">
             <Button color={"white"}>Connect Wallet</Button>
           </a>
         </div>
