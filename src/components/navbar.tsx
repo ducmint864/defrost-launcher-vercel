@@ -42,15 +42,17 @@ const NAV_MENU = [
   {
     name: "My invesment",
     icon: RectangleStackIcon,
+    href: "",
   },
   {
     name: "Swap",
     icon: DollarCircleOutlined,
+    href: "",
   },
   {
     name: "Launchpad",
     icon: CommandLineIcon,
-    href: "https://www.material-tailwind.com/docs/react/installation",
+    href: "",
   },
 ];
 
