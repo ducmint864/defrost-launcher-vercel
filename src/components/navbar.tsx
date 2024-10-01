@@ -1,5 +1,5 @@
 import React from "react";
-
+import Link from "next/link";
 import {
   Navbar as MTNavbar,
   Collapse,
@@ -25,34 +25,34 @@ interface NavItemProps {
 function NavItem({ children, href }: NavItemProps) {
   return (
     <li>
-      <Typography
-        as="a"
-        href={href || "#"}
-        target={href ? "_blank" : "_self"}
-        variant="paragraph"
-        className="flex items-center gap-2 font-medium"
-      >
-        {children}
-      </Typography>
+      <Link href={href || "#"} passHref>
+        <Typography
+          as="span" // Sử dụng span thay vì a khi bọc bởi Link
+          variant="paragraph"
+          className="flex items-center gap-2 font-medium"
+        >
+          {children}
+        </Typography>
+      </Link>
     </li>
   );
 }
 
 const NAV_MENU = [
   {
-    name: "My invesment",
+    name: "My investment", // Sửa lại chính tả
     icon: RectangleStackIcon,
-    href: "",
+    href: "/app/my-investment", // Đặt một đường dẫn ví dụ
   },
   {
     name: "Swap",
     icon: DollarCircleOutlined,
-    href: "",
+    href: "/app/swap", // Đặt một đường dẫn ví dụ
   },
   {
     name: "Launchpad",
     icon: CommandLineIcon,
-    href: "",
+    href: "/launchpad",
   },
 ];
 

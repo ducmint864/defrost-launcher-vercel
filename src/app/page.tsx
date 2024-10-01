@@ -4,7 +4,10 @@ export default function Portfolio() {
   return (
     <>
       <div style={{ backgroundColor: "#FFF" }}>
-        <Navbar />
+        <div className="mb-24">
+          <Navbar />
+        </div>
+
         <Hero />
       </div>
     </>
