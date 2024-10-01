@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Navbar as MTNavbar,
@@ -16,6 +16,7 @@ import {
   Bars3Icon,
 } from "@heroicons/react/24/solid";
 import { DollarCircleOutlined } from "@ant-design/icons";
+import { connectWallet } from "../utils/wallet";
 
 interface NavItemProps {
   children: React.ReactNode;
@@ -59,6 +60,14 @@ const NAV_MENU = [
 export function Navbar() {
   const [open, setOpen] = React.useState(false);
   const [isScrolling, setIsScrolling] = React.useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+
+  const handleConnectWallet = async () => {
+    const account = await connectWallet(); 
+    if (account) {
+      setWalletAddress(account); 
+    }
+  };
 
   const handleOpen = () => setOpen((cur) => !cur);
 
@@ -106,9 +115,9 @@ export function Navbar() {
           ))}
         </ul>
         <div className="hidden items-center gap-4 lg:flex">
-          <a href="" target="_blank">
-            <Button color={"white"}>Connect Wallet</Button>
-          </a>
+          <Button color={"white"} onClick={handleConnectWallet}>
+            {walletAddress ? `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : "Connect Wallet"}
+          </Button>
         </div>
         <IconButton
           variant="text"

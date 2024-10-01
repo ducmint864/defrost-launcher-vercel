@@ -4,24 +4,15 @@ import { useState } from "react";
 import { Button, Typography } from "@material-tailwind/react";
 import bg from "../../public/images/bg1.jpg";
 import { Footer } from "@/components";
+import { connectWallet } from "../utils/wallet"
 
 function Hero() {
-  const [walletAddress, setWalletAddress] = useState("");
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
-  /**
-   * @dev function to trigger wallet connection in browser
-   */
-  const connectWallet = async () => {
-    if (window.ethereum && typeof window.ethereum.request === "function") {
-      try {
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        const account = accounts[0];
-        setWalletAddress(account); 
-      } catch (error) {
-        console.error("Failed to connect wallet:", error);
-      }
-    } else {
-      alert("MetaMask is not installed or request method is unavailable.");
+  const handleConnectWallet = async () => {
+    const account = await connectWallet();
+    if (account) {
+      setWalletAddress(account);
     }
   };
 
@@ -49,7 +40,7 @@ function Hero() {
             release post lock-up.{" "}
           </Typography>
           <div className="flex items-center gap-4">
-            <Button variant="gradient" color="white" onClick={connectWallet}>
+            <Button variant="gradient" color="white" onClick={handleConnectWallet}>
               {walletAddress ? `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : "Connect Wallet"}
             </Button>
           </div>
