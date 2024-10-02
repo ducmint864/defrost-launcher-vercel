@@ -1,4 +1,5 @@
 import React from "react";
+import { ConnectWallet } from "@thirdweb-dev/react";
 
 import {
   Navbar as MTNavbar,
@@ -56,7 +57,11 @@ const NAV_MENU = [
   },
 ];
 
-export function Navbar() {
+interface NavbarProps {
+  backgroundColor?: string;
+}
+
+export function Navbar({ backgroundColor = "transparent" }: NavbarProps) {
   const [open, setOpen] = React.useState(false);
   const [isScrolling, setIsScrolling] = React.useState(false);
 
@@ -88,7 +93,7 @@ export function Navbar() {
       shadow={false}
       fullWidth
       blurred={false}
-      color={"transparent"}
+      color={backgroundColor}
       className="fixed top-0 z-50 border-0"
     >
       <div className="container mx-auto flex items-center justify-between">
@@ -106,9 +111,16 @@ export function Navbar() {
           ))}
         </ul>
         <div className="hidden items-center gap-4 lg:flex">
-          <a href="" target="_blank">
-            <Button color={"white"}>Connect Wallet</Button>
-          </a>
+          {/* <a href="" target="_blank"> */}
+            {/* <Button color={"white"}>Connect Wallet</Button> */}
+			{/* <Web3Button
+      		  contractAddress="0x0000000000000000000000000000000000000000"
+      		  action={connect}
+    		>
+			Connect Wallet
+    		</Web3Button> */}
+			<ConnectWallet />
+          {/* </a> */}
         </div>
         <IconButton
           variant="text"
