@@ -4,9 +4,11 @@ import LaunchpadPage from "./launchpad";
 
 const Launchpad = () => {
   return (
-    <div style={{ backgroundColor: "#16202B", minHeight: "100vh" }}>
+    <div style={{ backgroundColor: "#16202B" }}>
       <Navbar />
-      <LaunchpadPage />
+      <div style={{ paddingTop: "60px" }}>
+        <LaunchpadPage />
+      </div>
     </div>
   );
 };
