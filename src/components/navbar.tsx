@@ -1,6 +1,5 @@
-import React from "react";
-import { ConnectWallet } from "@thirdweb-dev/react";
-
+import React, { useState } from "react";
+import Link from "next/link";
 import {
   Navbar as MTNavbar,
   Collapse,
@@ -10,13 +9,13 @@ import {
 } from "@material-tailwind/react";
 import {
   RectangleStackIcon,
-  UserCircleIcon,
   CommandLineIcon,
-  Squares2X2Icon,
   XMarkIcon,
   Bars3Icon,
 } from "@heroicons/react/24/solid";
+import { connectWallet } from "../utils/wallet";
 import { DollarCircleOutlined } from "@ant-design/icons";
+import { ConnectWallet } from "@thirdweb-dev/react";
 
 interface NavItemProps {
   children: React.ReactNode;
@@ -26,22 +25,22 @@ interface NavItemProps {
 function NavItem({ children, href }: NavItemProps) {
   return (
     <li>
-      <Typography
-        as="a"
-        href={href || "#"}
-        target={href ? "_blank" : "_self"}
-        variant="paragraph"
-        className="flex items-center gap-2 font-medium"
-      >
-        {children}
-      </Typography>
+      <Link href={href || "#"} passHref>
+        <Typography
+          as="span"
+          variant="paragraph"
+          className="flex items-center gap-2 font-medium"
+        >
+          {children}
+        </Typography>
+      </Link>
     </li>
   );
 }
 
 const NAV_MENU = [
   {
-    name: "My invesment",
+    name: "My investment",
     icon: RectangleStackIcon,
     href: "",
   },
@@ -53,7 +52,7 @@ const NAV_MENU = [
   {
     name: "Launchpad",
     icon: CommandLineIcon,
-    href: "",
+    href: "/launchpad",
   },
 ];
 
@@ -64,6 +63,14 @@ interface NavbarProps {
 export function Navbar({ backgroundColor = "transparent" }: NavbarProps) {
   const [open, setOpen] = React.useState(false);
   const [isScrolling, setIsScrolling] = React.useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+
+  const handleConnectWallet = async () => {
+    const account = await connectWallet();
+    if (account) {
+      setWalletAddress(account);
+    }
+  };
 
   const handleOpen = () => setOpen((cur) => !cur);
 
@@ -76,6 +83,7 @@ export function Navbar({ backgroundColor = "transparent" }: NavbarProps) {
 
   React.useEffect(() => {
     function handleScroll() {
+      // Kiểm tra vị trí cuộn để cập nhật state isScrolling
       if (window.scrollY > 0) {
         setIsScrolling(true);
       } else {
@@ -84,7 +92,6 @@ export function Navbar({ backgroundColor = "transparent" }: NavbarProps) {
     }
 
     window.addEventListener("scroll", handleScroll);
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -93,16 +100,14 @@ export function Navbar({ backgroundColor = "transparent" }: NavbarProps) {
       shadow={false}
       fullWidth
       blurred={false}
-      color={backgroundColor}
-      className="fixed top-0 z-50 border-0"
+      color={"transparent"}
+      className={`fixed top-0 z-50 border-0 transition-all duration-300 ${"bg-[#16202B]"}`}
     >
       <div className="container mx-auto flex items-center justify-between">
         <Typography color={"white"} className="text-lg font-bold">
           Solidithi Launchpad
         </Typography>
-        <ul
-          className={`ml-10 hidden items-center gap-6 lg:flex ${"text-white"}`}
-        >
+        <ul className={`ml-10 hidden items-center gap-6 lg:flex text-white`}>
           {NAV_MENU.map(({ name, icon: Icon, href }) => (
             <NavItem key={name} href={href}>
               <Icon className="h-5 w-5" />
@@ -111,17 +116,8 @@ export function Navbar({ backgroundColor = "transparent" }: NavbarProps) {
           ))}
         </ul>
         <div className="hidden items-center gap-4 lg:flex">
-          {/* <a href="" target="_blank"> */}
-            {/* <Button color={"white"}>Connect Wallet</Button> */}
-			{/* <Web3Button
-      		  contractAddress="0x0000000000000000000000000000000000000000"
-      		  action={connect}
-    		>
-			Connect Wallet
-    		</Web3Button> */}
-			<ConnectWallet />
-          {/* </a> */}
-        </div>
+          <ConnectWallet />
+        </div >
         <IconButton
           variant="text"
           color={"white"}
@@ -134,7 +130,7 @@ export function Navbar({ backgroundColor = "transparent" }: NavbarProps) {
             <Bars3Icon strokeWidth={2} className="h-6 w-6" />
           )}
         </IconButton>
-      </div>
+      </div >
       <Collapse open={open}>
         <div className="container mx-auto mt-4 rounded-lg bg-white px-6 py-5">
           <ul className="flex flex-col gap-4 text-gray-900">
@@ -145,15 +141,9 @@ export function Navbar({ backgroundColor = "transparent" }: NavbarProps) {
               </NavItem>
             ))}
           </ul>
-          <div className="mt-6 flex items-center gap-4">
-            <Button variant="text">Log in</Button>
-            <a href="https://www.materila-tailwind.com/blocks" target="_blank">
-              <Button color="gray">blocks</Button>
-            </a>
-          </div>
         </div>
       </Collapse>
-    </MTNavbar>
+    </MTNavbar >
   );
 }
 
