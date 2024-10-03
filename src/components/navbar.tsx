@@ -1,5 +1,5 @@
-import React from "react";
-
+import React, { useState } from "react";
+import Link from "next/link";
 import {
   Navbar as MTNavbar,
   Collapse,
@@ -9,14 +9,12 @@ import {
 } from "@material-tailwind/react";
 import {
   RectangleStackIcon,
-  UserCircleIcon,
   CommandLineIcon,
-  Squares2X2Icon,
   XMarkIcon,
   Bars3Icon,
 } from "@heroicons/react/24/solid";
+import { connectWallet } from "../utils/wallet";
 import { DollarCircleOutlined } from "@ant-design/icons";
-
 interface NavItemProps {
   children: React.ReactNode;
   href?: string;
@@ -25,22 +23,22 @@ interface NavItemProps {
 function NavItem({ children, href }: NavItemProps) {
   return (
     <li>
-      <Typography
-        as="a"
-        href={href || "#"}
-        target={href ? "_blank" : "_self"}
-        variant="paragraph"
-        className="flex items-center gap-2 font-medium"
-      >
-        {children}
-      </Typography>
+      <Link href={href || "#"} passHref>
+        <Typography
+          as="span"
+          variant="paragraph"
+          className="flex items-center gap-2 font-medium"
+        >
+          {children}
+        </Typography>
+      </Link>
     </li>
   );
 }
 
 const NAV_MENU = [
   {
-    name: "My invesment",
+    name: "My investment",
     icon: RectangleStackIcon,
     href: "",
   },
@@ -52,13 +50,21 @@ const NAV_MENU = [
   {
     name: "Launchpad",
     icon: CommandLineIcon,
-    href: "",
+    href: "/launchpad",
   },
 ];
 
 export function Navbar() {
   const [open, setOpen] = React.useState(false);
   const [isScrolling, setIsScrolling] = React.useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+
+  const handleConnectWallet = async () => {
+    const account = await connectWallet();
+    if (account) {
+      setWalletAddress(account);
+    }
+  };
 
   const handleOpen = () => setOpen((cur) => !cur);
 
@@ -71,6 +77,7 @@ export function Navbar() {
 
   React.useEffect(() => {
     function handleScroll() {
+      // Kiểm tra vị trí cuộn để cập nhật state isScrolling
       if (window.scrollY > 0) {
         setIsScrolling(true);
       } else {
@@ -79,7 +86,6 @@ export function Navbar() {
     }
 
     window.addEventListener("scroll", handleScroll);
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -89,15 +95,13 @@ export function Navbar() {
       fullWidth
       blurred={false}
       color={"transparent"}
-      className="fixed top-0 z-50 border-0"
+      className={`fixed top-0 z-50 border-0 transition-all duration-300 ${"bg-[#16202B]"}`}
     >
       <div className="container mx-auto flex items-center justify-between">
         <Typography color={"white"} className="text-lg font-bold">
           Solidithi Launchpad
         </Typography>
-        <ul
-          className={`ml-10 hidden items-center gap-6 lg:flex ${"text-white"}`}
-        >
+        <ul className={`ml-10 hidden items-center gap-6 lg:flex text-white`}>
           {NAV_MENU.map(({ name, icon: Icon, href }) => (
             <NavItem key={name} href={href}>
               <Icon className="h-5 w-5" />
@@ -106,9 +110,14 @@ export function Navbar() {
           ))}
         </ul>
         <div className="hidden items-center gap-4 lg:flex">
-          <a href="" target="_blank">
-            <Button color={"white"}>Connect Wallet</Button>
-          </a>
+          <Button color={"white"} onClick={handleConnectWallet}>
+            {walletAddress
+              ? `Connected: ${walletAddress.slice(
+                  0,
+                  6
+                )}...${walletAddress.slice(-4)}`
+              : "Connect Wallet"}
+          </Button>
         </div>
         <IconButton
           variant="text"
@@ -133,12 +142,6 @@ export function Navbar() {
               </NavItem>
             ))}
           </ul>
-          <div className="mt-6 flex items-center gap-4">
-            <Button variant="text">Log in</Button>
-            <a href="https://www.materila-tailwind.com/blocks" target="_blank">
-              <Button color="gray">blocks</Button>
-            </a>
-          </div>
         </div>
       </Collapse>
     </MTNavbar>
