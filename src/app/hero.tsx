@@ -4,8 +4,12 @@ import { useState } from "react";
 import { Button, Typography } from "@material-tailwind/react";
 import bg from "../../public/images/bg1.jpg";
 import { Footer } from "@/components";
+import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 
 function Hero() {
+  // get address to check if wallet is connected
+  const address = useAddress();
+
   return (
     <div
       className="relative min-h-screen w-full bg-cover bg-no-repeat"
@@ -30,14 +34,12 @@ function Hero() {
             release post lock-up.{" "}
           </Typography>
           <div className="flex items-center gap-4">
-            <Button
+            {address ? <Button
               variant="gradient"
               color="white"
-              onClick={handleConnectWallet}
             >
-              {/* {walletAddress ? `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : "Connect Wallet"} */}
               Launchpad
-            </Button>
+            </Button> : <ConnectWallet />}
           </div>
         </div>
       </div>
