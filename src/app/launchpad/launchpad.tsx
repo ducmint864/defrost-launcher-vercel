@@ -95,7 +95,6 @@ const tableData = [
 ];
 
 function LaunchpadPage() {
-  // Cấu hình cho slider
   const settings = {
     dots: true,
     infinite: true,
@@ -113,16 +112,21 @@ function LaunchpadPage() {
     ],
   };
 
+  const handleClick = () => {
+    window.location.href = "./addproject/verifytoken";
+  };
+
   return (
-    <div className="flex justify-center min-h-screen  bg-[#02121D]">
+    <div className="flex justify-center min-h-screen bg-[#02121D]">
       <div className="p-5 font-sans w-200 max-w-4xl">
-        {/* Upcoming Project Section */}
         <div className="mb-10 mt-5">
           <span className="text-lg text-[#28DBD1]">IDO Project</span>
           <div className="flex items-center justify-between mb-4 mt-5">
             <h2 className="text-3xl font-bold text-white">Upcoming IDO</h2>{" "}
-            {/* Tăng kích thước chữ */}
-            <button className="bg-[#28DBD1] py-1 px-4 rounded-lg hover:bg-[#162f2d] text-[#02121D] hover:text-[#fefefe]">
+            <button
+              className="bg-[#28DBD1] py-1 px-4 rounded-lg hover:bg-[#162f2d] text-[#02121D] hover:text-[#fefefe]"
+              onClick={handleClick}
+            >
               Add Project
             </button>
           </div>
@@ -133,7 +137,6 @@ function LaunchpadPage() {
               <div key={project.id} className="w-full p-2">
                 <div className="h-96 rounded-lg bg-[#0A1F2F] p-4 text-white flex flex-col justify-between transition-transform transform hover:-translate-y-2 duration-300">
                   <div>
-                    {/* Thêm hình ảnh ở đây */}
                     <Image
                       src={project.image}
                       alt={project.title}

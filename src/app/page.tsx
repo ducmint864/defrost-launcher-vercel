@@ -3,7 +3,7 @@ import Hero from "./hero";
 export default function Portfolio() {
   return (
     <>
-      <div style={{ backgroundColor: "#FFF" }}>
+      <div>
         <Navbar />
         <Hero />
       </div>
