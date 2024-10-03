@@ -4,18 +4,8 @@ import { useState } from "react";
 import { Button, Typography } from "@material-tailwind/react";
 import bg from "../../public/images/bg1.jpg";
 import { Footer } from "@/components";
-import { connectWallet } from "../utils/wallet";
 
 function Hero() {
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
-
-  const handleConnectWallet = async () => {
-    const account = await connectWallet();
-    if (account) {
-      setWalletAddress(account);
-    }
-  };
-
   return (
     <div
       className="relative min-h-screen w-full bg-cover bg-no-repeat"

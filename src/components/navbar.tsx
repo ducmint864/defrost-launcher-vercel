@@ -13,7 +13,6 @@ import {
   XMarkIcon,
   Bars3Icon,
 } from "@heroicons/react/24/solid";
-import { connectWallet } from "../utils/wallet";
 import { DollarCircleOutlined } from "@ant-design/icons";
 import { ConnectWallet } from "@thirdweb-dev/react";
 
@@ -63,14 +62,6 @@ interface NavbarProps {
 export function Navbar({ backgroundColor = "transparent" }: NavbarProps) {
   const [open, setOpen] = React.useState(false);
   const [isScrolling, setIsScrolling] = React.useState(false);
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
-
-  const handleConnectWallet = async () => {
-    const account = await connectWallet();
-    if (account) {
-      setWalletAddress(account);
-    }
-  };
 
   const handleOpen = () => setOpen((cur) => !cur);
 
