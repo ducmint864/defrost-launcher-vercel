@@ -47,7 +47,7 @@ const NAV_MENU = [
   {
     name: "Swap",
     icon: DollarCircleOutlined,
-    href: "",
+    href: "/swap",
   },
   {
     name: "Launchpad",
