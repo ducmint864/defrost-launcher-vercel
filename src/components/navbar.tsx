@@ -15,6 +15,8 @@ import {
 } from "@heroicons/react/24/solid";
 import { connectWallet } from "../utils/wallet";
 import { DollarCircleOutlined } from "@ant-design/icons";
+import { ConnectWallet } from "@thirdweb-dev/react";
+
 interface NavItemProps {
   children: React.ReactNode;
   href?: string;
@@ -110,14 +112,7 @@ export function Navbar() {
           ))}
         </ul>
         <div className="hidden items-center gap-4 lg:flex">
-          <Button color={"white"} onClick={handleConnectWallet}>
-            {walletAddress
-              ? `Connected: ${walletAddress.slice(
-                  0,
-                  6
-                )}...${walletAddress.slice(-4)}`
-              : "Connect Wallet"}
-          </Button>
+          <ConnectWallet />
         </div>
         <IconButton
           variant="text"
