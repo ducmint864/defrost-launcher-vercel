@@ -13,7 +13,7 @@ import {
   XMarkIcon,
   Bars3Icon,
 } from "@heroicons/react/24/solid";
-import { connectWallet } from "../utils/wallet";
+// import { connectWallet } from "../";
 import { DollarCircleOutlined } from "@ant-design/icons";
 import { ConnectWallet } from "@thirdweb-dev/react";
 
@@ -61,13 +61,6 @@ export function Navbar() {
   const [isScrolling, setIsScrolling] = React.useState(false);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
-  const handleConnectWallet = async () => {
-    const account = await connectWallet();
-    if (account) {
-      setWalletAddress(account);
-    }
-  };
-
   const handleOpen = () => setOpen((cur) => !cur);
 
   React.useEffect(() => {
@@ -100,7 +93,7 @@ export function Navbar() {
       className={`fixed top-0 z-50 border-0 transition-all duration-300 ${"bg-[#16202B]"}`}
     >
       <div className="container mx-auto flex items-center justify-between">
-        <Typography color={"white"} className="text-lg font-bold">
+        <Typography color={"white"} className="text-lg font-bold" href="/">
           Solidithi Launchpad
         </Typography>
         <ul className={`ml-10 hidden items-center gap-6 lg:flex text-white`}>
