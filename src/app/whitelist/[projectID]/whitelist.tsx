@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import { Loading } from '@/components/loading';
 import { WhitelistProps } from '@/app/whitelist/types';
 import { SocialTask } from '@/app/whitelist/types';
 import Image from 'next/image';
@@ -44,7 +43,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
 
   // Email & OTP states
   const [email, setEmail] = useState('');
-  const [emailVerified, setEmailVerified] = useState<boolean | null>(null);
+  const [isEmailVerified, setIsEmailVerified] = useState<boolean | null>(null);
   const [isOTPVerifying, setIsVerifying] = useState<boolean>(false);
   const [OTP, setOTP] = useState<string>('');
   const [isOTPTimedOut, setIsOTPTimedOut] = useState<boolean | null>(null);
@@ -54,8 +53,8 @@ export default function Whitelist({ projectID }: WhitelistProps) {
     // const verifiedStatus = localStorage.getItem('emailVerified');
     // const isVerified = verifiedStatus === 'true';
 
-    const isVerified = false;
-    setEmailVerified(isVerified);
+    const isVerified = true;
+    setIsEmailVerified(isVerified);
     // if (isVerified) {
     //   localStorage.setItem('emailVerified', 'false');
     // }
@@ -84,8 +83,8 @@ export default function Whitelist({ projectID }: WhitelistProps) {
     OTPModal.showModal();
   }
 
-  const handleOTPSubmit = async (otp: string): Promise<boolean> => {
-    if (!otp) {
+  const handleOTPSubmit = async (): Promise<boolean> => {
+    if (!OTP) {
       return false;;
     }
 
@@ -98,15 +97,14 @@ export default function Whitelist({ projectID }: WhitelistProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ otp, email, projectID }),
+        body: JSON.stringify({ OTP, email, projectID }),
       });
 
       if (response.ok) {
         alert('OTP verified successfully!');
-        setEmailVerified(true);
+        setIsEmailVerified(true);
       } else {
         alert('OTP verification failed. Please try again.');
-        setEmailVerified(false);
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
@@ -120,13 +118,13 @@ export default function Whitelist({ projectID }: WhitelistProps) {
   }
 
   // check email verification status periodically
-  useEffect(() => {
-    if (email) {
-      // 2 seconds delay b4 checking email verification status
-      const intervalId = setInterval(checkEmailVerified, 2000);
-      return () => clearInterval(intervalId);
-    }
-  }, [email]);
+  // useEffect(() => {
+  //   if (email) {
+  //     // 2 seconds delay b4 checking email verification status
+  //     const intervalId = setInterval(checkEmailVerified, 2000);
+  //     return () => clearInterval(intervalId);
+  //   }
+  // }, []);
 
 
   // check email verification status on page load
@@ -151,7 +149,6 @@ export default function Whitelist({ projectID }: WhitelistProps) {
       });
 
       if (response.ok) {
-        alert('Verification email sent. Please check your inbox.');
         setIsOTPTimedOut(false);
       } else {
         alert('Failed to send OTP. Please try again.');
@@ -195,40 +192,56 @@ export default function Whitelist({ projectID }: WhitelistProps) {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl relative overflow-hidden">
-      <div className="fixed inset-0 w-full h-full bg-gradient-to-tr from-transparent via-blue-300/40 to-purple-400/20 animate-[pulse_7s_ease-in-out_infinite] -z-10"></div>
+      <div className="fixed inset-0 w-full h-full bg-gradient-to-tr from-transparent via-blue-300/40 to-purple-400/30 animate-[pulse_7s_ease-in-out_infinite] -z-10"></div>
       <div className="relative">
         <div className="shadow-full backdrop-blur-sm rounded-2xl p-6 bg-neutral border-2 border-opacity-20 border-white/20 bg-gradient-to-br from-white/10 to-white/5">
-          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-blue-500/30 via-purple-500/30 to-pink-500/30 opacity-20 blur-xl"></div>
+          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-bg-neutral/30 via-bg-secondary/30 to-bg-accent/30 opacity-20 blur-xl"></div>
           <div className="relative z-10">
 
             <h1 className="text-2xl font-bold text-center mb-6 text-neutral-content">
               WELCOME TO THE PROJECT WITH ID {projectID} WHITE LIST
             </h1>
             <p className="text-center mb-6">
-              Complete the following tasks to be eligible for the whitelist
+              Fill in the form to be eligible for the whitelist
             </p>
 
             <form>
-              <div className="mb-4">
-                <label htmlFor="fullName" className="block mb-2 font-medium">Full Name:</label>
+              <label className="bg-neutral mb-4 input input-bordered flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  className="h-4 w-4 opacity-70">
+                  <path
+                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
+                </svg>
                 <input
                   type="text"
-                  id="fullName"
-                  className="w-full px-3 py-2 bg-neutral border border-secondary rounded-lg"
+                  className="grow"
+                  placeholder="Full name"
                   onChange={(e) => setFullName(e.target.value)}
                 />
-              </div>
+              </label>
 
-              <div className="mb-4">
-                <label htmlFor="email" className="block mb-2 font-medium">Email:</label>
+              <label className="bg-neutral mb-4 input input-bordered flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  className="h-4 w-4 opacity-70">
+                  <path
+                    d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
+                  <path
+                    d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
+                </svg>
                 <input
-                  type="email"
-                  id="email"
-                  value={email}
+                  type="text"
+                  className="grow"
+                  placeholder="Email"
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 bg-neutral border border-secondary rounded-lg"
                 />
-              </div>
+              </label>
+
 
               <dialog id="emailOTPModal" className="modal">
                 {/* don't show OTP modal until isOTPTimedOut is not null (OTP has been sent) */}
@@ -239,14 +252,14 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                       {isOTPTimedOut === true ? 'OTP timed out!' : <OTPTimer minutes={parseInt(process.env.NEXT_PUBLIC_OTP_TTL_MINUTES || '5')} />}
                     </p><br />
                     <p className="py-4">Enter the 6-digit OTP sent to your email:</p>
-                    <form className="flex flex-col items-center" onSubmit={(e) => { e.preventDefault(); handleOTPSubmit(OTP) }}>
+                    <form className="flex flex-col items-center">
                       <div className="flex space-x-3 mb-4">
                         {[...Array(6)].map((_, index) => (
                           <input
                             key={index}
                             type="text"
                             maxLength={1}
-                            className="w-12 h-12 text-center text-xl border rounded-md"
+                            className="w-12 h-12 text-center text-2xl text-base-content border bg-base-300 rounded-md"
                             required
                             disabled={isOTPVerifying || isOTPTimedOut}
                             onKeyUp={(e) => {
@@ -268,12 +281,18 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                             }}
                             onInput={(e) => {
                               const target = e.target as HTMLInputElement;
-                              target.value = target.value.replace(/[^0-9]/g, '');
+                              target.value = target.value.replace(/[^0-9a-zA-Z]/g, '');
                             }}
                           />
                         ))}
                       </div>
-                      <button type="submit" className="btn btn-primary">Verify OTP</button>
+                      <button
+                        type="button" className="btn btn-primary"
+                        disabled={isOTPVerifying || isOTPTimedOut === true}
+                        onClick={handleOTPSubmit}
+                      >
+                        Verify OTP
+                      </button>
                     </form>
 
                     {/* Option to resend OTP after OTP has expired */}
@@ -294,18 +313,20 @@ export default function Whitelist({ projectID }: WhitelistProps) {
               <button
                 type="button"
                 onClick={handleVerifyEmailClick}
-                disabled={emailVerified === true}
-                className={`mb-6 mt-2 px-4 py-2 rounded-md flex items-center justify-center border border-black ${emailVerified
+                disabled={isEmailVerified === true}
+                className={`mb-6 mt-2 px-4 py-2 rounded-md flex items-center justify-center border border-black ${isEmailVerified
                   ? 'bg-white text-black'
                   : 'bg-white text-black hover:bg-gray-100'
                   }`}
               >
-                {emailVerified ?
+                {isEmailVerified ?
                   <div className="flex items-center justify-center space-x-2">
                     <p className="mr-2">Email Verified</p>
                     <Image src="/images/icons/icons8-verified-25.png" alt="Email Verified" width={25} height={25} />
                   </div>
-                  : (isSendingOTP ? <Loading /> : 'Verify Email')}
+                  : (isSendingOTP
+                    ? <span className="loading loading-ring loading-md">Sendig email</span>
+                    : 'Verify Email')}
               </button>
               <div className="mb-6">
                 <label className="block mb-2 font-bold text-lg">Connect your social accounts for identity verification:</label>
