@@ -24,8 +24,10 @@
     ],
     "paths": {
       "@/*": [
-        "./src/*",
-        "./prisma"
+        "./src/*"
+      ],
+      "@prismaClient/*": [
+        "./prisma/*"
       ]
     },
     "forceConsistentCasingInFileNames": true
