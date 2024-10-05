@@ -16,11 +16,11 @@ datasource db {
 }
 
 model User {
-  id            String  @id @default(auto()) @map("_id") @db.ObjectId
-  address       String  @unique
-  name          String
-  email         String  @unique
-  emailVerified Boolean
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  fullName      String
+  email         String   @unique
+  emailVerified Boolean? @default(false)
+  createdAt     DateTime @default(now())
 }
 
 model SocialTask {
@@ -33,10 +33,10 @@ model SocialTask {
 }
 
 model TaskDone {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  address String
-  taskID  String
-  doneAt  DateTime @default(now())
+  id     String   @id @default(auto()) @map("_id") @db.ObjectId
+  email  String
+  taskID String
+  doneAt DateTime @default(now())
 }
 
 model Project {
