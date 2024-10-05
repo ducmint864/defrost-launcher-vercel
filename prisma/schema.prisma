@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// DB schema for MVP verseion of the app
+generator client {
+  provider = "prisma-client-js"
+}
+
+// mockup db
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGO_MVP_DB_URL")
+}
+
+model User {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  address       String  @unique
+  name          String
+  email         String  @unique
+  emailVerified Boolean
+}
+
+model SocialTask {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  taskID          String   @unique
+  socialPlatform  String
+  taskDescription String
+  taskType        TaskType
+  postUrl         String
+}
+
+model TaskDone {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  address String
+  taskID  String
+  doneAt  DateTime @default(now())
+}
+
+model Project {
+  id               String  @id @default(auto()) @map("_id") @db.ObjectId
+  projectID        String  @unique
+  description      String
+  shortDescription String
+  projectImages    Bytes[]
+}
+
+// Enum for task type
+enum TaskType {
+  follow
+  like
+  share
+}
+
+model OTP {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String
+  code      String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
