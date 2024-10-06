@@ -3,7 +3,7 @@ import Hero from "./hero";
 export default function Portfolio() {
   return (
     <>
-      <div>
+      <div className="h-screen">
         <Navbar />
         <Hero />
       </div>

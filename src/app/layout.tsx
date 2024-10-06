@@ -27,7 +27,11 @@ export default function RootLayout({
           data-site="YOUR_DOMAIN_HERE"
           src="https://api.nepcha.com/js/nepcha-analytics.js"
         ></script>
-        <link rel="shortcut icon" href="/favicon.png" type="image/png" />
+        <link
+          rel="shortcut icon"
+          href="https://readwrite.com/wp-content/uploads/2022/05/Multiply-Your-Dividends-By-Developing-Your-Own-IDO-Launchpad-1200-x-630-copy-900x473.jpg"
+          type="image/png"
+        />
       </head>
       <body className={roboto.className}>
         <Layout>{children}</Layout>

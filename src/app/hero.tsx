@@ -9,7 +9,9 @@ import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 function Hero() {
   // get address to check if wallet is connected
   const address = useAddress();
-
+  const handleClick = () => {
+    window.location.href = "./launchpad";
+  };
   return (
     <div
       className="relative min-h-screen w-full bg-cover bg-no-repeat"
@@ -34,12 +36,13 @@ function Hero() {
             release post lock-up.{" "}
           </Typography>
           <div className="flex items-center gap-4">
-            {address ? <Button
-              variant="gradient"
-              color="white"
-            >
-              Launchpad
-            </Button> : <ConnectWallet />}
+            {address ? (
+              <Button variant="gradient" color="white" onClick={handleClick}>
+                Launchpad
+              </Button>
+            ) : (
+              <ConnectWallet />
+            )}
           </div>
         </div>
       </div>

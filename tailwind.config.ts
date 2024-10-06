@@ -8,6 +8,9 @@ const config: Config = withMT({
   ],
   theme: {},
   plugins: [],
+  // daisyui: {
+  //   themes: ["light", "dark", "aqua"],
+  // },
 });
 
 export default config;

@@ -13,7 +13,7 @@ import {
   XMarkIcon,
   Bars3Icon,
 } from "@heroicons/react/24/solid";
-import { connectWallet } from "../utils/wallet";
+// import { connectWallet } from "../utils/wallet";
 import { DollarCircleOutlined } from "@ant-design/icons";
 import { ConnectWallet } from "@thirdweb-dev/react";
 
