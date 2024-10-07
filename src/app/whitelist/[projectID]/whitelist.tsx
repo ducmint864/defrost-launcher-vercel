@@ -1,36 +1,68 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { WhitelistProps } from '@/app/whitelist/types';
-import { SocialTask } from '@/app/whitelist/types';
-import Image from 'next/image';
-import '@heroicons/react'
-import { XMarkIcon } from '@heroicons/react/24/solid';
-
+import React, { useState, useEffect } from "react";
+import { WhitelistProps } from "@/app/whitelist/types";
+import { SocialTask } from "@/app/whitelist/types";
+import Image from "next/image";
+import "@heroicons/react";
+import { XMarkIcon } from "@heroicons/react/24/solid";
+import { CiCircleCheck } from "react-icons/ci";
 export default function Whitelist({ projectID }: WhitelistProps) {
   // Social tasks states
   const [tasks, setTasks] = useState<SocialTask[]>([
-    { id: 'followTwitter', description: 'Follow our project on Twitter', verified: false },
-    { id: 'retweetPost', description: 'Retweet our latest post on X', verified: false },
-    { id: 'likeFacebook', description: 'Like our Facebook page', verified: false },
-    { id: 'joinDiscord', description: 'Join our Discord server', verified: false },
-    { id: 'telegramGroup', description: 'Join our Telegram group', verified: false },
+    {
+      id: "followTwitter",
+      description: "Follow our project on Twitter",
+      verified: false,
+    },
+    {
+      id: "retweetPost",
+      description: "Retweet our latest post on X",
+      verified: false,
+    },
+    {
+      id: "likeFacebook",
+      description: "Like our Facebook page",
+      verified: false,
+    },
+    {
+      id: "joinDiscord",
+      description: "Join our Discord server",
+      verified: false,
+    },
+    {
+      id: "telegramGroup",
+      description: "Join our Telegram group",
+      verified: false,
+    },
   ]);
 
   const handleVerifyTasks = async (taskId: string) => {
     // call server-side api later
     // for now, we'll just simulate a successful verification
-    const updatedTasks = tasks.map(task =>
+    const updatedTasks = tasks.map((task) =>
       task.id === taskId ? { ...task, verified: true } : task
     );
     setTasks(updatedTasks);
   };
 
   const socialConnects = [
-    { name: 'Google', icon: '/google-icon.svg' },
-    { name: 'Facebook', icon: '/images/social-icons/facebook.png' },
-    { name: 'X', icon: '/images/social/twitter.png' },
-    { name: 'LinkedIn', icon: '/linkedin-icon.svg' },
+    {
+      name: "Google",
+      icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png",
+    },
+    {
+      name: "Facebook",
+      icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1200px-Facebook_Logo_%282019%29.png",
+    },
+    {
+      name: "X",
+      icon: "https://img.freepik.com/free-vector/new-2023-twitter-logo-x-icon-design_1017-45418.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1728172800&semt=ais_hybrid",
+    },
+    {
+      name: "LinkedIn",
+      icon: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png",
+    },
   ];
 
   const handleSocialConnect = (socialName: string) => {
@@ -39,13 +71,13 @@ export default function Whitelist({ projectID }: WhitelistProps) {
   };
 
   // Full name states
-  const [fullName, setFullName] = useState('');
+  const [fullName, setFullName] = useState("");
 
   // Email & OTP states
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [isEmailVerified, setIsEmailVerified] = useState<boolean | null>(null);
   const [isOTPVerifying, setIsVerifying] = useState<boolean>(false);
-  const [OTP, setOTP] = useState<string>('');
+  const [OTP, setOTP] = useState<string>("");
   const [isOTPTimedOut, setIsOTPTimedOut] = useState<boolean | null>(null);
   const [isSendingOTP, setIsSendingOTP] = useState<boolean>(false);
 
@@ -71,51 +103,50 @@ export default function Whitelist({ projectID }: WhitelistProps) {
       sendOTPViaEmail();
     }
 
-    (document.getElementById('emailOTPModal') as HTMLDialogElement).showModal();
-  }
+    (document.getElementById("emailOTPModal") as HTMLDialogElement).showModal();
+  };
 
   const handleResendOTP = () => {
-    const OTPModal = document.getElementById("emailOTPModal") as any
+    const OTPModal = document.getElementById("emailOTPModal") as any;
     OTPModal.close();
     setIsSendingOTP(true);
     setIsOTPTimedOut(null);
     sendOTPViaEmail();
     OTPModal.showModal();
-  }
+  };
 
   const handleOTPSubmit = async (): Promise<boolean> => {
     if (!OTP) {
-      return false;;
+      return false;
     }
 
     setIsVerifying(true);
 
     // call server-side api
     try {
-      const response = await fetch('/api/auth/email/verify-otp', {
-        method: 'POST',
+      const response = await fetch("/api/auth/email/verify-otp", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ OTP, email, projectID }),
       });
 
       if (response.ok) {
-        alert('OTP verified successfully!');
+        alert("OTP verified successfully!");
         setIsEmailVerified(true);
       } else {
-        alert('OTP verification failed. Please try again.');
+        alert("OTP verification failed. Please try again.");
       }
     } catch (error) {
-      console.error('Error verifying OTP:', error);
-      alert('An error occurred. Please try again.');
+      console.error("Error verifying OTP:", error);
+      alert("An error occurred. Please try again.");
     } finally {
       setIsVerifying(false);
     }
 
-
     return true;
-  }
+  };
 
   // check email verification status periodically
   // useEffect(() => {
@@ -125,7 +156,6 @@ export default function Whitelist({ projectID }: WhitelistProps) {
   //     return () => clearInterval(intervalId);
   //   }
   // }, []);
-
 
   // check email verification status on page load
   useEffect(() => {
@@ -140,10 +170,10 @@ export default function Whitelist({ projectID }: WhitelistProps) {
 
   const sendOTPViaEmail = async () => {
     try {
-      const response = await fetch('/api/auth/email/send-otp', {
-        method: 'POST',
+      const response = await fetch("/api/auth/email/send-otp", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, projectID, fullName }),
       });
@@ -151,11 +181,11 @@ export default function Whitelist({ projectID }: WhitelistProps) {
       if (response.ok) {
         setIsOTPTimedOut(false);
       } else {
-        alert('Failed to send OTP. Please try again.');
+        alert("Failed to send OTP. Please try again.");
       }
     } catch (error) {
-      console.error('Error sending OTP:', error);
-      alert('An error occurred. Please try again.');
+      console.error("Error sending OTP:", error);
+      alert("An error occurred. Please try again.");
     } finally {
       setIsSendingOTP(false);
     }
@@ -177,7 +207,6 @@ export default function Whitelist({ projectID }: WhitelistProps) {
           setSecond(59);
           setMinute(minute - 1);
         }
-
       }, 1000);
       return () => clearInterval(intervalID);
     }, [second]);
@@ -186,18 +215,19 @@ export default function Whitelist({ projectID }: WhitelistProps) {
     const formattedSecond = second < 10 ? `0${second}` : second;
 
     return (
-      <p>OTP expires in: {formattedMinute}:{formattedSecond}</p>
-    )
-  }
+      <p>
+        OTP expires in: {formattedMinute}:{formattedSecond}
+      </p>
+    );
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl relative overflow-hidden">
-      <div className="fixed inset-0 w-full h-full bg-gradient-to-tr from-transparent via-blue-300/40 to-purple-400/30 animate-[pulse_7s_ease-in-out_infinite] -z-10"></div>
+      <div className="fixed inset-0 w-full h-full bg-gradient-radial from-blue-900 via-blue-500 to-[#023A0D]-400 animate-pulse -z-10"></div>
       <div className="relative">
         <div className="shadow-full backdrop-blur-sm rounded-2xl p-6 bg-neutral border-2 border-opacity-20 border-white/20 bg-gradient-to-br from-white/10 to-white/5">
           <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-bg-neutral/30 via-bg-secondary/30 to-bg-accent/30 opacity-20 blur-xl"></div>
           <div className="relative z-10">
-
             <h1 className="text-2xl font-bold text-center mb-6 text-neutral-content">
               WELCOME TO THE PROJECT WITH ID {projectID} WHITE LIST
             </h1>
@@ -211,9 +241,9 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 16 16"
                   fill="currentColor"
-                  className="h-4 w-4 opacity-70">
-                  <path
-                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
+                  className="h-4 w-4 opacity-70"
+                >
+                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
                 </svg>
                 <input
                   type="text"
@@ -228,11 +258,10 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 16 16"
                   fill="currentColor"
-                  className="h-4 w-4 opacity-70">
-                  <path
-                    d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
-                  <path
-                    d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
+                  className="h-4 w-4 opacity-70"
+                >
+                  <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
+                  <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
                 </svg>
                 <input
                   type="text"
@@ -242,16 +271,29 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                 />
               </label>
 
-
               <dialog id="emailOTPModal" className="modal">
                 {/* don't show OTP modal until isOTPTimedOut is not null (OTP has been sent) */}
                 {isOTPTimedOut !== null && (
-                  <div id='modalContent' className="modal-box backdrop-blur-lg transition-all duration-300 bg-transparent">
+                  <div
+                    id="modalContent"
+                    className="modal-box backdrop-blur-lg transition-all duration-300 bg-transparent"
+                  >
                     <h3 className="font-bold text-lg">Email Verification</h3>
-                    <p className='py-1 text-sm'>
-                      {isOTPTimedOut === true ? 'OTP timed out!' : <OTPTimer minutes={parseInt(process.env.NEXT_PUBLIC_OTP_TTL_MINUTES || '5')} />}
-                    </p><br />
-                    <p className="py-4">Enter the 6-digit OTP sent to your email:</p>
+                    <p className="py-1 text-sm">
+                      {isOTPTimedOut === true ? (
+                        "OTP timed out!"
+                      ) : (
+                        <OTPTimer
+                          minutes={parseInt(
+                            process.env.NEXT_PUBLIC_OTP_TTL_MINUTES || "5"
+                          )}
+                        />
+                      )}
+                    </p>
+                    <br />
+                    <p className="py-4">
+                      Enter the 6-digit OTP sent to your email:
+                    </p>
                     <form className="flex flex-col items-center">
                       <div className="flex space-x-3 mb-4">
                         {[...Array(6)].map((_, index) => (
@@ -265,15 +307,20 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                             onKeyUp={(e) => {
                               const target = e.target as HTMLInputElement;
                               if (target.value.length === 1) {
-                                const nextSibling = target.nextElementSibling as HTMLInputElement | null;
-                                let newOtp = OTP.slice(0, index) + target.value + OTP.slice(index + 1);
+                                const nextSibling =
+                                  target.nextElementSibling as HTMLInputElement | null;
+                                let newOtp =
+                                  OTP.slice(0, index) +
+                                  target.value +
+                                  OTP.slice(index + 1);
                                 newOtp = newOtp.trim();
-                                setOTP(newOtp)
+                                setOTP(newOtp);
                                 if (nextSibling) {
                                   nextSibling.focus();
                                 }
                               } else if (target.value.length === 0) {
-                                const previousSibling = target.previousElementSibling as HTMLInputElement | null;
+                                const previousSibling =
+                                  target.previousElementSibling as HTMLInputElement | null;
                                 if (previousSibling) {
                                   previousSibling.focus();
                                 }
@@ -281,13 +328,17 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                             }}
                             onInput={(e) => {
                               const target = e.target as HTMLInputElement;
-                              target.value = target.value.replace(/[^0-9a-zA-Z]/g, '');
+                              target.value = target.value.replace(
+                                /[^0-9a-zA-Z]/g,
+                                ""
+                              );
                             }}
                           />
                         ))}
                       </div>
                       <button
-                        type="button" className="btn btn-primary"
+                        type="button"
+                        className="btn btn-primary"
                         disabled={isOTPVerifying || isOTPTimedOut === true}
                         onClick={handleOTPSubmit}
                       >
@@ -297,8 +348,15 @@ export default function Whitelist({ projectID }: WhitelistProps) {
 
                     {/* Option to resend OTP after OTP has expired */}
                     {isOTPTimedOut === true && (
-                      <p className='justify-between text-center py-4 text-sm'>Didn't receive OTP?
-                        <a onClick={handleResendOTP} className='font-bold hover:underline text-success cursor-pointer'> Resend OTP</a>
+                      <p className="justify-between text-center py-4 text-sm">
+                        Didn't receive OTP?
+                        <a
+                          onClick={handleResendOTP}
+                          className="font-bold hover:underline text-success cursor-pointer"
+                        >
+                          {" "}
+                          Resend OTP
+                        </a>
                       </p>
                     )}
                     <div className="modal-action">
@@ -314,31 +372,44 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                 type="button"
                 onClick={handleVerifyEmailClick}
                 disabled={isEmailVerified === true}
-                className={`mb-6 mt-2 px-4 py-2 rounded-md flex items-center justify-center border border-black ${isEmailVerified
-                  ? 'bg-white text-black'
-                  : 'bg-white text-black hover:bg-gray-100'
-                  }`}
+                className={`mb-6 mt-2 px-4 py-2 rounded-md flex items-center justify-center border border-black ${
+                  isEmailVerified
+                    ? "bg-white text-black"
+                    : "bg-white text-black hover:bg-gray-100"
+                }`}
               >
-                {isEmailVerified ?
+                {isEmailVerified ? (
                   <div className="flex items-center justify-center space-x-2">
                     <p className="mr-2">Email Verified</p>
-                    <Image src="/images/icons/icons8-verified-25.png" alt="Email Verified" width={25} height={25} />
+                    <CiCircleCheck />
                   </div>
-                  : (isSendingOTP
-                    ? <span className="loading loading-ring loading-md">Sendig email</span>
-                    : 'Verify Email')}
+                ) : isSendingOTP ? (
+                  <span className="loading loading-ring loading-md">
+                    Sendig email
+                  </span>
+                ) : (
+                  "Verify Email"
+                )}
               </button>
               <div className="mb-6">
-                <label className="block mb-2 font-bold text-lg">Connect your social accounts for identity verification:</label>
-                <div className="flex flex-wrap justify-center gap-2">
+                <label className="block mb-2 font-bold text-lg">
+                  Connect your social accounts for identity verification:
+                </label>
+                <div className="flex  justify-center gap-2 ">
                   {socialConnects.map((social) => (
                     <button
                       key={social.name}
                       type="button"
                       onClick={() => handleSocialConnect(social.name)}
-                      className="flex items-center p-2 border rounded-full hover:bg-gray-100 transition-colors"
+                      className="flex items-center justify-center p-2 border rounded-full hover:bg-gray-100 transition-colors w-[200px]"
                     >
-                      <Image src={social.icon} alt={social.name} width={16} height={16} />
+                      <Image
+                        src={social.icon}
+                        alt={social.name}
+                        width={16}
+                        height={16}
+                        className="rounded-full"
+                      />
                       <span className="ml-2 text-sm">{social.name}</span>
                     </button>
                   ))}
@@ -346,10 +417,15 @@ export default function Whitelist({ projectID }: WhitelistProps) {
               </div>
 
               <div className="mb-6">
-                <label className="block mb-2 font-medium">Proof of engagement</label>
+                <label className="block mb-2 font-medium">
+                  Proof of engagement
+                </label>
                 <div className="space-y-2">
-                  {tasks.map(task => (
-                    <div key={task.id} className="flex items-center justify-between rounded-lg p-3">
+                  {tasks.map((task) => (
+                    <div
+                      key={task.id}
+                      className="flex items-center justify-between rounded-lg p-3"
+                    >
                       <div className="flex items-center space-x-3">
                         <div className="bg-gray-700 rounded-full p-2">
                           <XMarkIcon className="h-5 w-5 text-white" />
@@ -361,11 +437,14 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                       <button
                         type="button"
                         onClick={() => handleVerifyTasks(task.id)}
-                        className={`px-4 py-2 rounded-md ${task.verified ? 'bg-gray-700 text-gray-400' : 'bg-white text-black'
-                          }`}
+                        className={`px-4 py-2 rounded-md ${
+                          task.verified
+                            ? "bg-gray-700 text-gray-400"
+                            : "bg-white text-black"
+                        }`}
                         disabled={task.verified}
                       >
-                        {task.verified ? 'Verified' : 'Start'}
+                        {task.verified ? "Verified" : "Start"}
                       </button>
                     </div>
                   ))}
@@ -373,8 +452,18 @@ export default function Whitelist({ projectID }: WhitelistProps) {
               </div>
 
               <div className="flex justify-end space-x-4">
-                <button type="button" className="px-4 py-2 bg-neutral text-neutral-content rounded-md">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-success text-success-content rounded-md">Continue</button>
+                <button
+                  type="button"
+                  className="px-4 py-2 bg-neutral text-neutral-content rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-success text-success-content rounded-md"
+                >
+                  Continue
+                </button>
               </div>
             </form>
           </div>
