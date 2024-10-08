@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { useState } from "react";
 import axios from "axios";
@@ -14,7 +15,7 @@ function VerifyToken() {
       if (response.data.success) {
         console.log("Token Verified");
       }
-      router.push("/addproject/generaldetails");
+      router.push("/addproject/generaldetail");
     } catch (error) {
       console.log(error);
       // toast.error("Token not verified");
