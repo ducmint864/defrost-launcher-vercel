@@ -7,22 +7,19 @@ import { useRouter } from "next/navigation";
 function VerifyToken() {
   const router = useRouter();
   const [tokenAddress, setTokenAddress] = useState("");
-  
+
   const handleSubmit = async () => {
     try {
       const response = await axios.post("/api/addProject", tokenAddress);
-      if(response.data.success){
+      if (response.data.success) {
         console.log("Token Verified");
       }
       router.push("/addproject/generaldetails");
     } catch (error) {
       console.log(error);
-      // toast.error("Token not verified");      
+      // toast.error("Token not verified");
     }
-  }
-
-  
-
+  };
 
   return (
     <div className="flex justify-center items-center h-screen ">
@@ -39,13 +36,7 @@ function VerifyToken() {
           className="w-full p-3 border rounded-md mb-6 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500"
           onChange={(e) => setTokenAddress(e.target.value)}
         />
-<<<<<<< Updated upstream
-        <button className="w-full bg-[#28DBD1] text-[#02121D] py-3 rounded-md font-semibold hover:bg-blue-800"
-        onClick={handleSubmit}
-        >
-=======
         <button className="w-full bg-[#0047FF] py-3 shadow-lg shadow-blue-500/50 rounded-md font-semibold text-[#fefefe] transition duration-300 ease-in-out hover:bg-[#203e6a] hover:text-[#fefefe] hover:shadow-lg hover:shadow-blue-200">
->>>>>>> Stashed changes
           Verify Ownership
         </button>
       </div>
