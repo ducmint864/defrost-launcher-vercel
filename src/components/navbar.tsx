@@ -74,7 +74,7 @@ export function Navbar({ backgroundColor = "transparent" }: NavbarProps) {
 
   React.useEffect(() => {
     function handleScroll() {
-      // Kiểm tra vị trí cuộn để cập nhật state isScrolling
+      // Cập nhật trạng thái khi cuộn
       if (window.scrollY > 0) {
         setIsScrolling(true);
       } else {
@@ -91,27 +91,36 @@ export function Navbar({ backgroundColor = "transparent" }: NavbarProps) {
       shadow={false}
       fullWidth
       blurred={false}
-      color={"transparent"}
-      className={`fixed top-0 z-50 border-0 transition-all duration-300 ${"bg-[#16202B]"}`}
+      color="transparent"
+      className={`fixed top-0 z-50 border-0 transition-all duration-300 ${
+        isScrolling ? "bg-[#0b162d] bg-opacity-100" : ""
+      }`}
     >
       <div className="container mx-auto flex items-center justify-between">
-        <Typography color={"white"} className="text-lg font-bold" href="/">
-          Solidithi Launchpad
-        </Typography>
-        <ul className={`ml-10 hidden items-center gap-6 lg:flex text-white`}>
+        <Link href="/" passHref>
+          <Typography
+            color="white"
+            className="text-lg font-bold transition-transform transform hover:-translate-y-1 duration-300"
+          >
+            Solidithi Launchpad
+          </Typography>
+        </Link>
+        <ul className="ml-10 hidden items-center gap-6 lg:flex text-white ">
           {NAV_MENU.map(({ name, icon: Icon, href }) => (
             <NavItem key={name} href={href}>
-              <Icon className="h-5 w-5" />
-              <span>{name}</span>
+              <div className="flex items-center transition-transform transform hover:-translate-y-1 duration-300">
+                <Icon className="h-5 w-5 mr-2" />
+                <span>{name}</span>
+              </div>
             </NavItem>
           ))}
         </ul>
         <div className="hidden items-center gap-4 lg:flex">
           <ConnectWallet />
-        </div >
+        </div>
         <IconButton
           variant="text"
-          color={"white"}
+          color="white"
           onClick={handleOpen}
           className="ml-auto inline-block lg:hidden"
         >
@@ -121,7 +130,7 @@ export function Navbar({ backgroundColor = "transparent" }: NavbarProps) {
             <Bars3Icon strokeWidth={2} className="h-6 w-6" />
           )}
         </IconButton>
-      </div >
+      </div>
       <Collapse open={open}>
         <div className="container mx-auto mt-4 rounded-lg bg-white px-6 py-5">
           <ul className="flex flex-col gap-4 text-gray-900">
@@ -134,7 +143,7 @@ export function Navbar({ backgroundColor = "transparent" }: NavbarProps) {
           </ul>
         </div>
       </Collapse>
-    </MTNavbar >
+    </MTNavbar>
   );
 }
 

@@ -25,8 +25,9 @@ function VerifyToken() {
 
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-[#02121D]">
-      <div className="  rounded-lg shadow-md text-center max-w-md w-full">
+    <div className="flex justify-center items-center h-screen ">
+      {/* <div className="absolute left-1/2 bottom-0 w-[600px] h-[300px] bg-[#0047FF] rounded-t-full opacity-10 blur-[100px] animate-[pulse_3s_infinite] z-0 transform -translate-x-1/2"></div> */}
+      <div className="  rounded-lg shadow-md text-center max-w-md w-full font-sans">
         <h2 className="text-xl font-semibold mb-4 text-white">Add Token</h2>
         <p className="text-gray-500 mb-6">
           Paste your token URL so we can verify that you own this
@@ -38,9 +39,13 @@ function VerifyToken() {
           className="w-full p-3 border rounded-md mb-6 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500"
           onChange={(e) => setTokenAddress(e.target.value)}
         />
+<<<<<<< Updated upstream
         <button className="w-full bg-[#28DBD1] text-[#02121D] py-3 rounded-md font-semibold hover:bg-blue-800"
         onClick={handleSubmit}
         >
+=======
+        <button className="w-full bg-[#0047FF] py-3 shadow-lg shadow-blue-500/50 rounded-md font-semibold text-[#fefefe] transition duration-300 ease-in-out hover:bg-[#203e6a] hover:text-[#fefefe] hover:shadow-lg hover:shadow-blue-200">
+>>>>>>> Stashed changes
           Verify Ownership
         </button>
       </div>
