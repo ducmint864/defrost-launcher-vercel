@@ -28,6 +28,6 @@ async function main(): Promise<OTP[]> {
 
 main().then((OTPList) => {
     OTPList.forEach((OTP) => {
-        console.log(`Found an OTP of email ${OTP.email}: ${OTP.OTP}, which was created at: ${OTP.createdAt}`);
+        console.log(`Found an OTP of email ${OTP.email}: ${OTP.code}, which was created at: ${OTP.createdAt}`);
     });
 });
