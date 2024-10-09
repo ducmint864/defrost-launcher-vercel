@@ -147,7 +147,7 @@ function InvesmentPage() {
             </div>
           </div>
           <div className="ml-auto">
-            <Button className="bg-neutral text-white px-4 py-2 rounded-full">
+            <Button className="bg-neutral text-white px-4 py-2 rounded-full transition duration-300 hover:shadow-lg hover:bg-opacity-80">
               Withdraw
             </Button>
           </div>
@@ -157,14 +157,14 @@ function InvesmentPage() {
       <div className="mt-4 flex justify-center w-full">
         {!showMoreEnded ? (
           <Button
-            className="bg-neutral text-white px-4 py-2 rounded-full"
+            className="bg-neutral text-white px-4 py-2 rounded-full transition duration-300 hover:shadow-lg hover:bg-opacity-80"
             onClick={() => setShowMoreEnded(true)}
           >
             More Ended Projects
           </Button>
         ) : (
           <Button
-            className="bg-neutral text-white px-4 py-2 rounded-full"
+            className="bg-neutral text-white px-4 py-2 rounded-full transition duration-300 hover:shadow-lg hover:bg-opacity-80"
             onClick={() => setShowMoreEnded(false)}
           >
             Less Ended Projects
@@ -220,14 +220,14 @@ function InvesmentPage() {
       <div className="mt-4 mb-4 flex justify-center w-full">
         {!showMorePending ? (
           <Button
-            className="bg-neutral text-white px-4 py-2 rounded-full"
+            className="bg-neutral text-white px-4 py-2 rounded-full transition duration-300 hover:shadow-lg hover:bg-opacity-80"
             onClick={() => setShowMorePending(true)}
           >
             More Pending Projects
           </Button>
         ) : (
           <Button
-            className="bg-neutral text-white px-4 py-2 rounded-full"
+            className="bg-neutral text-white px-4 py-2 rounded-full transition duration-300 hover:shadow-lg hover:bg-opacity-80"
             onClick={() => setShowMorePending(false)}
           >
             Less Pending Projects
