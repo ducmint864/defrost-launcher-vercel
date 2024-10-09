@@ -8,6 +8,8 @@ import image2 from "../../../public/images/bg2.jpg";
 import image3 from "../../../public/images/bg3.jpg";
 import image4 from "../../../public/images/bg4.jpg";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 const projectsData = [
   {
     id: 1,
@@ -112,10 +114,11 @@ function LaunchpadPage() {
     ],
   };
 
-  const handleClick = () => {
-    window.location.href = "./addproject/verifytoken";
-  };
+  const route = useRouter();
 
+  const handleClick = () => {
+    route.push("./addproject/verifytoken");
+  };
   return (
     <div className="relative flex justify-center items-center min-h-screen bg-primary">
       <div className="absolute left-0 top-1/4 w-[300px] h-[300px] bg-[#0047FF] rounded-full opacity-10 blur-3xl animate-pulse z-0"></div>

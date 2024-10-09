@@ -41,7 +41,7 @@ const NAV_MENU = [
   {
     name: "My investment",
     icon: RectangleStackIcon,
-    href: "",
+    href: "/investment",
   },
   {
     name: "Swap",

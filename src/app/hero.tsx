@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -7,12 +6,14 @@ import bg from "../../public/images/sea.png";
 import { Footer } from "@/components";
 import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import { Button } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 function Hero() {
   // get address to check if wallet is connected
   const address = useAddress();
+  const route = useRouter();
   const handleClick = () => {
-    window.location.href = "./launchpad";
+    route.push("./launchpad");
   };
   return (
     <div
@@ -43,7 +44,9 @@ function Hero() {
           </span>
           <div className="flex items-center gap-4 ">
             {address ? (
-              <Button onClick={handleClick}>Launchpad</Button>
+              <Button className=" bg-white rounded-md" onClick={handleClick}>
+                Launchpad
+              </Button>
             ) : (
               <ConnectWallet />
             )}
