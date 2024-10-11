@@ -1,14 +1,28 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 // import PromotionPage from "./promotion";
 import { Calendar } from "@nextui-org/react";
 import { parseDate } from "@internationalized/date";
 import { DatePicker } from "@nextui-org/react";
+import { useDispatch } from "react-redux";
+import { updatePromotionPageData } from "@/lib/store/formSlice";
 const Promotion = () => {
+  const [tokenExchangeRate, setTokenExchangeRate] = useState("");
+  const [amountTokenRelease, setAmountTokenRelease] = useState("");
+  const [date, setDate] = useState("");
+  
+
   const route = useRouter();
+  const dispatch = useDispatch();
 
   const handleContinue = () => {
+    const formDatas = [
+      tokenExchangeRate,
+      amountTokenRelease,
+      date,
+    ];
+    dispatch(updatePromotionPageData(formDatas));
     route.push("/addproject/preview");
   };
 
@@ -22,6 +36,7 @@ const Promotion = () => {
               type="number"
               className="border border-black rounded-2xl w-3/5 h-12 text-lg pl-5"
               placeholder="Set token exchange rate"
+              onChange={(e) => setTokenExchangeRate(e.target.value)}
             />
 
             <hr className="border border-black w-3/5 my-14"></hr>
@@ -31,6 +46,7 @@ const Promotion = () => {
                 type="number"
                 className="border border-black rounded-2xl w-3/5 h-12 text-lg"
                 placeholder="Amount token release"
+                onChange={(e) => setAmountTokenRelease(e.target.value)}
               />
             </div>
 
@@ -43,6 +59,7 @@ const Promotion = () => {
                 variant="bordered"
                 showMonthAndYearPickers
                 className="border border-black rounded-2xl w-3/5 h-12 text-lg"
+                onChange={(date) => setDate(date.toString())}
               />
             </div>
             {/* </div> */}

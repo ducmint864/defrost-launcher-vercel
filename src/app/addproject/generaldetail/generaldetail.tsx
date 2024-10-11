@@ -3,11 +3,17 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import { CiImageOn } from "react-icons/ci";
 import { Button } from "@nextui-org/react";
+import { useSelector, useDispatch } from "react-redux";
+import { updateGeneralDetailPageData } from "@/lib/store/formSlice";
 
 const GeneralDetail = () => {
+  const [projectTitle, setProjectTitle] = useState<string>("");
+  const [shortDescription, setShortDescription] = useState<string>("");
+  const [longDescription, setLongDescription] = useState<string>("");
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]); 
+  const dispatch = useDispatch();
 
   const handleSelectCoin = (coin: string) => {
     setSelectedCoin(coin);
@@ -28,6 +34,19 @@ const GeneralDetail = () => {
     }
   };
 
+
+//REDUX GLOBAL STATE
+  const handleSubmit = () => {
+    const formDatas = [
+      selectedCoin,
+      selectedImages,
+      projectTitle,
+      shortDescription,
+      longDescription,
+    ]
+    dispatch(updateGeneralDetailPageData(formDatas));
+
+  };
   return (
     <div className="flex justify-center min-h-screen bg-primary">
       <div className="w-3/5 mx-auto">
@@ -141,15 +160,18 @@ const GeneralDetail = () => {
               type="text"
               className="border border-black rounded-2xl h-12 text-lg pl-5 w-full"
               placeholder="Project Title"
+              onChange={(e) => setProjectTitle(e.target.value)}
             />
             <input
               type="text"
               className="border border-black rounded-2xl h-12 text-lg pl-5 w-full"
               placeholder="Short Description"
+              onChange={(e) => setShortDescription(e.target.value)}
             />
             <textarea
               className="border border-black rounded-2xl  h-[200px] text-lg pl-5 w-full resize-y textarea "
               placeholder="Long Description"
+              onChange={(e) => setLongDescription(e.target.value)}
             />
           </div>
         </div>
@@ -158,6 +180,7 @@ const GeneralDetail = () => {
           <button
             className="mt-5 bg-black text-white w-full mx-auto p-3 text-lg rounded-2xl mb-10"
             type="submit"
+            onClick={handleSubmit}
           >
             Continue
           </button>

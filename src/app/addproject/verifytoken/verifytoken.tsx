@@ -3,13 +3,20 @@ import React from "react";
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
+import { updateVerifyTokenPageData } from "@/lib/store/formSlice";
+
 // import toast from "react-hot-toast";
 
 function VerifyToken() {
   const router = useRouter();
   const [tokenAddress, setTokenAddress] = useState("");
+  const dispatch = useDispatch();
+  const formData = useSelector((state: any) => state.form.verifyTokenData);
 
   const handleSubmit = async () => {
+    dispatch(updateVerifyTokenPageData(tokenAddress));
+
     try {
       const response = await axios.post("/api/addProject", tokenAddress);
       if (response.data.success) {
