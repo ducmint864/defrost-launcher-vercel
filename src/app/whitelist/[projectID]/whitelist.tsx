@@ -349,7 +349,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                     {/* Option to resend OTP after OTP has expired */}
                     {isOTPTimedOut === true && (
                       <p className="justify-between text-center py-4 text-sm">
-                        Didn't receive OTP?
+                        Didnt receive OTP?
                         <a
                           onClick={handleResendOTP}
                           className="font-bold hover:underline text-success cursor-pointer"
