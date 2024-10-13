@@ -223,7 +223,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl relative overflow-hidden">
-      <div className="fixed inset-0 w-full h-full bg-gradient-to-tr from-primary via-accent to-primary animate-[pulse_7s_ease-in-out_infinite] -z-10"></div>
+      <div className="fixed inset-0 w-full h-full bg-gradient-to-tr from-transparent via-blue-300/40 to-purple-400/30 animate-[pulse_7s_ease-in-out_infinite] -z-10"></div>
       <div className="relative">
         <div className="shadow-full backdrop-blur-sm rounded-2xl p-6 bg-[#1E293B] border-2 border-opacity-20 border-white/20 bg-gradient-to-br from-white/10 to-white/5">
           <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-bg-[#1E293B]/30 via-bg-secondary/30 to-bg-accent/30 opacity-20 blur-xl"></div>

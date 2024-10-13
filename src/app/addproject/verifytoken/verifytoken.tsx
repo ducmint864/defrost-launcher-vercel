@@ -14,18 +14,22 @@ function VerifyToken() {
   const dispatch = useDispatch();
   const formData = useSelector((state: any) => state.form.verifyTokenData);
 
-  const handleSubmit = async () => {
-    dispatch(updateVerifyTokenPageData(tokenAddress));
+  // const handleSubmit = async () => {
+  //   dispatch(updateVerifyTokenPageData(tokenAddress));
 
-    try {
-      const response = await axios.post("/api/addProject", tokenAddress);
-      if (response.data.success) {
-        console.log("Token Verified");
-      }
-      router.push("/addproject/generaldetail");
-    } catch (error) {
-      console.log(error);
-    }
+  //   try {
+  //     const response = await axios.post("/api/addProject", tokenAddress);
+  //     if (response.data.success) {
+  //       console.log("Token Verified");
+  //     }
+  //     router.push("./addproject/generaldetail");
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  const route = useRouter();
+  const handleSubmit = () => {
+    route.push("./addproject/generaldetail");
   };
 
   return (
@@ -43,11 +47,11 @@ function VerifyToken() {
           className="w-full p-3 border rounded-md mb-6 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500"
           onChange={(e) => setTokenAddress(e.target.value)}
         />
-        <button className="w-full bg-[#0047FF] py-3 shadow-lg shadow-blue-500/50 rounded-md font-semibold
+        <button
+          className="w-full bg-[#0047FF] py-3 shadow-lg shadow-blue-500/50 rounded-md font-semibold
          text-[#fefefe] transition duration-300 ease-in-out hover:bg-[#203e6a] hover:text-[#fefefe] hover:shadow-lg hover:shadow-blue-200"
-         onClick={handleSubmit}
-         >
-
+          onClick={handleSubmit}
+        >
           Verify Ownership
         </button>
       </div>

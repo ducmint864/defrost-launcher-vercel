@@ -1,14 +1,19 @@
+"use client";
 import InfoBar from "@/components/infobar";
 import Generaldetail from "./generaldetail";
 import { Navbar } from "@/components";
+import { Provider } from "react-redux";
+import { store } from "@/lib/store/store";
 
 const PromotionPage = () => {
   return (
     <div className="h-screen bg-primary">
       <Navbar />
       <div style={{ paddingTop: "60px" }}>
-        <InfoBar />
-        <Generaldetail />
+        <Provider store={store}>
+          <InfoBar />
+          <Generaldetail />
+        </Provider>
       </div>
     </div>
   );
