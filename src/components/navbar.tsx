@@ -12,6 +12,7 @@ import {
   CommandLineIcon,
   XMarkIcon,
   Bars3Icon,
+  FireIcon,
 } from "@heroicons/react/24/solid";
 import { DollarCircleOutlined } from "@ant-design/icons";
 import { ConnectWallet } from "@thirdweb-dev/react";
@@ -21,7 +22,7 @@ interface NavItemProps {
   href?: string;
 }
 
-function NavItem({ children, href }: NavItemProps,) {
+function NavItem({ children, href }: NavItemProps) {
   return (
     <li>
       <Link href={href || "#"} passHref>
@@ -37,14 +38,15 @@ function NavItem({ children, href }: NavItemProps,) {
   );
 }
 
-
-
 interface NavbarProps {
   backgroundColor?: string;
   isOwner?: boolean;
 }
 
-export function Navbar({ backgroundColor = "transparent", isOwner }: NavbarProps) {
+export function Navbar({
+  backgroundColor = "transparent",
+  isOwner,
+}: NavbarProps) {
   const [NAV_MENU, SET_NAV_MENU] = useState([
     {
       name: "My investment",
@@ -65,25 +67,25 @@ export function Navbar({ backgroundColor = "transparent", isOwner }: NavbarProps
 
   const [open, setOpen] = React.useState(false);
   const [isScrolling, setIsScrolling] = React.useState(false);
-  
+
   const handleOpen = () => setOpen((cur) => !cur);
-  
+
   useEffect(() => {
     const checkProjectOwner = async () => {
-      const owner = isOwner;
+      const owner = true;
       if (owner) {
         SET_NAV_MENU((prevMenu) => [
           {
             name: "My project",
-            icon: RectangleStackIcon,
+            icon: FireIcon,
             href: "/myproject",
           },
-          ...prevMenu
+          ...prevMenu,
         ]);
       }
     };
     checkProjectOwner();
-  }, [])
+  }, []);
   React.useEffect(() => {
     window.addEventListener(
       "resize",

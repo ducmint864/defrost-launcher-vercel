@@ -25,7 +25,6 @@ function VerifyToken() {
       router.push("/addproject/generaldetail");
     } catch (error) {
       console.log(error);
-      // toast.error("Token not verified");
     }
   };
 
