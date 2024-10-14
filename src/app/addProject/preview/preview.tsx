@@ -4,6 +4,9 @@ import Image from "next/image";
 import { Tabs, Tab } from "@nextui-org/react";
 import { Key } from "react";
 import { Button } from "@nextui-org/react";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const tokenSaleData = [
   {
@@ -50,6 +53,18 @@ const PreviewPage = () => {
 
   const [currentImage, setCurrentImage] = useState(0);
   const [activeTab, setActiveTab] = useState<Key>("description");
+  const formDataVerifyToken = useSelector((state: any) => {
+    console.log(state);
+    return state.form.verifyTokenData
+  })
+  const formDataGeneralDetail = useSelector((state: any) => state.form.generalDetailData);
+  const formDataPromotion = useSelector((state: any) => state.form.promotionData);  
+  const route = useRouter();
+  const combinedData = {
+    verifyToken: formDataVerifyToken,
+    generalDetail: formDataGeneralDetail,
+    promotion: formDataPromotion,
+  }
 
   const nextImage = () => {
     setCurrentImage((prevImage) => (prevImage + 1) % images.length);
@@ -65,6 +80,13 @@ const PreviewPage = () => {
 
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
+  };
+
+  const handleSubmit = async () => {
+    const response = await axios.post("/api/addProject", combinedData);
+    if( response.data.success) {
+      route.push("/myProject");
+    }
   };
 
   return (
@@ -272,7 +294,9 @@ const PreviewPage = () => {
             />
           </div>
         )}
-        <Button className="mt-2 mb-8 bg-neutral text-[#ffffff] py-2 px-4 rounded-full">
+        <Button className="mt-2 mb-8 bg-neutral text-[#ffffff] py-2 px-4 rounded-full"
+        onClick={handleSubmit}
+        >
           Verify
         </Button>
       </div>

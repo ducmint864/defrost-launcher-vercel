@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import Verifytoken from "./verifytoken";
+import Verifytoken from "./verifyToken";
 import { Navbar } from "@/components";
 import { Provider } from "react-redux";
 import { store } from "@/lib/store/store";

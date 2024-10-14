@@ -44,7 +44,7 @@ model Project {
   projectID        String  @unique
   description      String
   shortDescription String
-  projectImages    Bytes[]
+  projectImageUrls    String[]
 }
 
 // Enum for task type

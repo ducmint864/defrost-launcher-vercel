@@ -1,5 +1,5 @@
 import { Navbar } from "@/components";
-import MyProjectPage from "./myproject";
+import MyProjectPage from "./myProject";
 import React from "react";
 
 function Invesment() {

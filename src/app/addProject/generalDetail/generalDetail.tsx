@@ -5,6 +5,7 @@ import { CiImageOn } from "react-icons/ci";
 import { Button } from "@nextui-org/react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateGeneralDetailPageData } from "@/lib/store/formSlice";
+import { useRouter } from "next/navigation";
 
 const GeneralDetail = () => {
   const [projectTitle, setProjectTitle] = useState<string>("");
@@ -13,7 +14,12 @@ const GeneralDetail = () => {
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedImages, setSelectedImages] = useState<string[]>([]); 
+  const route = useRouter();
   const dispatch = useDispatch();
+  const updateData = useSelector((state: any) => {
+    console.log(state);
+    return state.form.generalDetailData
+  });
 
   const handleSelectCoin = (coin: string) => {
     setSelectedCoin(coin);
@@ -45,7 +51,9 @@ const GeneralDetail = () => {
       longDescription,
     ]
     dispatch(updateGeneralDetailPageData(formDatas));
-
+    console.log(updateData);
+    route.push("/addProject/promotion");
+    
   };
   return (
     <div className="flex justify-center min-h-screen bg-primary">

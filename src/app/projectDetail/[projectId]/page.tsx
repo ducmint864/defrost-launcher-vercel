@@ -1,6 +1,6 @@
 // import { Footer, Navbar } from "@/components"
 import { Navbar } from "@/components";
-import ProjectDetailPage from "./projectdetail";
+import ProjectDetailPage from "./projectDetail";
 
 const ProjectDetail = () => {
   return (

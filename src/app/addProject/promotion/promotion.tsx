@@ -23,7 +23,7 @@ const Promotion = () => {
       date,
     ];
     dispatch(updatePromotionPageData(formDatas));
-    route.push("/addproject/preview");
+    route.push("/addProject/preview");
   };
 
   return (

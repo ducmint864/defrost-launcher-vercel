@@ -1,6 +1,6 @@
 "use client";
 import InfoBar from "@/components/infobar";
-import Generaldetail from "./generaldetail";
+import Generaldetail from "./generalDetail";
 import { Navbar } from "@/components";
 import { Provider } from "react-redux";
 import { store } from "@/lib/store/store";
