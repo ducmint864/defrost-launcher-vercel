@@ -78,7 +78,7 @@ export function Navbar({
           {
             name: "My project",
             icon: FireIcon,
-            href: "/myproject",
+            href: "/myProject",
           },
           ...prevMenu,
         ]);

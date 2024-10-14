@@ -12,14 +12,18 @@ import { ethers } from "ethers";
 function VerifyToken() {
   const router = useRouter();
   const [tokenAddress, setTokenAddress] = useState("");
+  const [signedMessage, setSignedMessage] = useState<boolean>(false);
   const dispatch = useDispatch();
 
   const handleSubmit = async () => {
     // const provider = new ethers.providers.JsonRpcProvider("localhost:8545");
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const signature = await signer.signMessage(`Guarantee this is your token address: ${tokenAddress}`);
-    console.log(signature);
+    if(!signedMessage){
+      const signer = provider.getSigner();
+      const signature = await signer.signMessage(`Guarantee this is your token address: ${tokenAddress}`);
+      setSignedMessage(true);
+      console.log(signature);
+    }
 
 
     dispatch(updateVerifyTokenPageData(tokenAddress));
@@ -54,6 +58,7 @@ return (
         className="w-full bg-[#0047FF] py-3 shadow-lg shadow-blue-500/50 rounded-md font-semibold
          text-[#fefefe] transition duration-300 ease-in-out hover:bg-[#203e6a] hover:text-[#fefefe] hover:shadow-lg hover:shadow-blue-200"
         onClick={handleSubmit}
+        disabled={signedMessage}
       >
         Verify Ownership
       </button>

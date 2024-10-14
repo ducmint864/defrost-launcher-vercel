@@ -6,15 +6,15 @@ const InfoBar = () => {
   const route = useRouter();
 
   const toGeneralDetails = () => {
-    route.push("/addproject/generaldetails");
+    route.push("/addProject/generalDetail");
   };
 
   const toPromotion = () => {
-    route.push("/addproject/promotion");
+    route.push("/addProject/promotion");
   };
 
   const toPreview = () => {
-    route.push("/addproject/preview");
+    route.push("/addProject/preview");
   };
 
   return (
@@ -64,17 +64,17 @@ export default InfoBar;
 
 //   const toGeneralDetails = () => {
 //     setActiveTab("general");
-//     router.push("/addproject/generaldetail");
+//     router.push("/addProject/generaldetail");
 //   };
 
 //   const toPromotion = () => {
 //     setActiveTab("promotion");
-//     router.push("/addproject/promotion");
+//     router.push("/addProject/promotion");
 //   };
 
 //   const toPreview = () => {
 //     setActiveTab("preview");
-//     router.push("/addproject/preview");
+//     router.push("/addProject/preview");
 //   };
 
 //   return (

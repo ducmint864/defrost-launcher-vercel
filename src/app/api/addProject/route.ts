@@ -10,11 +10,11 @@ export async function POST(req: NextRequest, res: NextResponse){
     console.log(body);
     const { verifyToken, generalDetail, promotion } = body;
 
-    await prismaClient.project.create({
-        data: {
+    // await prismaClient.project.create({
+    //     data: {
             
-        }
-    })    
+    //     }
+    // })    
 
     
 
