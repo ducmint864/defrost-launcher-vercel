@@ -7,7 +7,7 @@ import { store } from "@/lib/store/store";
 
 const PromotionPage = () => {
   return (
-    <div className="h-screen">
+    <div className="h-screen bg-primary">
       <Navbar />
       <div style={{ paddingTop: "60px" }}>
         <Provider store={store}>

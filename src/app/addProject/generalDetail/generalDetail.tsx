@@ -13,12 +13,12 @@ const GeneralDetail = () => {
   const [longDescription, setLongDescription] = useState<string>("");
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [selectedImages, setSelectedImages] = useState<string[]>([]); 
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const route = useRouter();
   const dispatch = useDispatch();
   const updateData = useSelector((state: any) => {
     console.log(state);
-    return state.form.generalDetailData
+    return state.form.generalDetailData;
   });
 
   const handleSelectCoin = (coin: string) => {
@@ -36,12 +36,11 @@ const GeneralDetail = () => {
 
   const triggerFileInput = () => {
     if (fileInputRef.current) {
-      fileInputRef.current.click(); 
+      fileInputRef.current.click();
     }
   };
 
-
-//REDUX GLOBAL STATE
+  //REDUX GLOBAL STATE
   const handleSubmit = () => {
     const formDatas = [
       selectedCoin,
@@ -49,11 +48,10 @@ const GeneralDetail = () => {
       projectTitle,
       shortDescription,
       longDescription,
-    ]
+    ];
     dispatch(updateGeneralDetailPageData(formDatas));
     console.log(updateData);
     route.push("/addProject/promotion");
-    
   };
   return (
     <div className="flex justify-center min-h-screen bg-primary">
@@ -146,7 +144,7 @@ const GeneralDetail = () => {
             </div>
 
             <Button
-              className="bg-primary text-white py-2 px-4 rounded-full ml-auto"
+              className="bg-neutral text-white py-2 px-4 rounded-full ml-auto"
               onClick={triggerFileInput}
             >
               Upload
@@ -185,13 +183,13 @@ const GeneralDetail = () => {
         </div>
 
         <div className="flex justify-center">
-          <button
-            className="mt-5 bg-black text-white w-full mx-auto p-3 text-lg rounded-2xl mb-10"
+          <Button
+            className="mt-5 bg-neutral text-white w-full mx-auto p-3 text-lg rounded-2xl mb-10"
             type="submit"
             onClick={handleSubmit}
           >
             Continue
-          </button>
+          </Button>
         </div>
       </div>
     </div>

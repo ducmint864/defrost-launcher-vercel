@@ -2,36 +2,39 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 // import PromotionPage from "./promotion";
-import { Calendar } from "@nextui-org/react";
+import { Button, Calendar, DateRangePicker } from "@nextui-org/react";
 import { parseDate } from "@internationalized/date";
-import { DatePicker } from "@nextui-org/react";
+// import { DatePicker } from "@nextui-org/react";
 import { useDispatch } from "react-redux";
 import { updatePromotionPageData } from "@/lib/store/formSlice";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { FaCalendarAlt } from "react-icons/fa";
 const Promotion = () => {
   const [tokenExchangeRate, setTokenExchangeRate] = useState("");
   const [amountTokenRelease, setAmountTokenRelease] = useState("");
   const [date, setDate] = useState("");
-  
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
   const route = useRouter();
   const dispatch = useDispatch();
 
   const handleContinue = () => {
-    const formDatas = [
-      tokenExchangeRate,
-      amountTokenRelease,
-      date,
-    ];
+    const formDatas = [tokenExchangeRate, amountTokenRelease, date];
     dispatch(updatePromotionPageData(formDatas));
     route.push("/addProject/preview");
   };
 
   return (
-    <div>
+    <div className="flex justify-center min-h-screen bg-primary">
       <div className="w-3/5 mx-auto">
-        <div className="mt-12 mb-6 text-2xl font-bold">Set Price</div>
-        <div className="border border-black rounded-2xl h-3/5 mb-12">
-          <div className="my-6 ml-10 w-full">
+        <div className="mt-12 mb-6 text-2xl font-bold text-white">
+          Set Price
+        </div>
+        <div className="border border-black bg-white rounded-2xl h-2/5 mb-12">
+          <div className="my-6 ml-10 w-full flex flex-col gap-5">
+            {/* <div className=""> */}
             <input
               type="number"
               className="border border-black rounded-2xl w-3/5 h-12 text-lg pl-5"
@@ -39,40 +42,62 @@ const Promotion = () => {
               onChange={(e) => setTokenExchangeRate(e.target.value)}
             />
 
-            <hr className="border border-black w-3/5 my-14"></hr>
+            <span className="text-gray-600 text-md">
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry.
+            </span>
 
-            <div>
-              <input
-                type="number"
-                className="border border-black rounded-2xl w-3/5 h-12 text-lg"
-                placeholder="Amount token release"
-                onChange={(e) => setAmountTokenRelease(e.target.value)}
-              />
-            </div>
+            <input
+              type="number"
+              className="border border-black rounded-2xl w-3/5 h-12 text-lg pl-5"
+              placeholder="Amount token release"
+              onChange={(e) => setTokenExchangeRate(e.target.value)}
+            />
 
-            <hr className="border border-black w-3/5 mt-14 mb-6"></hr>
+            <span className="text-gray-600 text-md">
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry.
+            </span>
 
-            {/* <div className=" "> */}
-            <div>
+            <div className="flex items-center border border-black rounded-2xl w-3/5 h-12 text-lg px-3">
+              <FaCalendarAlt className="text-gray-500 mr-2" />
               <DatePicker
-                // label="Birth Date"
-                variant="bordered"
-                showMonthAndYearPickers
-                className="border border-black rounded-2xl w-3/5 h-12 text-lg"
-                onChange={(date) => setDate(date.toString())}
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                placeholderText="Start Date"
+                className="border-none outline-none w-full"
+              />
+              <span className="mx-2">to</span>
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                placeholderText="End Date"
+                className="border-none outline-none w-full"
               />
             </div>
+
+            <span className="text-gray-600 text-md">
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry.
+            </span>
             {/* </div> */}
           </div>
         </div>
         <div className="flex justify-center">
-          <button
-            className="mt-10 bg-black text-white w-full mx-auto p-3 text-lg rounded-2xl"
+          <Button
+            className="mt-5 bg-neutral text-white w-full mx-auto p-3 text-lg rounded-2xl mb-10"
             type="submit"
-            onClick={handleContinue}
+            // onClick={handleSubmit}
           >
             Continue
-          </button>
+          </Button>
         </div>
       </div>
     </div>

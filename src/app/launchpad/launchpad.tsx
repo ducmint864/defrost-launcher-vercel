@@ -120,11 +120,11 @@ function LaunchpadPage() {
   const route = useRouter();
 
   const handleClick = () => {
-    route.push("./addproject/verifytoken");
+    route.push("./addProject/verifyToken");
   };
 
   const handleChooseProject = () => {
-    route.push("./projectdetail");
+    route.push("./projectDetail");
   };
 
   return (
