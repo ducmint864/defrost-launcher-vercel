@@ -94,7 +94,7 @@ const Promotion = () => {
           <Button
             className="mt-5 bg-neutral text-white w-full mx-auto p-3 text-lg rounded-2xl mb-10"
             type="submit"
-            // onClick={handleSubmit}
+            onClick={handleContinue}
           >
             Continue
           </Button>

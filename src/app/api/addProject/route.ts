@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
-import contractArtifact from "./IDO.json";
 import { NextRequest, NextResponse } from "next/server";
-import { prismaClient } from "@/*";
+import prismaClient  from "@/*";
 
 const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 

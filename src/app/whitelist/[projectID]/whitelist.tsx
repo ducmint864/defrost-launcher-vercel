@@ -7,7 +7,15 @@ import Image from "next/image";
 import "@heroicons/react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { CiCircleCheck } from "react-icons/ci";
+import { ethers } from "ethers";
+import contractArtifact from "../../../abi/IDO.json";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 export default function Whitelist({ projectID }: WhitelistProps) {
+  const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; /* @dev replace contract address using projectID */
+  const contractABI = contractArtifact.abi;
+  const route = useRouter();
+
   // Social tasks states
   const [tasks, setTasks] = useState<SocialTask[]>([
     {
@@ -220,6 +228,40 @@ export default function Whitelist({ projectID }: WhitelistProps) {
       </p>
     );
   };
+
+  const handleSubmitWhitelist = async () => {
+    // validate input
+    if (!isEmailVerified) {
+      alert("Please verify your email first.");
+      return;
+    }
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(
+      contractAddress,
+      contractABI,
+      signer
+    )
+    const data = {
+      email,
+      fullName,
+      projectID,
+      tasks
+  }
+
+    const tx = await contract.whitelistUser();
+    const receipt = await tx.wait();
+    console.log(receipt);
+    const response = await axios.post("/api/whitelist", data);
+    if (response.status === 200) {
+      alert("Whitelisted successfully!");
+      route.push("/whitelist/success");
+    } else {
+      alert("Failed to whitelist. Please try again.");
+    }
+    route.push(`/projectDetail/${projectID}`);
+    
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl relative overflow-hidden">
@@ -461,6 +503,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                 <button
                   type="submit"
                   className="px-4 py-2 bg-success text-success-content rounded-md"
+                  onClick={handleSubmitWhitelist}
                 >
                   Continue
                 </button>
