@@ -3,13 +3,12 @@ import React from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import image1 from "../../../public/images/bg1.jpg";
-import image2 from "../../../public/images/bg2.jpg";
-import image3 from "../../../public/images/bg3.jpg";
-import image4 from "../../../public/images/bg4.jpg";
+// import image1 from "../../../public/images/bg1.jpg";
+// import image2 from "../../../public/images/bg2.jpg";
+// import image3 from "../../../public/images/bg3.jpg";
+// import image4 from "../../../public/images/bg4.jpg";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
 const projectsData = [
   {
     id: 1,
@@ -17,7 +16,8 @@ const projectsData = [
     description: "Transforming the Smartphone into the EarnPhone",
     fundraiseGoal: "$TBA",
     maxAllocation: "$TBA",
-    image: image1,
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMxujFuNX3mOdiIXO2Zzyoz-mWHXhz_WeBLw&s",
   },
   {
     id: 2,
@@ -25,7 +25,8 @@ const projectsData = [
     description: "Uniting Web2 & Web3.",
     fundraiseGoal: "$250,000",
     maxAllocation: "$TBA",
-    image: image2,
+    image:
+      "https://t3.ftcdn.net/jpg/05/71/06/76/360_F_571067620_JS5T5TkDtu3gf8Wqm78KoJRF1vobPvo6.jpg",
   },
   {
     id: 3,
@@ -33,7 +34,8 @@ const projectsData = [
     description: "The Finest RWA Assets on the Blockchain",
     fundraiseGoal: "$TBA",
     maxAllocation: "$TBA",
-    image: image3,
+    image:
+      "https://i.pinimg.com/736x/a8/2c/4b/a82c4b062593c35f4ebcf1617e83cacd.jpg",
   },
   {
     id: 4,
@@ -41,7 +43,8 @@ const projectsData = [
     description: "Description of New Project 1",
     fundraiseGoal: "$500,000",
     maxAllocation: "$TBA",
-    image: image4,
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxCzEXi6R41EnGcBPEx2VqXZ4l31BEMYBshw&s",
   },
 ];
 
@@ -117,8 +120,13 @@ function LaunchpadPage() {
   const route = useRouter();
 
   const handleClick = () => {
-    route.push("./addproject/verifytoken");
+    route.push("./addProject/verifyToken");
   };
+
+  const handleChooseProject = () => {
+    route.push("./projectDetail");
+  };
+
   return (
     <div className="relative flex justify-center items-center min-h-screen bg-primary">
       <div className="absolute left-0 top-1/4 w-[300px] h-[300px] bg-[#0047FF] rounded-full opacity-10 blur-3xl animate-pulse z-0"></div>
@@ -138,15 +146,20 @@ function LaunchpadPage() {
             </button>
           </div>
 
-          {/* Slider */}
           <Slider {...settings}>
             {projectsData.map((project) => (
-              <div key={project.id} className="w-full p-2">
+              <div
+                key={project.id}
+                className="w-full p-2"
+                onClick={handleChooseProject}
+              >
                 <div className="h-96 rounded-lg bg-secondary p-4 text-white flex flex-col justify-between transition-transform transform hover:-translate-y-2 duration-300">
                   <div>
                     <Image
                       src={project.image}
                       alt={project.title}
+                      width={1000}
+                      height={2000}
                       className="w-full h-24 object-cover rounded-lg mb-2"
                     />
                     <h3 className="text-lg font-bold mb-2">{project.title}</h3>

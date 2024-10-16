@@ -3,22 +3,40 @@ import React from "react";
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
+import { updateVerifyTokenPageData } from "@/lib/store/formSlice";
+import { ethers } from "ethers";
+
 // import toast from "react-hot-toast";
 
 function VerifyToken() {
   const router = useRouter();
   const [tokenAddress, setTokenAddress] = useState("");
+  const [signedMessage, setSignedMessage] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
   const handleSubmit = async () => {
+    // const provider = new ethers.providers.JsonRpcProvider("localhost:8545");
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    if (!signedMessage) {
+      const signer = provider.getSigner();
+      const signature = await signer.signMessage(
+        `Guarantee this is your token address: ${tokenAddress}`
+      );
+      setSignedMessage(true);
+      console.log(signature);
+    }
+
+    dispatch(updateVerifyTokenPageData(tokenAddress));
+
     try {
-      const response = await axios.post("/api/addProject", tokenAddress);
-      if (response.data.success) {
-        console.log("Token Verified");
-      }
-      router.push("/addproject/generaldetail");
+      // const response = await axios.post("/api/addProject/verifyToken", tokenAddress);
+      // if (response.data.success) {
+      console.log("Token Verified");
+      // }
+      router.push("./addProject/generalDetail");
     } catch (error) {
       console.log(error);
-      // toast.error("Token not verified");
     }
   };
 
@@ -37,7 +55,12 @@ function VerifyToken() {
           className="w-full p-3 border rounded-md mb-6 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500"
           onChange={(e) => setTokenAddress(e.target.value)}
         />
-        <button className="w-full bg-[#0047FF] py-3 shadow-lg shadow-blue-500/50 rounded-md font-semibold text-[#fefefe] transition duration-300 ease-in-out hover:bg-[#203e6a] hover:text-[#fefefe] hover:shadow-lg hover:shadow-blue-200">
+        <button
+          className="w-full bg-[#0047FF] py-3 shadow-lg shadow-blue-500/50 rounded-md font-semibold
+         text-[#fefefe] transition duration-300 ease-in-out hover:bg-[#203e6a] hover:text-[#fefefe] hover:shadow-lg hover:shadow-blue-200"
+          onClick={handleSubmit}
+          disabled={signedMessage}
+        >
           Verify Ownership
         </button>
       </div>

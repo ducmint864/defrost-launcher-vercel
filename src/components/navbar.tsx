@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Navbar as MTNavbar,
@@ -12,6 +12,7 @@ import {
   CommandLineIcon,
   XMarkIcon,
   Bars3Icon,
+  FireIcon,
 } from "@heroicons/react/24/solid";
 import { DollarCircleOutlined } from "@ant-design/icons";
 import { ConnectWallet } from "@thirdweb-dev/react";
@@ -37,34 +38,54 @@ function NavItem({ children, href }: NavItemProps) {
   );
 }
 
-const NAV_MENU = [
-  {
-    name: "My investment",
-    icon: RectangleStackIcon,
-    href: "/investment",
-  },
-  {
-    name: "Swap",
-    icon: DollarCircleOutlined,
-    href: "/swap",
-  },
-  {
-    name: "Launchpad",
-    icon: CommandLineIcon,
-    href: "/launchpad",
-  },
-];
-
 interface NavbarProps {
   backgroundColor?: string;
+  isOwner?: boolean;
 }
 
-export function Navbar({ backgroundColor = "transparent" }: NavbarProps) {
+export function Navbar({
+  backgroundColor = "transparent",
+  isOwner,
+}: NavbarProps) {
+  const [NAV_MENU, SET_NAV_MENU] = useState([
+    {
+      name: "My investment",
+      icon: RectangleStackIcon,
+      href: "/investment",
+    },
+    {
+      name: "Swap",
+      icon: DollarCircleOutlined,
+      href: "/swap",
+    },
+    {
+      name: "Launchpad",
+      icon: CommandLineIcon,
+      href: "/launchpad",
+    },
+  ]);
+
   const [open, setOpen] = React.useState(false);
   const [isScrolling, setIsScrolling] = React.useState(false);
 
   const handleOpen = () => setOpen((cur) => !cur);
 
+  useEffect(() => {
+    const checkProjectOwner = async () => {
+      const owner = true;
+      if (owner) {
+        SET_NAV_MENU((prevMenu) => [
+          {
+            name: "My project",
+            icon: FireIcon,
+            href: "/myProject",
+          },
+          ...prevMenu,
+        ]);
+      }
+    };
+    checkProjectOwner();
+  }, []);
   React.useEffect(() => {
     window.addEventListener(
       "resize",

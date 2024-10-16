@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 // import { Button, Typography } from "@material-tailwind/react";
-import bg from "../../public/images/sea.png";
 import { Footer } from "@/components";
 import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import { Button } from "@nextui-org/react";
@@ -18,7 +17,9 @@ function Hero() {
   return (
     <div
       className={`relative min-h-screen w-full bg-cover bg-no-repeat  overflow-hidden`}
-      style={{ backgroundImage: `url(${bg.src})` }}
+      style={{
+        backgroundImage: `url('https://www.hdwallpapers.in/download/dragon_dark_blue_background_4k_hd_horizon_forbidden_west-3840x2160.jpg')`,
+      }}
     >
       {/* Overlay Gradient */}
       {/* <div className="absolute top-0 right-0 h-full w-full pointer-events-none">
@@ -27,11 +28,11 @@ function Hero() {
       <div className="absolute bottom-0 right-0 h-full w-full pointer-events-none">
         <div className="absolute bottom-0 bottom-0 w-[40%] h-[40%] bg-gradient-to-t from-neutral via-transparent to-transparent opacity-60 rounded-full animate-floating"></div>
       </div> */}
-      <div className="absolute inset-0 h-full w-full bg-gray-900/60" />
+      <div className="absolute inset-0 h-full w-full bg-gray-900/40" />
       <div className="grid min-h-screen px-8">
         <div className="container relative z-10 my-auto mx-auto grid place-items-center text-center">
           <h1 className="mb-2 text-white text-2xl">Project Launch Pad</h1>
-          <h1 className=" border-r-4 border-r-white text-5xl text-white font-bold">
+          <h1 className="text-5xl text-white font-bold">
             Polkadot Hackathon - DeFi Track
           </h1>
           <span
