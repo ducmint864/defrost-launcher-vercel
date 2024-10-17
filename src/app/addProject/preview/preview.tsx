@@ -66,10 +66,10 @@ const PreviewPage = () => {
   );
   const route = useRouter();
   const combinedData = {
-    verifyToken: formDataVerifyToken,
-    generalDetail: formDataGeneralDetail,
-    promotion: formDataPromotion,
-  };
+    verifyTokenData: formDataVerifyToken,
+    generalDetailData: formDataGeneralDetail,
+    promotionData: formDataPromotion,
+  }
 
   const nextImage = () => {
     setCurrentImage((prevImage) => (prevImage + 1) % images.length);
@@ -89,9 +89,9 @@ const PreviewPage = () => {
 
   const handleSubmit = async () => {
     console.log(combinedData);
-    console.log(combinedData.generalDetail[0]);
-    console.log(combinedData.generalDetail.selectedCoin);
-    console.log(combinedData.promotion[2]);
+    console.log(combinedData.generalDetailData[0]);
+    console.log(combinedData.generalDetailData.selectedCoin);
+    console.log(combinedData.promotionData[2]);
 
     const response = await axios.post("/api/addProject", combinedData);
     if (response.data.success) {
@@ -113,7 +113,7 @@ const PreviewPage = () => {
         <div className="flex items-center text-left mb-8">
           <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
             <img
-              src={combinedData.generalDetail[2]}
+              src={combinedData.generalDetailData[2]}
               alt="Profile Icon"
               width={52}
               height={52}
@@ -122,10 +122,10 @@ const PreviewPage = () => {
           </div>
           <div>
             <h1 className="text-4xl font-bold">
-              {combinedData.generalDetail[3]}
+              {combinedData.generalDetailData[3]}
             </h1>
             <p className="text-lg text-gray-400">
-              {combinedData.generalDetail[4]}
+              {combinedData.generalDetailData[4]}
             </p>
           </div>
         </div>
@@ -183,10 +183,10 @@ const PreviewPage = () => {
             <div className="rounded-lg bg-secondary w-full h-72 p-5 flex flex-col">
               <p className="text-xl font-semibold text-white">Fundraise Goal</p>
               <p className="text-3xl font-bold text-white mt-2">
-                {combinedData.generalDetail[3]}
+                {combinedData.generalDetailData[3]}
               </p>
               <p className="text-gray-400 mt-8">
-                {combinedData.generalDetail[4]}
+                {combinedData.generalDetailData[4]}
               </p>
 
               <Button className="bg-neutral hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full mt-auto w-full">
@@ -237,7 +237,7 @@ const PreviewPage = () => {
           {activeTab === "description" && (
             <div>
               <h2 className="text-2xl font-semibold">Description Content</h2>
-              <p className=" mt-2">{combinedData.generalDetail[5]}</p>
+              <p className=" mt-2">{combinedData.generalDetailData[5]}</p>
             </div>
           )}
 
@@ -274,7 +274,7 @@ const PreviewPage = () => {
             onClick={toggleFullscreen}
           >
             <Image
-              src={combinedData.generalDetail[1][1]}
+              src={combinedData.generalDetailData[1][1]}
               // src={images[currentImage]}
               alt="Fullscreen Image"
               width={1200}
