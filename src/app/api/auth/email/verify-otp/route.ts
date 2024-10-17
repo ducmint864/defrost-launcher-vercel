@@ -1,12 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prismaClient } from "@/*"; // Ensure this import is present
-import { useWallet } from "@thirdweb-dev/react";
-import { useSigner } from '@thirdweb-dev/react';
 
 export async function POST(req: Request) {
     const { OTP, email, address } = await req.json();
-    const wallet = useWallet();
-    const signer = useSigner();
 
     if (!OTP || !email || !address) {
         return NextResponse.json({ error: 'missing email, address, or OTP' }, { status: 400 });
@@ -30,7 +26,6 @@ export async function POST(req: Request) {
             where: {
                 email: email,
                 address: address,
-
             },
             data: {
                 emailVerified: true, // Assuming you have an emailVerified field

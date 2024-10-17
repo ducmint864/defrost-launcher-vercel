@@ -206,7 +206,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, projectID, fullName }),
+        body: JSON.stringify({ email, address, projectID, fullName }),
       });
 
       if (response.ok) {

@@ -4,12 +4,21 @@ import otpGenerator from 'otp-generator';
 import { prismaClient } from '@/*';
 
 export async function POST(req: Request) {
-    const { fullName, email, projectID } = await req.json();
+    const { fullName, address, email, projectID } = await req.json();
+
+    if (!fullName
+        || !address
+        || !email
+        || !projectID
+    ) {
+        return NextResponse.json({ message: 'missing user info' }, { status: 400 });
+    }
 
     const latestOTPRecord = await prismaClient.oTP.findFirst({
         where: { email: email },
         orderBy: { createdAt: 'desc' }
     });
+
     if (latestOTPRecord && latestOTPRecord.expiresAt > new Date()) {
         return NextResponse.json({ message: 'last-sent OTP is still valid' }, { status: 400 });
     }
@@ -31,6 +40,17 @@ export async function POST(req: Request) {
         if (!Number.isNaN(ttlNum)) {
             TTLMilisecs = ttlNum * 60 * 1000;
         }
+    }
+
+    const createdUser = await prismaClient.user.create({
+        data: {
+            email: email as string,
+            address: address as string,
+            name: fullName as string,
+        }
+    })
+    if (!createdUser) {
+        return NextResponse.json({ error: "cannot save user info" }, { status: 500 });
     }
 
     // save OTP record
