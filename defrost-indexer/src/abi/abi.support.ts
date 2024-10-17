@@ -21,7 +21,6 @@ export class LogEvent<Args> {
     }
 
     decode(rec: EventRecord): Args {
-		console.debug("DEBUG: rec =", rec);
         return this.abi.decodeEventLog(this.fragment, rec.data, rec.topics) as any as Args
     }
 }

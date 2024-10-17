@@ -7,6 +7,7 @@ import { Button } from "@nextui-org/react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import GeneralDetail from "../generalDetail/generalDetail";
 
 const tokenSaleData = [
   {
@@ -55,15 +56,19 @@ const PreviewPage = () => {
   const [activeTab, setActiveTab] = useState<Key>("description");
   const formDataVerifyToken = useSelector((state: any) => {
     console.log(state);
-    return state.form.verifyTokenData
-  })
-  const formDataGeneralDetail = useSelector((state: any) => state.form.generalDetailData);
-  const formDataPromotion = useSelector((state: any) => state.form.promotionData);  
+    return state.form.verifyTokenData;
+  });
+  const formDataGeneralDetail = useSelector(
+    (state: any) => state.form.generalDetailData
+  );
+  const formDataPromotion = useSelector(
+    (state: any) => state.form.promotionData
+  );
   const route = useRouter();
   const combinedData = {
-    verifyToken: formDataVerifyToken,
-    generalDetail: formDataGeneralDetail,
-    promotion: formDataPromotion,
+    verifyTokenData: formDataVerifyToken,
+    generalDetailData: formDataGeneralDetail,
+    promotionData: formDataPromotion,
   }
 
   const nextImage = () => {
@@ -83,8 +88,13 @@ const PreviewPage = () => {
   };
 
   const handleSubmit = async () => {
+    console.log(combinedData);
+    console.log(combinedData.generalDetailData[0]);
+    console.log(combinedData.generalDetailData.selectedCoin);
+    console.log(combinedData.promotionData[2]);
+
     const response = await axios.post("/api/addProject", combinedData);
-    if( response.data.success) {
+    if (response.data.success) {
       route.push("/myProject");
     }
   };
@@ -102,8 +112,8 @@ const PreviewPage = () => {
       <div className="relative w-full lg:w-3/5 flex flex-col text-white mt-28">
         <div className="flex items-center text-left mb-8">
           <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
-            <Image
-              src="https://i.pinimg.com/enabled_lo/564x/bb/2f/52/bb2f52ab166107088ef7153de6c5588a.jpg"
+            <img
+              src={combinedData.generalDetailData[2]}
               alt="Profile Icon"
               width={52}
               height={52}
@@ -111,10 +121,11 @@ const PreviewPage = () => {
             />
           </div>
           <div>
-            <h1 className="text-4xl font-bold">Project Title</h1>
+            <h1 className="text-4xl font-bold">
+              {combinedData.generalDetailData[3]}
+            </h1>
             <p className="text-lg text-gray-400">
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry.
+              {combinedData.generalDetailData[4]}
             </p>
           </div>
         </div>
@@ -172,11 +183,10 @@ const PreviewPage = () => {
             <div className="rounded-lg bg-secondary w-full h-72 p-5 flex flex-col">
               <p className="text-xl font-semibold text-white">Fundraise Goal</p>
               <p className="text-3xl font-bold text-white mt-2">
-                Project Subtitle
+                {combinedData.generalDetailData[3]}
               </p>
               <p className="text-gray-400 mt-8">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has
+                {combinedData.generalDetailData[4]}
               </p>
 
               <Button className="bg-neutral hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full mt-auto w-full">
@@ -185,6 +195,7 @@ const PreviewPage = () => {
             </div>
           </div>
         </div>
+
         <div className="flex flex-wrap gap-4 mt-9 border-b-2 border-gray-700">
           <Tabs
             variant="underlined"
@@ -226,30 +237,7 @@ const PreviewPage = () => {
           {activeTab === "description" && (
             <div>
               <h2 className="text-2xl font-semibold">Description Content</h2>
-              <p className=" mt-2">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry standard dummy text
-                ever since the 1500s, when an unknown printer took a galley of
-                type and scrambled it to make a type specimen book. It has
-                survived not only five centuries, but also the leap into
-                electronic typesetting, remaining essentially unchanged. It was
-                popularised in the 1960s with the release of Letraset sheets
-                containing Lorem Ipsum passages, and more recently with desktop
-                publishing software like Aldus PageMaker including versions of
-                Lorem Ipsum
-              </p>
-              <p className=" mt-2">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry standard dummy text
-                ever since the 1500s, when an unknown printer took a galley of
-                type and scrambled it to make a type specimen book. It has
-                survived not only five centuries, but also the leap into
-                electronic typesetting, remaining essentially unchanged. It was
-                popularised in the 1960s with the release of Letraset sheets
-                containing Lorem Ipsum passages, and more recently with desktop
-                publishing software like Aldus PageMaker including versions of
-                Lorem Ipsum
-              </p>
+              <p className=" mt-2">{combinedData.generalDetailData[5]}</p>
             </div>
           )}
 
@@ -286,7 +274,8 @@ const PreviewPage = () => {
             onClick={toggleFullscreen}
           >
             <Image
-              src={images[currentImage]}
+              src={combinedData.generalDetailData[1][1]}
+              // src={images[currentImage]}
               alt="Fullscreen Image"
               width={1200}
               height={800}
@@ -294,8 +283,9 @@ const PreviewPage = () => {
             />
           </div>
         )}
-        <Button className="mt-2 mb-8 bg-neutral text-[#ffffff] py-2 px-4 rounded-full"
-        onClick={handleSubmit}
+        <Button
+          className="mt-2 mb-8 bg-neutral text-[#ffffff] py-2 px-4 rounded-full"
+          onClick={handleSubmit}
         >
           Verify
         </Button>

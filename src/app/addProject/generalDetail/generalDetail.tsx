@@ -13,7 +13,9 @@ const GeneralDetail = () => {
   const [longDescription, setLongDescription] = useState<string>("");
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRefLogo = useRef<HTMLInputElement | null>(null);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [selectedLogo, setSelectedLogo] = useState<string[]>([]);
   const route = useRouter();
   const dispatch = useDispatch();
   const updateData = useSelector((state: any) => {
@@ -34,9 +36,24 @@ const GeneralDetail = () => {
     setSelectedImages(files.map((file) => URL.createObjectURL(file)));
   };
 
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length > 1) {
+      alert("You can only upload up to 1 Logo");
+      return;
+    }
+    setSelectedLogo(files.map((file) => URL.createObjectURL(file)));
+  };
+
   const triggerFileInput = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
+    }
+  };
+
+  const triggerFileInputLogo = () => {
+    if (fileInputRefLogo.current) {
+      fileInputRefLogo.current.click();
     }
   };
 
@@ -45,6 +62,7 @@ const GeneralDetail = () => {
     const formDatas = [
       selectedCoin,
       selectedImages,
+      selectedLogo,
       projectTitle,
       shortDescription,
       longDescription,
@@ -129,7 +147,6 @@ const GeneralDetail = () => {
                 <span className="text-gray-500">Upload your image</span>
               )}
             </label>
-
             <div className="flex space-x-2">
               {selectedImages.map((image, index) => (
                 <Image
@@ -157,6 +174,46 @@ const GeneralDetail = () => {
               ref={fileInputRef}
               className="hidden"
               onChange={handleImageUpload}
+            />
+          </div>
+
+          <hr className="border border-black w-full my-5"></hr>
+          <div className="flex items-center">
+            <label className="cursor-pointer flex items-center space-x-2">
+              <CiImageOn className="w-8 h-8" />
+              {selectedLogo.length > 0 ? (
+                <span></span>
+              ) : (
+                <span className="text-gray-500">Upload your Logo image</span>
+              )}
+            </label>
+            <div className="flex space-x-2">
+              {selectedLogo.map((image, index) => (
+                <Image
+                  key={index}
+                  src={image}
+                  alt={`Selected ${index + 1}`}
+                  className="w-20 h-10"
+                  width={40}
+                  height={40}
+                />
+              ))}
+            </div>
+
+            <Button
+              className="bg-neutral text-white py-2 px-4 rounded-full ml-auto"
+              onClick={triggerFileInputLogo}
+            >
+              Upload
+            </Button>
+
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              ref={fileInputRefLogo}
+              className="hidden"
+              onChange={handleLogoUpload}
             />
           </div>
 
