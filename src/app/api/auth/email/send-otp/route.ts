@@ -1,19 +1,51 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-import crypto from 'crypto';
+import otpGenerator from 'otp-generator';
+import { prismaClient } from '@/*';
 
 export async function POST(req: Request) {
     const { fullName, email, projectID } = await req.json();
 
+    const latestOTPRecord = await prismaClient.oTP.findFirst({
+        where: { email: email },
+        orderBy: { createdAt: 'desc' }
+    });
+    if (latestOTPRecord && latestOTPRecord.expiresAt > new Date()) {
+        return NextResponse.json({ message: 'last-sent OTP is still valid' }, { status: 400 });
+    }
+
     // Generate a unique OTP
-    const otp = crypto.randomBytes(6).toString('hex');
-    // hard code for now
-    // const otp = '08060';
+    const otp = otpGenerator.generate(6, {
+        lowerCaseAlphabets: true,
+        upperCaseAlphabets: false,
+        specialChars: false,
+    });
 
     // Store the token in your database along with the email and projectID
-    // This is where you'd typically save to your database
-    // For this example, we'll just log it
-    console.log(`OTP for ${email} @ project ${projectID}: ${otp}`)
+    console.debug(`OTP for ${email} @ project ${projectID}: ${otp}`)
+
+    // Calc. OTP expiration time
+    let TTLMilisecs = 5 * 60 * 1000; // convert 5 minutes to milisecs
+    if (process.env.OTP_TTL_MINUTES) {
+        const ttlNum = Number(process.env.OTP_TTL_MINUTES);
+        if (!Number.isNaN(ttlNum)) {
+            TTLMilisecs = ttlNum * 60 * 1000;
+        }
+    }
+
+    // save OTP record
+    const createdOTP = await prismaClient.oTP.create({
+        data: {
+            email: email,
+            code: otp,
+            expiresAt: new Date(Date.now() + TTLMilisecs),
+        }
+    });
+
+    if (!createdOTP) {
+        return NextResponse.json({ error: "cannot save OTP" }, { status: 500 });
+    }
+    console.debug("saved OTP to db: ", createdOTP);
 
     // Set up nodemailer transporter
     const transporter = nodemailer.createTransport({
@@ -27,7 +59,6 @@ export async function POST(req: Request) {
     });
     // const projectName = await  // TODO: get project name from projectID
     const projectName = `[name of project with ID ${projectID}]`;
-
 
     // Email options
     const mailOptions = {
@@ -56,9 +87,9 @@ export async function POST(req: Request) {
     try {
         // Send email
         await transporter.sendMail(mailOptions);
-        return NextResponse.json({ message: 'Verification email sent' }, { status: 200 });
+        return NextResponse.json({ message: 'verification email sent' }, { status: 200 });
     } catch (error) {
         console.error('Error sending email:', error);
-        return NextResponse.json({ error: 'Failed to send verification email' }, { status: 500 });
+        return NextResponse.json({ error: 'failed to send verification email' }, { status: 500 });
     }
 }

@@ -88,16 +88,39 @@ export default function Whitelist({ projectID }: WhitelistProps) {
   const [OTP, setOTP] = useState<string>("");
   const [isOTPTimedOut, setIsOTPTimedOut] = useState<boolean | null>(null);
   const [isSendingOTP, setIsSendingOTP] = useState<boolean>(false);
+  const [address, setAddress] = useState<string>("0x000000000000000000000000000004");
 
-  const checkEmailVerified = () => {
-    // const verifiedStatus = localStorage.getItem('emailVerified');
-    // const isVerified = verifiedStatus === 'true';
+  const checkEmailVerified = async () => {
+    if (!email) {
+      return
+    }
+
+    try {
+      const response = await fetch("/api/auth/email/verified", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, address }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const isVerified = Boolean(data['verfiied'])
+        setIsOTPTimedOut(isVerified);
+      } else {
+        alert("Failed to send OTP. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      alert("An error occurred. Please try again.");
+    } finally {
+      setIsSendingOTP(false);
+    }
+
 
     const isVerified = true;
     setIsEmailVerified(isVerified);
-    // if (isVerified) {
-    //   localStorage.setItem('emailVerified', 'false');
-    // }
   };
 
   const handleVerifyEmailClick = () => {
@@ -137,7 +160,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ OTP, email, projectID }),
+        body: JSON.stringify({ OTP, email, address }),
       });
 
       if (response.ok) {
@@ -167,7 +190,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
 
   // check email verification status on page load
   useEffect(() => {
-    // Check immediately
+    // Check immediately on page load
     checkEmailVerified();
 
     // Set up periodic checking
@@ -247,7 +270,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
       fullName,
       projectID,
       tasks
-  }
+    }
 
     const tx = await contract.whitelistUser();
     const receipt = await tx.wait();
@@ -260,7 +283,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
       alert("Failed to whitelist. Please try again.");
     }
     route.push(`/projectDetail/${projectID}`);
-    
+
   }
 
   return (
@@ -414,11 +437,10 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                 type="button"
                 onClick={handleVerifyEmailClick}
                 disabled={isEmailVerified === true}
-                className={`mb-6 mt-2 px-4 py-2 rounded-md flex items-center justify-center border border-black ${
-                  isEmailVerified
-                    ? "bg-white text-black"
-                    : "bg-white text-black hover:bg-gray-100"
-                }`}
+                className={`mb-6 mt-2 px-4 py-2 rounded-md flex items-center justify-center border border-black ${isEmailVerified
+                  ? "bg-white text-black"
+                  : "bg-white text-black hover:bg-gray-100"
+                  }`}
               >
                 {isEmailVerified ? (
                   <div className="flex items-center justify-center space-x-2">
@@ -479,11 +501,10 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                       <button
                         type="button"
                         onClick={() => handleVerifyTasks(task.id)}
-                        className={`px-4 py-2 rounded-md ${
-                          task.verified
-                            ? "bg-gray-700 text-gray-400"
-                            : "bg-white text-black"
-                        }`}
+                        className={`px-4 py-2 rounded-md ${task.verified
+                          ? "bg-gray-700 text-gray-400"
+                          : "bg-white text-black"
+                          }`}
                         disabled={task.verified}
                       >
                         {task.verified ? "Verified" : "Start"}
