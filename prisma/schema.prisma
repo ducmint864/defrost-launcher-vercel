@@ -20,7 +20,7 @@ model User {
   address       String  @unique
   name          String
   email         String
-  emailVerified Boolean
+  emailVerified Boolean @default(false)
 }
 
 model SocialTask {
