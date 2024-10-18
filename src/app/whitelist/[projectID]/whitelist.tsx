@@ -7,14 +7,19 @@ import Image from "next/image";
 import "@heroicons/react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { CiCircleCheck } from "react-icons/ci";
-import { ethers } from "ethers";
-import contractArtifact from "../../../abi/IDO.json";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { ProjectPoolFactoryABI, ProjectPoolABI } from "@/abi/"
+import { useAddress, useChain } from "@thirdweb-dev/react";
+import { getProjectPoolContract } from "@/utils/contracts";
+
 export default function Whitelist({ projectID }: WhitelistProps) {
-  const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; /* @dev replace contract address using projectID */
-  const contractABI = contractArtifact.abi;
   const route = useRouter();
+
+  // Wallet-related states
+  const address = useAddress();
+  const chain = useChain();
+  const poolContract = getProjectPoolContract(projectID);
 
   // Social tasks states
   const [tasks, setTasks] = useState<SocialTask[]>([
@@ -88,7 +93,6 @@ export default function Whitelist({ projectID }: WhitelistProps) {
   const [OTP, setOTP] = useState<string>("");
   const [isOTPTimedOut, setIsOTPTimedOut] = useState<boolean | null>(null);
   const [isSendingOTP, setIsSendingOTP] = useState<boolean>(false);
-  const [address, setAddress] = useState<string>("0x000000000000000000000000000004");
 
   const checkEmailVerified = async () => {
     if (!email) {
@@ -123,8 +127,14 @@ export default function Whitelist({ projectID }: WhitelistProps) {
     setIsEmailVerified(isVerified);
   };
 
+
   const handleVerifyEmailClick = () => {
     // validate input
+    if (!address) {
+      (document.getElementById("connectWalletAlert") as HTMLDialogElement)?.showModal();
+      return;
+    }
+
     if (!email || !fullName) {
       // TODO: show error message
       return;
@@ -134,7 +144,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
       sendOTPViaEmail();
     }
 
-    (document.getElementById("emailOTPModal") as HTMLDialogElement).showModal();
+    (document.getElementById("emailOTPModal") as HTMLDialogElement)?.showModal();
   };
 
   const handleResendOTP = () => {
@@ -258,13 +268,6 @@ export default function Whitelist({ projectID }: WhitelistProps) {
       alert("Please verify your email first.");
       return;
     }
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(
-      contractAddress,
-      contractABI,
-      signer
-    )
     const data = {
       email,
       fullName,
@@ -272,9 +275,6 @@ export default function Whitelist({ projectID }: WhitelistProps) {
       tasks
     }
 
-    const tx = await contract.whitelistUser();
-    const receipt = await tx.wait();
-    console.log(receipt);
     const response = await axios.post("/api/whitelist", data);
     if (response.status === 200) {
       alert("Whitelisted successfully!");
@@ -283,7 +283,6 @@ export default function Whitelist({ projectID }: WhitelistProps) {
       alert("Failed to whitelist. Please try again.");
     }
     route.push(`/projectDetail/${projectID}`);
-
   }
 
   return (
@@ -295,7 +294,18 @@ export default function Whitelist({ projectID }: WhitelistProps) {
           <div className="relative z-10">
             <h1 className="text-2xl font-bold text-center mb-6 text-[#1E293B]-content">
               WELCOME TO THE PROJECT WITH ID {projectID} WHITE LIST
+              <div>connected to address {address}</div><br></br>
+              <div>{!!chain ? <p>`Conncted to chain with ID {chain.chainId}`</p> : <p>'Unsupported network!'</p>}</div>
             </h1>
+
+
+            <p className="py-4">
+              {poolContract ?
+                "connected to pool contract at" + poolContract!.getAddress()
+                : "cannot connect to pool contract"
+              }
+            </p>
+
             <p className="text-center mb-6">
               Fill in the form to be eligible for the whitelist
             </p>
@@ -335,6 +345,20 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </label>
+
+              {/* hidden modal */}
+              <dialog id="connectWalletAlert" className="modal modal-bottom sm:modal-middle">
+                <div className="modal-box bg-primary text-primary-content">
+                  <h3 className="font-bold text-lg">Connect wallet</h3>
+                  <p className="py-4">Please connect your wallet first</p>
+                  <div className="modal-action">
+                    <form method="dialog">
+                      {/* if there is a button in form, it will close the modal */}
+                      <button className="btn">Close</button>
+                    </form>
+                  </div>
+                </div>
+              </dialog>
 
               <dialog id="emailOTPModal" className="modal">
                 {/* don't show OTP modal until isOTPTimedOut is not null (OTP has been sent) */}
