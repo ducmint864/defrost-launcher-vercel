@@ -11,35 +11,34 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaCalendarAlt } from "react-icons/fa";
 const Promotion = () => {
- const [tokenExchangeRate, setTokenExchangeRate] = useState<string>("");
- const [amountTokenRelease, setAmountTokenRelease] = useState<string>("");
- const [softcap, setSoftcap] = useState<string>(""); 
- const [hardcap, setHardcap] = useState<string>(""); 
- const [minInvestment, setMinInvestment] = useState<string>("");
- const [maxInvestment, setMaxInvestment] = useState<string>(""); 
- const [endDate, setEndDate] = useState<Date | undefined>(undefined);
- const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [tokenExchangeRate, setTokenExchangeRate] = useState<string>("");
+  const [amountTokenRelease, setAmountTokenRelease] = useState<string>("");
+  const [softcap, setSoftcap] = useState<string>("");
+  const [hardcap, setHardcap] = useState<string>("");
+  const [minInvestment, setMinInvestment] = useState<string>("");
+  const [maxInvestment, setMaxInvestment] = useState<string>("");
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
 
- const route = useRouter();
- const dispatch = useDispatch();
+  const route = useRouter();
+  const dispatch = useDispatch();
 
- const handleContinue = () => {
-   const formDatas = {
-     tokenExchangeRate,
-     amountTokenRelease,
-     softcap, 
-     hardcap, 
-     minInvestment,
-     maxInvestment, 
-     startDate,
-     endDate,
-   };
+  const handleContinue = () => {
+    const formDatas = {
+      tokenExchangeRate,
+      amountTokenRelease,
+      softcap,
+      hardcap,
+      minInvestment,
+      maxInvestment,
+      startDate,
+      endDate,
+    };
 
-   dispatch(updatePromotionPageData(formDatas));
+    dispatch(updatePromotionPageData(formDatas));
 
-   route.push("/addProject/preview");
- };
-
+    route.push("/addProject/preview");
+  };
 
   return (
     <div className="flex justify-center min-h-screen bg-primary">
@@ -47,7 +46,8 @@ const Promotion = () => {
         <div className="mt-12 mb-6 text-2xl font-bold text-white">
           Set Price
         </div>
-        <div className="border border-black bg-white rounded-2xl h-[900px] mb-12">
+        <div className="border border-black bg-white rounded-2xl h-[900px] mb-12 overflow-hidden">
+          {" "}
           <div className="my-6 ml-8 w-full flex flex-col  gap-5 ">
             <input
               type="number"
