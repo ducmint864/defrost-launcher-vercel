@@ -7,7 +7,7 @@ import { Button } from "@nextui-org/react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import GeneralDetail from "../generalDetail/generalDetail";
+// import GeneralDetail from "../generalDetail/generalDetail";
 
 const tokenSaleData = [
   {
