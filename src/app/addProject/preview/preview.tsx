@@ -12,46 +12,47 @@ import GeneralDetail from "../generalDetail/generalDetail";
 const tokenSaleData = [
   {
     id: 1,
-    title: "Sale Price",
-    value: "...",
+    title: "Token exchange rate",
+    key: "tokenExchangeRate", // Kết nối với trường 'tokenExchangeRate'
   },
   {
     id: 2,
     title: "Sale Start Time",
-    value: "01/09/2024",
+    key: "startDate", // Kết nối với trường 'startDate'
   },
   {
     id: 3,
     title: "Sale End Time",
-    value: "25/10/2024",
+    key: "endDate", // Kết nối với trường 'endDate'
   },
   {
     id: 4,
-    title: "Token Distribution Time",
-    value: "...",
+    title: "Amount token release",
+    key: "amountTokenRelease", // Kết nối với trường 'amountTokenRelease'
   },
   {
     id: 5,
-    title: "Initial Market Cap",
-    value: "...",
+    title: "Softcap",
+    key: "softcap", // Kết nối với trường 'softcap'
   },
   {
     id: 6,
-    title: "Initial Token Circulation",
-    value: "...",
+    title: "Hardcap",
+    key: "hardcap", // Kết nối với trường 'hardcap'
+  },
+  {
+    id: 7,
+    title: "Minimum investment",
+    key: "minInvestment", // Kết nối với trường 'minInvestment'
+  },
+  {
+    id: 8,
+    title: "Maximum investment",
+    key: "maxInvestment", // Kết nối với trường 'maxInvestment'
   },
 ];
 
 const PreviewPage = () => {
-  const images = [
-    "https://i.pinimg.com/736x/4d/79/b4/4d79b4275d26861880c4dea267ecbfd2.jpg",
-    "https://i.pinimg.com/736x/97/15/32/9715323da02c77d79ecbff770259eca2.jpg",
-    "https://i.pinimg.com/564x/a8/80/1b/a8801b321787785447f5a50d55b7a88d.jpg",
-    "https://i.pinimg.com/736x/fe/96/98/fe969833b4ba05c590bb6c01a0a19c96.jpg",
-    "https://i.pinimg.com/736x/76/ec/16/76ec1693791a33594059d478ae9206f7.jpg",
-    "https://c4.wallpaperflare.com/wallpaper/103/5/162/anime-anime-boys-jujutsu-kaisen-satoru-gojo-hd-wallpaper-preview.jpg",
-  ];
-
   const [currentImage, setCurrentImage] = useState(0);
   const [activeTab, setActiveTab] = useState<Key>("description");
   const formDataVerifyToken = useSelector((state: any) => {
@@ -69,8 +70,8 @@ const PreviewPage = () => {
     verifyTokenData: formDataVerifyToken,
     generalDetailData: formDataGeneralDetail,
     promotionData: formDataPromotion,
-  }
-
+  };
+  const images = combinedData.generalDetailData[1];
   const nextImage = () => {
     setCurrentImage((prevImage) => (prevImage + 1) % images.length);
   };
@@ -163,14 +164,14 @@ const PreviewPage = () => {
             </div>
 
             <div className="flex space-x-4">
-              {images.map((image, index) => (
+              {images.map((image: string, index: number) => (
                 <Image
                   key={index}
                   src={image}
                   alt={`Thumbnail ${index + 1}`}
                   width={100}
                   height={100}
-                  className={`cursor-pointer rounded-lg ${
+                  className={`cursor-pointer rounded-lg object-cover ${
                     currentImage === index ? "ring-4 ring-blue-500" : ""
                   }`}
                   onClick={() => setCurrentImage(index)}
@@ -255,12 +256,20 @@ const PreviewPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {tokenSaleData.map((data) => (
-                      <tr key={data.id}>
-                        <td className="p-4 text-[#aeaeae]">{data.title}</td>
-                        <td className="p-4 text-right">{data.value}</td>
-                      </tr>
-                    ))}
+                    {tokenSaleData.map((data) => {
+                      const value = combinedData.promotionData[data.key];
+                      const formattedValue =
+                        value instanceof Date
+                          ? value.toLocaleDateString("en-GB")
+                          : value || "...";
+
+                      return (
+                        <tr key={data.id}>
+                          <td className="p-4 text-[#aeaeae]">{data.title}</td>
+                          <td className="p-4 text-right">{formattedValue}</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -274,8 +283,8 @@ const PreviewPage = () => {
             onClick={toggleFullscreen}
           >
             <Image
-              src={combinedData.generalDetailData[1][1]}
-              // src={images[currentImage]}
+              // src={combinedData.generalDetailData[1][1]}
+              src={images[currentImage]}
               alt="Fullscreen Image"
               width={1200}
               height={800}
