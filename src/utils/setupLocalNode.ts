@@ -66,7 +66,7 @@ export async function deployContract(
     let chainConfigJSON = JSON.parse(readFileSync("src/config/chainConfig.json", { encoding: "utf-8" }));
     const nameInConfig = !!nameAlias ? nameAlias : contractName;
     if (Object.keys(chainConfigJSON[31337]?.contracts)?.findIndex((v) => v === contractName) != -1) {
-        chainConfigJSON[31337]["contracts"][nameInConfig] = contract.address;
+        chainConfigJSON[31337]["contracts"][nameInConfig]["address"] = contract.address;
     }
     writeFileSync("src/config/chainConfig.json", JSON.stringify(chainConfigJSON, null, 2));
     console.log('\x1b[32m%s\x1b[0m', `Saved ${nameInConfig} contract address to src/config/chainConfig.json`);

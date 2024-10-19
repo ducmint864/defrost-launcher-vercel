@@ -1,7 +1,6 @@
 import {
     useContract,
     useContractRead,
-    useContractWrite,
     useChainId,
 } from "@thirdweb-dev/react";
 import { chainConfig } from "@/config";
