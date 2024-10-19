@@ -27,3 +27,7 @@
 // }
 
 // export const POST = GET;
+
+export function POST() {
+
+}
