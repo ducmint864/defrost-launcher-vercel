@@ -24,28 +24,28 @@ const tokenSaleData = [
     title: "Sale End Time",
     key: "endDate", // Kết nối với trường 'endDate'
   },
+  // {
+  //   id: 4,
+  //   title: "Amount token release",
+  //   key: "amountTokenRelease", // Kết nối với trường 'amountTokenRelease'
+  // },
   {
     id: 4,
-    title: "Amount token release",
-    key: "amountTokenRelease", // Kết nối với trường 'amountTokenRelease'
-  },
-  {
-    id: 5,
     title: "Softcap",
     key: "softcap", // Kết nối với trường 'softcap'
   },
   {
-    id: 6,
+    id: 5,
     title: "Hardcap",
     key: "hardcap", // Kết nối với trường 'hardcap'
   },
   {
-    id: 7,
+    id: 6,
     title: "Minimum investment",
     key: "minInvestment", // Kết nối với trường 'minInvestment'
   },
   {
-    id: 8,
+    id: 7,
     title: "Maximum investment",
     key: "maxInvestment", // Kết nối với trường 'maxInvestment'
   },

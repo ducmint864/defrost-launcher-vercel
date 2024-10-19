@@ -12,7 +12,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { FaCalendarAlt } from "react-icons/fa";
 const Promotion = () => {
   const [tokenExchangeRate, setTokenExchangeRate] = useState<string>("");
-  const [amountTokenRelease, setAmountTokenRelease] = useState<string>("");
+  // const [amountTokenRelease, setAmountTokenRelease] = useState<string>("");
   const [softcap, setSoftcap] = useState<string>("");
   const [hardcap, setHardcap] = useState<string>("");
   const [minInvestment, setMinInvestment] = useState<string>("");
@@ -26,7 +26,7 @@ const Promotion = () => {
   const handleContinue = () => {
     const formDatas = {
       tokenExchangeRate,
-      amountTokenRelease,
+      // amountTokenRelease,
       softcap,
       hardcap,
       minInvestment,
@@ -61,7 +61,7 @@ const Promotion = () => {
               = X currency units).
             </span>
 
-            <input
+            {/* <input
               placeholder="Amount token release"
               type="number"
               className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
@@ -71,7 +71,7 @@ const Promotion = () => {
             <span className="text-gray-600 text-md">
               Enter the total amount of tokens to be released for sale or
               distribution.
-            </span>
+            </span> */}
 
             <input
               placeholder="Softcap"
