@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { NextRequest, NextResponse } from "next/server";
 import { prismaClient } from "@/*";
 import contractArtifact from "../../../abi/ProjectPoolFactory.json";
+import { title } from "process";
 
 const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
@@ -44,14 +45,15 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const endTimed = new Date(endDate);
     const unixTimeEnd = Math.floor(endTimed.getTime()/1000); //FORMATED to uint256
     
+    
 
     // await prismaClient.project.create({
-    //     data: {
-
-    //     }
+        //     data: {
+            
+        //     }
     // })    
 
-
+    
 
     // const {tokenAddress, tokenF  orSale, pricePerToken, startTime, endTime, minInvest, maxInvest } = body; //projectName missing
     // const {tokenAddress, tokenForSale, pricePerToken, startTime, endTime, minInvest, maxInvest, projectName } = {
@@ -79,9 +81,22 @@ export async function POST(req: NextRequest, res: NextResponse) {
             /**@notice reward, */
             selectedVToken
         )
-;
-    } catch (error) {
-        console.log(error);
+        const projectiD = ""; /*** @notice */
+        const txnHashCreated = ""
+        await prismaClient.project.create({
+          data:{
+            projectID:  projectiD,
+            projectTitle: projectTitle,
+            projectLogoImageUrl: selectedLogo,
+            description: longDescription,
+            shortDescription: shortDescription,
+            projectImageUrls: selectedImages,
+            txnHashCreated:txnHashCreated
+          }  
+        })
+        ;
+} catch (error) {
+    console.log(error);
         return NextResponse.json({success: false, error: error}, {status: 400});
     }
     return NextResponse.json({success: true});
