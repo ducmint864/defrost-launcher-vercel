@@ -1,6 +1,8 @@
 import { ethers } from "ethers";
 import { NextRequest, NextResponse } from "next/server";
 import { prismaClient } from "@/*";
+import contractArtifact from "../../../abi/ProjectPoolFactory.json";
+import { title } from "process";
 
 const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
@@ -20,7 +22,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const verifyToken = verifyTokenData[0];
 
     //generalDetailPage
-    const selectedCoin = generalDetailData[0];
+    const selectedVToken = generalDetailData[0]; //selectedToken address
     const selectedImages = generalDetailData[1];
     const selectedLogo = generalDetailData[2];
     const projectTitle = generalDetailData[3];
@@ -43,15 +45,15 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const endTimed = new Date(endDate);
     const unixTimeEnd = Math.floor(endTimed.getTime()/1000); //FORMATED to uint256
     
-
+    
 
     // await prismaClient.project.create({
-    //     data: {
-
-    //     }
+        //     data: {
+            
+        //     }
     // })    
 
-
+    
 
     // const {tokenAddress, tokenF  orSale, pricePerToken, startTime, endTime, minInvest, maxInvest } = body; //projectName missing
     // const {tokenAddress, tokenForSale, pricePerToken, startTime, endTime, minInvest, maxInvest, projectName } = {
@@ -65,13 +67,37 @@ export async function POST(req: NextRequest, res: NextResponse) {
     //     projectName: "projectName"
     // };
     try {
-        // const addProject = contract.addProject(tokenAddress, tokenForSale, pricePerToken, startTime, endTime, minInvest, maxInvest);
-        return NextResponse.json({ success: true }, { status: 200 });
-    } catch (error) {
-        console.log(error);
-        return NextResponse.json({ success: false, error: error });
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const contractABI = contractArtifact.abi;
+        const contract = new ethers.Contract(
+            contractAddress,
+            contractABI,
+            signer,
+        )
+        const addProject = contract.createProjectpool(
+            verifyToken, tokenExchangeRate, unixTime, unixTimeEnd,
+            minInvest, maxInvest, softCap, hardCap,
+            /**@notice reward, */
+            selectedVToken
+        )
+        const projectiD = ""; /*** @notice */
+        const txnHashCreated = ""
+        await prismaClient.project.create({
+          data:{
+            projectID:  projectiD,
+            projectTitle: projectTitle,
+            projectLogoImageUrl: selectedLogo,
+            description: longDescription,
+            shortDescription: shortDescription,
+            projectImageUrls: selectedImages,
+            txnHashCreated:txnHashCreated
+          }  
+        })
+        ;
+} catch (error) {
+    console.log(error);
+        return NextResponse.json({success: false, error: error}, {status: 400});
     }
-
-
+    return NextResponse.json({success: true});
 }
-

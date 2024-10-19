@@ -124,7 +124,7 @@ function LaunchpadPage() {
   };
 
   const handleChooseProject = () => {
-    route.push("./projectDetail");
+    route.push("./projectDetail/1");
   };
 
   return (

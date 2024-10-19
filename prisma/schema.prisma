@@ -42,9 +42,11 @@ model TaskDone {
 model Project {
   id               String   @id @default(uuid())
   projectID        String   @unique
+  projectTitle     String
   description      String
   shortDescription String
   projectImageUrls String[]
+  projectLogoImageUrl String
   txnHashCreated   String   @unique
 }
 
