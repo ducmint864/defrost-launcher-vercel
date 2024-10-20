@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prismaClient } from "@/*";
 import contractArtifact from "../../../abi/ProjectPoolFactory.json";
 import { title } from "process";
+import { ContractEvent } from "@thirdweb-dev/react";
 
 const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
@@ -42,8 +43,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
   const startDate = promotionData[5];
   const endDate = promotionData[6];
   // )
-  const projectiD =  smartContractEventData[0]/*** @notice */
-  const txnHashCreated = smartContractEventData[1]/*** @notice */
+  const eventData: ContractEvent = smartContractEventData[0];
+  const projectiD  =  eventData.data;/*** @notice */
+  console.log(eventData);
+  console.log(projectiD);
+  
+  const txnHashCreated = eventData.transaction.transactionHash;/*** @notice */
+
 
   //Convert date to unix time to fit the contract uint256
   const startTimed = new Date(startDate);
@@ -82,7 +88,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
         const data = await prismaClient.project.create({
           data:{
-            projectID:  projectiD,
+            // projectID:  projectiD,
             projectTitle: projectTitle,
             projectLogoImageUrl: selectedLogo,
             description: longDescription,

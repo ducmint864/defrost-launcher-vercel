@@ -109,10 +109,15 @@ const PreviewPage = () => {
     // console.log(combinedData.generalDetailData.selectedCoin);
     // console.log(combinedData.promotionData[2]);
 
-    handleWrite();
-    console.log(handleWrite);
-    console.log(isLoading);
-    console.log(createProjectError);
+    await handleWrite();
+
+    // console.log(isLoading);
+    
+    if(createProjectError){
+      console.log(createProjectError);
+      return;
+    }
+
 
     const response = await axios.post("/api/addProject", combinedData);
     if (response.data.success) {
