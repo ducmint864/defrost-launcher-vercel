@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import { Layout } from "@/components";
 import { Navbar } from "@/components";
-import logo from "../../public/Logo/IDO_Logo.png";
+import logo from "../../public/Logo/DL_Logo.png";
 const roboto = Roboto({
   subsets: ["latin"],
   weight: ["300", "400", "500", "700", "900"],

@@ -128,6 +128,7 @@ const Promotion = () => {
                 endDate={endDate}
                 placeholderText="Start Date"
                 className="border-none outline-none w-full"
+                dateFormat="dd/MM/yyyy"
               />
               <span className="mx-2">to</span>
               <DatePicker
@@ -139,6 +140,7 @@ const Promotion = () => {
                 minDate={startDate}
                 placeholderText="End Date"
                 className="border-none outline-none w-full"
+                dateFormat="dd/MM/yyyy"
               />
             </div>
             <span className="text-gray-600 text-md">
