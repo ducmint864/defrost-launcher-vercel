@@ -24,11 +24,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
       { status: 400 }
     );
   }
+  console.log("Event " + smartContractEventData);
+
   console.log("General " + generalDetailData.selectedCoin);
   console.log("Promotion " + promotionData.endDate);
 
   //verifyTokenPage
-  const verifyToken = verifyTokenData[0];
+  // const verifyToken = verifyTokenData[0];
 
   //generalDetailPage
   const selectedVToken = generalDetailData.selectedCoin; //selectedToken address
@@ -49,8 +51,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
   const endDate = promotionData.endDate;
   // )
   const eventData: ContractEvent = smartContractEventData[0];
-  const projectiD = eventData.data; /*** @notice */
   console.log(eventData);
+  const projectiD = eventData.data; /*** @notice */
+
   console.log(projectiD);
 
   const txnHashCreated = eventData.transaction.transactionHash; /*** @notice */

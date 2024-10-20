@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import createProjectPool from "@/utils/addProject";
+import useCreateProjectPool from "@/utils/addProject";
 // import GeneralDetail from "../generalDetail/generalDetail";
 
 const tokenSaleData = [
@@ -68,8 +69,8 @@ const PreviewPage = () => {
   );
   const route = useRouter();
   const { handleWrite, isLoading, createProjectError, eventData } =
-    createProjectPool(
-      formDataVerifyToken[0], //verifyToken
+    useCreateProjectPool(
+      formDataVerifyToken, //verifyToken
       formDataPromotion.tokenExchangeRate, //tokenExchangeRate
       new Date(formDataPromotion.startDate), //startDate
       new Date(formDataPromotion.endDate), //endDate
@@ -78,7 +79,8 @@ const PreviewPage = () => {
       formDataPromotion.softcap, //softcap
       formDataPromotion.hardcap, //hardcap
       formDataPromotion.reward, //reward
-      formDataGeneralDetail.selectedVToken //selectedVToken
+      // formDataGeneralDetail.selectedVToken //selectedVToken
+      "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
     );
   const combinedData = {
     verifyTokenData: formDataVerifyToken,
@@ -118,6 +120,8 @@ const PreviewPage = () => {
       return;
     }
 
+    console.log("Success Smartcontract");
+
     const response = await axios.post("/api/addProject", combinedData);
     if (response.data.success) {
       route.push("/myProject");
@@ -152,10 +156,10 @@ const PreviewPage = () => {
           </div>
           <div>
             <h1 className="text-4xl font-bold">
-              {combinedData.generalDetailData[3]}
+              {combinedData.generalDetailData.projectTitle}
             </h1>
             <p className="text-lg text-gray-400">
-              {combinedData.generalDetailData[4]}
+              {combinedData.generalDetailData.shortDescription}
             </p>
           </div>
         </div>
@@ -213,10 +217,10 @@ const PreviewPage = () => {
             <div className="rounded-lg bg-secondary w-full h-72 p-5 flex flex-col">
               <p className="text-xl font-semibold text-white">Fundraise Goal</p>
               <p className="text-3xl font-bold text-white mt-2">
-                {combinedData.generalDetailData[3]}
+                {combinedData.generalDetailData.projectTitle}
               </p>
               <p className="text-gray-400 mt-8">
-                {combinedData.generalDetailData[4]}
+                {combinedData.generalDetailData.shortDescription}
               </p>
 
               <Button className="bg-neutral hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full mt-auto w-full">
@@ -267,7 +271,9 @@ const PreviewPage = () => {
           {activeTab === "description" && (
             <div>
               <h2 className="text-2xl font-semibold">Description Content</h2>
-              <p className=" mt-2">{combinedData.generalDetailData[5]}</p>
+              <p className=" mt-2">
+                {combinedData.generalDetailData.longDescription}
+              </p>
             </div>
           )}
 
