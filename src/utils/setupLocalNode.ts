@@ -73,6 +73,11 @@ export async function deployContract(
     return contract;
 }
 
+async function getCurrentBlockTimestamp(provider: ethers.providers.Provider): Promise<number> {
+    const block = await provider.getBlock('latest');
+    return block.timestamp;
+}
+
 async function run(): Promise<void> {
     startAnvil();
 
@@ -106,11 +111,16 @@ async function run(): Promise<void> {
     const mockProjectTokenAddr = mockProjectTokenContract.address;
 
     // create example project pool
+    const blockTimestamp = await getCurrentBlockTimestamp(provider);
+    const startTime = blockTimestamp + 2;
+    // wait 2 secs
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
     const tx = await factoryContract.createProjectPool(
         mockProjectTokenAddr,
         BigInt(10 * (10 ** await mockVTokenContract.decimals())), // 1 project token = 10 vTokens
-        BigInt(1829300891),
-        BigInt(1929300891),
+        BigInt(startTime), // start time
+        BigInt(startTime + (60 * 60)), // end time = start time + 60 minutes
         BigInt(1 * (10 ** await mockVTokenContract.decimals())), // min invest is 1 vTokens
         BigInt(10 * (10 ** await mockVTokenContract.decimals())), // max invest is 10 vTokens
         BigInt(1000 * (10 ** await mockProjectTokenContract.decimals())), // hard cap is 1000 vTokens
