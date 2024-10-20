@@ -65,7 +65,7 @@ export async function deployContract(
     // write new contract address to chainConfig file
     let chainConfigJSON = JSON.parse(readFileSync("src/config/chainConfig.json", { encoding: "utf-8" }));
     const nameInConfig = !!nameAlias ? nameAlias : contractName;
-    if (Object.keys(chainConfigJSON[31337]?.contracts)?.findIndex((v) => v === contractName) != -1) {
+    if (Object.keys(chainConfigJSON[31337]?.contracts)?.findIndex((v) => v === nameInConfig) != -1) {
         chainConfigJSON[31337]["contracts"][nameInConfig]["address"] = contract.address;
     }
     writeFileSync("src/config/chainConfig.json", JSON.stringify(chainConfigJSON, null, 2));
@@ -73,13 +73,13 @@ export async function deployContract(
     return contract;
 }
 
-async function getCurrentBlockTimestamp(provider: ethers.providers.Provider): Promise<number> {
+export async function getCurrentBlockTimestamp(provider: ethers.providers.Provider): Promise<number> {
     const block = await provider.getBlock('latest');
     return block.timestamp;
 }
 
 async function run(): Promise<void> {
-    startAnvil();
+    // startAnvil();
 
     const provider = getProvider("http://localhost:8545");
 
@@ -97,16 +97,16 @@ async function run(): Promise<void> {
 
     // deploy mockVToken and mockProjectToken
     const mockVTokenContract = await deployContract(
-        "MockERC20",
-        signer,
         "MockVToken",
+        signer,
+        undefined,
     )
     const mockVTokenAddr = mockVTokenContract.address;
 
     const mockProjectTokenContract = await deployContract(
-        "MockERC20",
-        signer,
         "MockProjectToken",
+        signer,
+        undefined,
     );
     const mockProjectTokenAddr = mockProjectTokenContract.address;
 
@@ -135,4 +135,4 @@ async function run(): Promise<void> {
     console.log('\x1b[36m%s\x1b[0m', `An example ProjectPool contract was created at address ${poolAddr}`);
 }
 
-run().catch(err => console.error(err))
+run().then().catch(err => console.error(err))
