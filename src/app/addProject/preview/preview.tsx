@@ -7,6 +7,7 @@ import { Button } from "@nextui-org/react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import createProjectPool from "@/utils/addProject";
 // import GeneralDetail from "../generalDetail/generalDetail";
 
 const tokenSaleData = [
@@ -25,28 +26,28 @@ const tokenSaleData = [
     title: "Sale End Time",
     key: "endDate", // Kết nối với trường 'endDate'
   },
+  // {
+  //   id: 4,
+  //   title: "Amount token release",
+  //   key: "amountTokenRelease", // Kết nối với trường 'amountTokenRelease'
+  // },
   {
     id: 4,
-    title: "Amount token release",
-    key: "amountTokenRelease", // Kết nối với trường 'amountTokenRelease'
-  },
-  {
-    id: 5,
     title: "Softcap",
     key: "softcap", // Kết nối với trường 'softcap'
   },
   {
-    id: 6,
+    id: 5,
     title: "Hardcap",
     key: "hardcap", // Kết nối với trường 'hardcap'
   },
   {
-    id: 7,
+    id: 6,
     title: "Minimum investment",
     key: "minInvestment", // Kết nối với trường 'minInvestment'
   },
   {
-    id: 8,
+    id: 7,
     title: "Maximum investment",
     key: "maxInvestment", // Kết nối với trường 'maxInvestment'
   },
@@ -66,12 +67,26 @@ const PreviewPage = () => {
     (state: any) => state.form.promotionData
   );
   const route = useRouter();
+  const { handleWrite, isLoading, createProjectError, eventData } =
+    createProjectPool(
+      formDataVerifyToken[0], //verifyToken
+      formDataPromotion.tokenExchangeRate, //tokenExchangeRate
+      new Date(formDataPromotion.startDate), //startDate
+      new Date(formDataPromotion.endDate), //endDate
+      formDataPromotion.minInvestment, //minInvestment
+      formDataPromotion.maxInvestment, //maxInvestment
+      formDataPromotion.softcap, //softcap
+      formDataPromotion.hardcap, //hardcap
+      formDataPromotion.reward, //reward
+      formDataGeneralDetail.selectedVToken //selectedVToken
+    );
   const combinedData = {
     verifyTokenData: formDataVerifyToken,
     generalDetailData: formDataGeneralDetail,
     promotionData: formDataPromotion,
+    smartContractEventData: eventData,
   };
-  const images = combinedData.generalDetailData[1];
+  const images = combinedData.generalDetailData.selectedImages;
   const nextImage = () => {
     setCurrentImage((prevImage) => (prevImage + 1) % images.length);
   };
@@ -90,9 +105,18 @@ const PreviewPage = () => {
 
   const handleSubmit = async () => {
     console.log(combinedData);
-    console.log(combinedData.generalDetailData[0]);
-    console.log(combinedData.generalDetailData.selectedCoin);
-    console.log(combinedData.promotionData[2]);
+    // console.log(combinedData.generalDetailData[0]);
+    // console.log(combinedData.generalDetailData.selectedCoin);
+    // console.log(combinedData.promotionData[2]);
+
+    await handleWrite();
+
+    // console.log(isLoading);
+
+    if (createProjectError) {
+      console.log(createProjectError);
+      return;
+    }
 
     const response = await axios.post("/api/addProject", combinedData);
     if (response.data.success) {
@@ -102,19 +126,24 @@ const PreviewPage = () => {
 
   return (
     <div className="flex justify-center items-center bg-primary min-h-screen relative">
+      <p>{isLoading}</p>
+
+      <p>{String(createProjectError)}</p>
+
       <div
-        className="absolute top-0 left-0 w-full h-[800px] bg-cover bg-center blur-md"
+        className="absolute top-0 left-0 w-full h-[720px] bg-cover bg-center blur-md"
         style={{
-          backgroundImage: `url('https://i.pinimg.com/736x/4d/79/b4/4d79b4275d26861880c4dea267ecbfd2.jpg')`,
+          backgroundImage: `url(${images[0]})`,
         }}
       ></div>
+
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-gray-900 to-primary opacity-70"></div>
 
       <div className="relative w-full lg:w-3/5 flex flex-col text-white mt-28">
         <div className="flex items-center text-left mb-8">
           <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
             <img
-              src={combinedData.generalDetailData[2]}
+              src={combinedData.generalDetailData.selectedLogo}
               alt="Profile Icon"
               width={52}
               height={52}

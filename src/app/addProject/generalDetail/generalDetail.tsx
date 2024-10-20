@@ -59,14 +59,14 @@ const GeneralDetail = () => {
 
   //REDUX GLOBAL STATE
   const handleSubmit = () => {
-    const formDatas = [
+    const formDatas = {
       selectedCoin,
       selectedImages,
       selectedLogo,
       projectTitle,
       shortDescription,
       longDescription,
-    ];
+    };
     dispatch(updateGeneralDetailPageData(formDatas));
     console.log(updateData);
     route.push("/addProject/promotion");

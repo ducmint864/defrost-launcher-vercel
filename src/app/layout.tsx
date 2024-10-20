@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import { Layout } from "@/components";
 import { Navbar } from "@/components";
-
+import logo from "../../public/Logo/DL_Logo.png";
 const roboto = Roboto({
   subsets: ["latin"],
   weight: ["300", "400", "500", "700", "900"],
@@ -11,7 +11,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Launchpad",
+  title: "Defrost Launcher",
 };
 
 export default function RootLayout({
@@ -27,11 +27,7 @@ export default function RootLayout({
           data-site="YOUR_DOMAIN_HERE"
           src="https://api.nepcha.com/js/nepcha-analytics.js"
         ></script>
-        <link
-          rel="shortcut icon"
-          href="https://readwrite.com/wp-content/uploads/2022/05/Multiply-Your-Dividends-By-Developing-Your-Own-IDO-Launchpad-1200-x-630-copy-900x473.jpg"
-          type="image/png"
-        />
+        <link rel="shortcut icon" href={logo.src} type="image/png" />
       </head>
       <body className={roboto.className}>
         <Layout>{children}</Layout>

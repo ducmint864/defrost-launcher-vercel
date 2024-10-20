@@ -80,7 +80,6 @@ const SwapPage = () => {
                     height={24}
                     className="mr-2 rounded-full"
                   />
-                  <span>MODAL</span>
                 </div>
                 <div className="absolute left-4 pl-24 pb-4 ml-4">
                   <input
@@ -143,7 +142,6 @@ const SwapPage = () => {
                     height={24}
                     className="mr-2 rounded-full"
                   />
-                  <span>MODAL</span>
                 </div>
                 <div className="absolute left-4 pl-24 pb-4 ml-4">
                   <div className="border-none focus:outline-none focus:ring-0 w-72 h-11 mt-2">
@@ -219,4 +217,3 @@ const SwapPage = () => {
 };
 
 export default SwapPage;
-

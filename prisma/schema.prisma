@@ -1,15 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-// DB schema for MVP verseion of the app
 generator client {
   provider = "prisma-client-js"
 }
 
-// mockup db
 datasource db {
   provider = "postgresql"
   url      = env("MVP_DB_URL")
@@ -40,21 +32,16 @@ model TaskDone {
 }
 
 model Project {
-  id               String   @id @default(uuid())
-  projectID        String   @unique
-  projectTitle     String
-  description      String
-  shortDescription String
-  projectImageUrls String[]
-  projectLogoImageUrl String
-  txnHashCreated   String   @unique
-}
-
-// Enum for task type
-enum TaskType {
-  follow
-  like
-  share
+  id                  String   @id @default(uuid())
+  projectID           String?  @unique
+  description         String
+  shortDescription    String
+  projectImageUrls    String[]
+  txnHashCreated      String?  @unique
+  projectTitle        String
+  projectLogoImageUrl String[]
+  endDate             DateTime @default(now())
+  startDate           DateTime @default(now())
 }
 
 model OTP {
@@ -63,4 +50,10 @@ model OTP {
   code      String
   createdAt DateTime @default(now())
   expiresAt DateTime
+}
+
+enum TaskType {
+  follow
+  like
+  share
 }
