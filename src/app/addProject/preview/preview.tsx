@@ -7,6 +7,7 @@ import { Button } from "@nextui-org/react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import createProjectPool from "@/utils/addProject";
 // import GeneralDetail from "../generalDetail/generalDetail";
 
 const tokenSaleData = [
@@ -66,10 +67,23 @@ const PreviewPage = () => {
     (state: any) => state.form.promotionData
   );
   const route = useRouter();
+  const { handleWrite, isLoading, createProjectError, eventData } = createProjectPool(
+    formDataVerifyToken[0], //verifyToken
+    formDataPromotion[0], //tokenExchangeRate
+    new Date(formDataPromotion[5]), //startDate
+    new Date(formDataPromotion[6]),//endDate
+    formDataPromotion[3],//minInvestment
+    formDataPromotion[1],//maxInvestment
+    formDataPromotion[4],//softcap
+    formDataPromotion[2],//hardcap
+    formDataPromotion[7],//reward
+    formDataGeneralDetail[0]//selectedVToken
+  )
   const combinedData = {
     verifyTokenData: formDataVerifyToken,
     generalDetailData: formDataGeneralDetail,
     promotionData: formDataPromotion,
+    smartContractEventData: eventData,
   };
   const images = combinedData.generalDetailData[1];
   const nextImage = () => {
@@ -88,11 +102,17 @@ const PreviewPage = () => {
     setIsFullscreen(!isFullscreen);
   };
 
+
   const handleSubmit = async () => {
     console.log(combinedData);
     // console.log(combinedData.generalDetailData[0]);
     // console.log(combinedData.generalDetailData.selectedCoin);
     // console.log(combinedData.promotionData[2]);
+
+    handleWrite();
+    console.log(handleWrite);
+    console.log(isLoading);
+    console.log(createProjectError);
 
     const response = await axios.post("/api/addProject", combinedData);
     if (response.data.success) {
@@ -102,6 +122,10 @@ const PreviewPage = () => {
 
   return (
     <div className="flex justify-center items-center bg-primary min-h-screen relative">
+      <p>{isLoading}</p>
+
+      <p>{String(createProjectError)}</p>
+
       <div
         className="absolute top-0 left-0 w-full h-[720px] bg-cover bg-center blur-md"
         style={{

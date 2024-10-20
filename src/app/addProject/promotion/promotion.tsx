@@ -18,6 +18,7 @@ const Promotion = () => {
   const [minInvestment, setMinInvestment] = useState<string>("");
   const [maxInvestment, setMaxInvestment] = useState<string>("");
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [reward, setReward] = useState<string>("");
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
 
   const route = useRouter();
@@ -33,6 +34,7 @@ const Promotion = () => {
       maxInvestment,
       startDate,
       endDate,
+      reward,
     };
 
     dispatch(updatePromotionPageData(formDatas));
@@ -116,6 +118,18 @@ const Promotion = () => {
             />
             <span className="text-gray-600 text-md">
               The maximum amount a user can invest in this project.
+            </span>
+            
+            
+            <input
+              placeholder="Reward rate (%)"
+              type="number"
+              className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
+          [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              onChange={(e) => setReward(e.target.value)}
+            />
+            <span className="text-gray-600 text-md">
+              The reward rate base on the amount of token purchase.
             </span>
 
             <div className="flex items-center border border-black rounded-2xl w-[1050px] h-12 text-lg px-3">
