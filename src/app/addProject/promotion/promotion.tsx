@@ -119,8 +119,7 @@ const Promotion = () => {
             <span className="text-gray-600 text-md">
               The maximum amount a user can invest in this project.
             </span>
-            
-            
+
             <input
               placeholder="Reward rate (%)"
               type="number"
@@ -134,28 +133,97 @@ const Promotion = () => {
 
             <div className="flex items-center border border-black rounded-2xl w-[1050px] h-12 text-lg px-3">
               <FaCalendarAlt className="text-gray-500 mr-2" />
-              <DatePicker
+              {/* <DatePicker
                 selected={startDate}
-                onChange={(date) => setStartDate(date)}
+                onChange={(date) => {
+                  // Lưu ngày được chọn cùng với thời gian hiện tại (giờ, phút, giây)
+                  const currentTime = new Date();
+                  if (date) {
+                    // Đặt ngày được chọn và thời gian hiện tại vào startDate
+                    const selectedDateWithTime = new Date(
+                      date.setHours(
+                        currentTime.getHours(),
+                        currentTime.getMinutes(),
+                        currentTime.getSeconds()
+                      )
+                    );
+                    setStartDate(selectedDateWithTime);
+                  }
+                }}
                 selectsStart
                 startDate={startDate}
                 endDate={endDate}
                 placeholderText="Start Date"
                 className="border-none outline-none w-full"
                 dateFormat="dd/MM/yyyy"
-              />
-              <span className="mx-2">to</span>
-              <DatePicker
-                selected={endDate}
-                onChange={(date) => setEndDate(date)}
-                selectsEnd
-                startDate={startDate}
-                endDate={endDate}
-                minDate={startDate}
-                placeholderText="End Date"
-                className="border-none outline-none w-full"
-                dateFormat="dd/MM/yyyy"
-              />
+                minDate={new Date()} // Chỉ cho phép chọn ngày hiện tại hoặc tương lai
+              /> */}
+
+              <div className="flex items-center">
+                {/* Start Date and Time Picker */}
+                <DatePicker
+                  selected={startDate}
+                  onChange={(date) => {
+                    const now = new Date(); // Lấy thời gian hiện tại
+                    if (date && date >= now) {
+                      // Kiểm tra nếu startDate lớn hơn hoặc bằng thời gian hiện tại
+                      setStartDate(date); // Lưu ngày và thời gian đã chọn
+                      if (date >= endDate) {
+                        setEndDate(new Date(date.getTime() + 15 * 60 * 1000)); // Tự động đặt endDate lớn hơn startDate ít nhất 15 phút
+                      }
+                    }
+                  }}
+                  selectsStart
+                  startDate={startDate}
+                  endDate={endDate}
+                  placeholderText="Select Start Date and Time"
+                  className="border-none outline-none w-full"
+                  dateFormat="dd/MM/yyyy h:mm aa"
+                  minDate={new Date()} // Chỉ cho phép chọn ngày từ hôm nay trở đi
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  timeCaption="Time"
+                  minTime={
+                    startDate &&
+                    startDate.toDateString() === new Date().toDateString()
+                      ? new Date() // Nếu chọn hôm nay, giới hạn thời gian nhỏ nhất là thời gian hiện tại
+                      : new Date(new Date().setHours(0, 0, 0, 0)) // Nếu chọn ngày trong tương lai, thời gian nhỏ nhất là 00:00
+                  }
+                  maxTime={new Date(new Date().setHours(23, 59, 59, 999))}
+                />
+
+                <span className="mx-4">to</span>
+
+                {/* End Date and Time Picker */}
+                <DatePicker
+                  selected={endDate}
+                  onChange={(date) => {
+                    if (date && date >= startDate) {
+                      setEndDate(date); // Chỉ cho phép lưu endDate nếu nó lớn hơn hoặc bằng startDate
+                    }
+                  }}
+                  selectsEnd
+                  startDate={startDate}
+                  endDate={endDate}
+                  minDate={startDate} // endDate không thể nhỏ hơn startDate
+                  showTimeSelect
+                  placeholderText="End Date"
+                  className="border-none outline-none w-full"
+                  dateFormat="dd/MM/yyyy h:mm aa"
+                  timeIntervals={15}
+                  timeFormat="HH:mm"
+                  timeCaption="Time"
+                  minTime={
+                    startDate &&
+                    endDate &&
+                    startDate.toDateString() === endDate.toDateString()
+                      ? startDate // Nếu cùng ngày, endDate phải lớn hơn thời gian của startDate
+                      : new Date(new Date().setHours(0, 0, 0, 0)) // Nếu không cùng ngày, thời gian bắt đầu từ 00:00
+                  }
+                  maxTime={new Date(new Date().setHours(23, 59, 59, 999))} // Giới hạn thời gian tối đa trong ngày là 23:59:59
+                />
+              </div>
             </div>
             <span className="text-gray-600 text-md">
               Select the start and end dates for the project or token sale.

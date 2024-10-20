@@ -11,45 +11,49 @@ export async function POST(req: NextRequest, res: NextResponse) {
   const body = await req.json();
   console.log(body);
 
-  const { verifyTokenData, generalDetailData, promotionData, smartContractEventData } = body;
-  console.log("This is comb " + generalDetailData[1]);
+  const {
+    verifyTokenData,
+    generalDetailData,
+    promotionData,
+    smartContractEventData,
+  } = body;
+  console.log("This is comb " + generalDetailData.selectedImages);
   if (!verifyTokenData || !generalDetailData || !promotionData) {
     return NextResponse.json(
       { success: false, error: "Missing data" },
       { status: 400 }
     );
   }
-  console.log("General " + generalDetailData[0]);
-  console.log("Promotion " + promotionData[0]);
+  console.log("General " + generalDetailData.selectedCoin);
+  console.log("Promotion " + promotionData.endDate);
 
   //verifyTokenPage
   const verifyToken = verifyTokenData[0];
 
   //generalDetailPage
-  const selectedVToken = generalDetailData[0]; //selectedToken address
-  const selectedImages = generalDetailData[1];
-  const selectedLogo = generalDetailData[2];
-  const projectTitle = generalDetailData[3];
-  const shortDescription = generalDetailData[4];
-  const longDescription = generalDetailData[5];
+  const selectedVToken = generalDetailData.selectedCoin; //selectedToken address
+  const selectedImages = generalDetailData.selectedImages;
+  const selectedLogo = generalDetailData.selectedLogo;
+  const projectTitle = generalDetailData.projectTitle;
+  const shortDescription = generalDetailData.shortDescription;
+  const longDescription = generalDetailData.longDescription;
 
   //promotionPage
-  const tokenExchangeRate = promotionData[0];
+  // const tokenExchangeRate = promotionData[0];
   // const amountTokenRelease = promotionData[1];
-  const softCap = promotionData[1];
-  const hardCap = promotionData[2];
-  const minInvest = promotionData[3];
-  const maxInvest = promotionData[4];
-  const startDate = promotionData[5];
-  const endDate = promotionData[6];
+  // const softCap = promotionData[1];
+  // const hardCap = promotionData[2];
+  // const minInvest = promotionData[3];
+  // const maxInvest = promotionData[4];
+  const startDate = promotionData.startDate;
+  const endDate = promotionData.endDate;
   // )
   const eventData: ContractEvent = smartContractEventData[0];
-  const projectiD  =  eventData.data;/*** @notice */
+  const projectiD = eventData.data; /*** @notice */
   console.log(eventData);
   console.log(projectiD);
-  
-  const txnHashCreated = eventData.transaction.transactionHash;/*** @notice */
 
+  const txnHashCreated = eventData.transaction.transactionHash; /*** @notice */
 
   //Convert date to unix time to fit the contract uint256
   const startTimed = new Date(startDate);
@@ -60,47 +64,47 @@ export async function POST(req: NextRequest, res: NextResponse) {
   // await prismaClient.project.create({
   //     data: {
 
-    // const {tokenAddress, tokenF  orSale, pricePerToken, startTime, endTime, minInvest, maxInvest } = body; //projectName missing
-    // const {tokenAddress, tokenForSale, pricePerToken, startTime, endTime, minInvest, maxInvest, projectName } = {
-    //     tokenAddress: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    //     tokenForSale: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    //     pricePerToken: 100,
-    //     startTime: 100,
-    //     endTime: 100,
-    //     minInvest: 100,
-    //     maxInvest: 100,
-    //     projectName: "projectName"
-    // };
-    try {
-        // const provider = new ethers.providers.Web3Provider(window.ethereum);
-        // const signer = provider.getSigner();
-        // const contractABI = contractArtifact.abi;
-        // const contract = new ethers.Contract(
-        //     contractAddress,
-        //     contractABI,
-        //     signer,
-        // )
-        // const addProject = contract.createProjectpool(
-        //     verifyToken, tokenExchangeRate, unixTime, unixTimeEnd,
-        //     minInvest, maxInvest, softCap, hardCap,
-        //     /**@notice reward, */
-        //     selectedVToken
+  // const {tokenAddress, tokenF  orSale, pricePerToken, startTime, endTime, minInvest, maxInvest } = body; //projectName missing
+  // const {tokenAddress, tokenForSale, pricePerToken, startTime, endTime, minInvest, maxInvest, projectName } = {
+  //     tokenAddress: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  //     tokenForSale: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  //     pricePerToken: 100,
+  //     startTime: 100,
+  //     endTime: 100,
+  //     minInvest: 100,
+  //     maxInvest: 100,
+  //     projectName: "projectName"
+  // };
+  try {
+    // const provider = new ethers.providers.Web3Provider(window.ethereum);
+    // const signer = provider.getSigner();
+    // const contractABI = contractArtifact.abi;
+    // const contract = new ethers.Contract(
+    //     contractAddress,
+    //     contractABI,
+    //     signer,
+    // )
+    // const addProject = contract.createProjectpool(
+    //     verifyToken, tokenExchangeRate, unixTime, unixTimeEnd,
+    //     minInvest, maxInvest, softCap, hardCap,
+    //     /**@notice reward, */
+    //     selectedVToken
 
-        const data = await prismaClient.project.create({
-          data:{
-            // projectID:  projectiD,
-            projectTitle: projectTitle,
-            projectLogoImageUrl: selectedLogo,
-            description: longDescription,
-            shortDescription: shortDescription,
-            projectImageUrls: selectedImages,
-            startDate: startDate,
-            endDate: endDate,
-            txnHashCreated:txnHashCreated
-          }  
-        });
-        console.log(data);
-} catch (error) {
+    const data = await prismaClient.project.create({
+      data: {
+        // projectID:  projectiD,
+        projectTitle: projectTitle,
+        projectLogoImageUrl: selectedLogo,
+        description: longDescription,
+        shortDescription: shortDescription,
+        projectImageUrls: selectedImages,
+        startDate: startDate,
+        endDate: endDate,
+        txnHashCreated: txnHashCreated,
+      },
+    });
+    console.log(data);
+  } catch (error) {
     console.log(error);
     return NextResponse.json({ success: false, error: error }, { status: 400 });
   }

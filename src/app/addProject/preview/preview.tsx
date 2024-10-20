@@ -67,25 +67,26 @@ const PreviewPage = () => {
     (state: any) => state.form.promotionData
   );
   const route = useRouter();
-  const { handleWrite, isLoading, createProjectError, eventData } = createProjectPool(
-    formDataVerifyToken[0], //verifyToken
-    formDataPromotion[0], //tokenExchangeRate
-    new Date(formDataPromotion[5]), //startDate
-    new Date(formDataPromotion[6]),//endDate
-    formDataPromotion[3],//minInvestment
-    formDataPromotion[1],//maxInvestment
-    formDataPromotion[4],//softcap
-    formDataPromotion[2],//hardcap
-    formDataPromotion[7],//reward
-    formDataGeneralDetail[0]//selectedVToken
-  )
+  const { handleWrite, isLoading, createProjectError, eventData } =
+    createProjectPool(
+      formDataVerifyToken[0], //verifyToken
+      formDataPromotion.tokenExchangeRate, //tokenExchangeRate
+      new Date(formDataPromotion.startDate), //startDate
+      new Date(formDataPromotion.endDate), //endDate
+      formDataPromotion.minInvestment, //minInvestment
+      formDataPromotion.maxInvestment, //maxInvestment
+      formDataPromotion.softcap, //softcap
+      formDataPromotion.hardcap, //hardcap
+      formDataPromotion.reward, //reward
+      formDataGeneralDetail.selectedVToken //selectedVToken
+    );
   const combinedData = {
     verifyTokenData: formDataVerifyToken,
     generalDetailData: formDataGeneralDetail,
     promotionData: formDataPromotion,
     smartContractEventData: eventData,
   };
-  const images = combinedData.generalDetailData[1];
+  const images = combinedData.generalDetailData.selectedImages;
   const nextImage = () => {
     setCurrentImage((prevImage) => (prevImage + 1) % images.length);
   };
@@ -102,7 +103,6 @@ const PreviewPage = () => {
     setIsFullscreen(!isFullscreen);
   };
 
-
   const handleSubmit = async () => {
     console.log(combinedData);
     // console.log(combinedData.generalDetailData[0]);
@@ -112,12 +112,11 @@ const PreviewPage = () => {
     await handleWrite();
 
     // console.log(isLoading);
-    
-    if(createProjectError){
+
+    if (createProjectError) {
       console.log(createProjectError);
       return;
     }
-
 
     const response = await axios.post("/api/addProject", combinedData);
     if (response.data.success) {
@@ -144,7 +143,7 @@ const PreviewPage = () => {
         <div className="flex items-center text-left mb-8">
           <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
             <img
-              src={combinedData.generalDetailData[2]}
+              src={combinedData.generalDetailData.selectedLogo}
               alt="Profile Icon"
               width={52}
               height={52}
