@@ -1,11 +1,27 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@nextui-org/react";
+import axios from "axios";
+import { useAddress } from "@thirdweb-dev/react";
 
 function MyProjectPage() {
   const [showMoreEnded, setShowMoreEnded] = useState(false);
   const [showMorePending, setShowMorePending] = useState(false);
+  const [availableProjects, setAvailableProjects] = useState([]);
+  const [endedProjects, setEndedProjects] = useState([]);
+  const [pendingProjects, setPendingProjects] = useState([]);
+  const projectOwnerAddress = useAddress();
+
+
+  useEffect(()=>{
+    const fetchProjects = async () => {
+      const response = await axios.post("/api/myProject", projectOwnerAddress);
+      console.log(response.data);
+
+    }
+    fetchProjects();
+  }, [])
 
   const projects = [
     {

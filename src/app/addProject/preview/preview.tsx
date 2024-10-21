@@ -8,9 +8,10 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import createProjectPool from "@/utils/addProject";
+import { useAddress } from "@thirdweb-dev/react";
+
 import useCreateProjectPool from "@/utils/addProject";
 // import GeneralDetail from "../generalDetail/generalDetail";
-
 const tokenSaleData = [
   {
     id: 1,
