@@ -8,10 +8,12 @@ const getMyProjectInfo = (
     projectId: number | string
     ) => {
         const poolContract = getProjectPoolContract(projectId);
-        const { data, isLoading, error } = useContractRead(
+        const { data: raisedAmount, isLoading, error } = useContractRead(
             poolContract,
             "getProjectRaisedAmount"
         ) 
 
-        return { data, isLoading, error }
+        return { raisedAmount, isLoading, error }
 }
+
+export default getMyProjectInfo;

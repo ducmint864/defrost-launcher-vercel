@@ -4,24 +4,38 @@ import Image from "next/image";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
 import { useAddress } from "@thirdweb-dev/react";
+import getMyProjectInfo from "@/utils/getMyProjectInfo";
 
 function MyProjectPage() {
   const [showMoreEnded, setShowMoreEnded] = useState(false);
   const [showMorePending, setShowMorePending] = useState(false);
   const [availableProjects, setAvailableProjects] = useState([]);
-  const [endedProjects, setEndedProjects] = useState([]);
-  const [pendingProjects, setPendingProjects] = useState([]);
+  const [endedProjects, setEndedProjects] = useState<any[]>([]);
+  const [pendingProjects, setPendingProjects] = useState<any[]>([]);
   const projectOwnerAddress = useAddress();
 
 
-  useEffect(()=>{
+  useEffect(() => {
     const fetchProjects = async () => {
-      const response = await axios.post("/api/myProject", projectOwnerAddress);
+      const response = await axios.post("/api/myProject", projectOwnerAddress); // Query the projects of the owner
       console.log(response.data);
+      const projects = response.data;
+      setAvailableProjects(projects);
+      //set project with enum Status == Ended to endedProjects
+      if (projects) {
+        for (let i = 0; i < projects.length; i++) {
+          if (projects[i].status === Status.Ended) {
+            setEndedProjects((prev) => [...prev, projects[i]]);
+          } else {
+            setPendingProjects((prev) => [...prev, projects[i]]);
+          }
+        }
 
-    }
+      }
+      
+    };
     fetchProjects();
-  }, [])
+  }, []);
 
   const projects = [
     {

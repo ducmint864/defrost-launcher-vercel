@@ -8,7 +8,8 @@ import {
   FireIcon,
 } from "@heroicons/react/24/solid";
 import { DollarCircleOutlined } from "@ant-design/icons";
-import { ConnectWallet } from "@thirdweb-dev/react";
+import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
+import axios from "axios";
 
 interface NavItemProps {
   children: React.ReactNode;
@@ -52,6 +53,8 @@ export function Navbar({
     },
   ]);
 
+  const userAddress = useAddress();
+
   const [open, setOpen] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
 
@@ -59,7 +62,8 @@ export function Navbar({
 
   useEffect(() => {
     const checkProjectOwner = async () => {
-      const owner = true;
+      const owner = (await axios.post("/api/identity", { userAddress })).data;
+      console.log(owner);
       if (owner) {
         SET_NAV_MENU((prevMenu) => [
           {
