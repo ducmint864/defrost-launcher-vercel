@@ -43,6 +43,7 @@ model Project {
   projectLogoImageUrl String[]
   endDate             DateTime @default(now())
   startDate           DateTime @default(now())
+  status              String
 }
 
 model OTP {
