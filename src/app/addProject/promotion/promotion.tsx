@@ -50,18 +50,26 @@ const Promotion = () => {
         </div>
         <div className="border border-black bg-white rounded-2xl h-[900px] mb-12 overflow-hidden">
           {" "}
-          <div className="my-6 ml-8 w-full flex flex-col  gap-5 ">
-            <input
-              type="number"
-              className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
-          [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              placeholder="Set token exchange rate"
-              onChange={(e) => setTokenExchangeRate(e.target.value)}
-            />
-            <span className="text-gray-600 text-md">
-              The rate at which tokens are exchanged for currency (e.g., 1 token
-              = X currency units).
+          <div className="my-6 ml-8 w-full flex flex-col p-4">
+            <span className="label-text text-gray-600 text-md">
+              The rate at which tokens are exchanged for currency
             </span>
+            <label className="m-4 input input-bordered flex items-center gap-2 mb-10">
+              Exchange rate
+              <div className="label">
+              </div>
+              <input
+                type="number"
+                //     className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
+                // [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="grow"
+                placeholder="Set token exchange rate"
+                onChange={(e) => setTokenExchangeRate(e.target.value)}
+              />
+              <div className="label">
+                <span className="label-text-alt text-gray-500">(1 project token = X vtokens)</span>
+              </div>
+            </label>
 
             {/* <input
               placeholder="Amount token release"
@@ -75,62 +83,100 @@ const Promotion = () => {
               distribution.
             </span> */}
 
-            <input
-              placeholder="Softcap"
-              type="number"
-              className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
-          [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              onChange={(e) => setSoftcap(e.target.value)}
-            />
-            <span className="text-gray-600 text-md">
-              The minimum fundraising goal for the project to be considered
-              successful.
+            <span className="label-text text-gray-600 text-md">
+              The minimum fundraising goal for the project to be considered successful.
             </span>
+            <label className="m-4 input input-bordered flex items-center gap-2 mb-10">
+              Soft cap
+              <input
+                placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                type="number"
+                //     className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
+                // [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="grow"
+                onChange={(e) => setSoftcap(e.target.value)}
+              />
+              <div className="label">
+                <span className="label-text-alt text-gray-500">(vTokens)</span>
+              </div>
+            </label>
 
-            <input
-              placeholder="Hardcap"
-              type="number"
-              className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
-          [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              onChange={(e) => setHardcap(e.target.value)}
-            />
-            <span className="text-gray-600 text-md">
+            <span className="label-text ext-gray-600 text-md">
               The maximum fundraising goal for the project.
             </span>
+            <label className="m-4 input input-bordered flex items-center gap-2 mb-10">
+              Hard cap
+              <input
+                placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                type="number"
+                //   className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
+                // [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="grow"
+                onChange={(e) => setHardcap(e.target.value)}
+              />
+              <div className="label">
+                <span className="label-text-alt text-gray-500">(vTokens)</span>
+              </div>
+            </label>
 
-            <input
-              placeholder="Minimum investment"
-              type="number"
-              className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
-          [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              onChange={(e) => setMinInvestment(e.target.value)}
-            />
             <span className="text-gray-600 text-md">
               The minimum amount a user can invest in this project.
             </span>
+            <label className="m-4 input input-bordered flex items-center gap-2 mb-10">
+              Min investment
+              <input
+                placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                type="number"
+                //     className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
+                // [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="grow"
+                onChange={(e) => setMinInvestment(e.target.value)}
+              />
+              <div className="label">
+                <span className="label-text-alt text-gray-500">(vTokens)</span>
+              </div>
+            </label>
 
-            <input
-              placeholder="Maximum investment"
-              type="number"
-              className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
-          [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              onChange={(e) => setMaxInvestment(e.target.value)}
-            />
             <span className="text-gray-600 text-md">
               The maximum amount a user can invest in this project.
             </span>
+            <label className="m-4 input input-bordered flex items-center gap-2 mb-10">
+              Max investment
+              <input
+                placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                type="number"
+                //     className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
+                // [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="grow"
+                onChange={(e) => setMaxInvestment(e.target.value)}
+              />
+              <div className="label">
+                <span className="label-text-alt text-gray-500">(vTokens)</span>
+              </div>
+            </label>
 
-            <input
-              placeholder="Reward rate (%)"
-              type="number"
-              className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
-          [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              onChange={(e) => setReward(e.target.value)}
-            />
             <span className="text-gray-600 text-md">
               The reward rate base on the amount of token purchase.
             </span>
+            <label className="m-4 input input-bordered flex items-center gap-2 mb-10">
+              Staker reward (%)
+              <input
+                placeholder="xxxxxxx"
+                type="number"
+                //   className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
+                // [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="grow"
+                onChange={(e) => setReward(e.target.value)}
+              />
+              <div className="label">
+                <span className="label-text-alt text-gray-500">e.g, 1 for 1%</span>
+              </div>
+            </label>
 
+
+            <span className="text-gray-600 text-md">
+              Select the start and end dates for the project or token sale.
+            </span>
             <div className="flex items-center border border-black rounded-2xl w-[1050px] h-12 text-lg px-3">
               <FaCalendarAlt className="text-gray-500 mr-2" />
               {/* <DatePicker
@@ -186,7 +232,7 @@ const Promotion = () => {
                   timeCaption="Time"
                   minTime={
                     startDate &&
-                    startDate.toDateString() === new Date().toDateString()
+                      startDate.toDateString() === new Date().toDateString()
                       ? new Date() // Nếu chọn hôm nay, giới hạn thời gian nhỏ nhất là thời gian hiện tại
                       : new Date(new Date().setHours(0, 0, 0, 0)) // Nếu chọn ngày trong tương lai, thời gian nhỏ nhất là 00:00
                   }
@@ -216,8 +262,8 @@ const Promotion = () => {
                   timeCaption="Time"
                   minTime={
                     startDate &&
-                    endDate &&
-                    startDate.toDateString() === endDate.toDateString()
+                      endDate &&
+                      startDate.toDateString() === endDate.toDateString()
                       ? startDate // Nếu cùng ngày, endDate phải lớn hơn thời gian của startDate
                       : new Date(new Date().setHours(0, 0, 0, 0)) // Nếu không cùng ngày, thời gian bắt đầu từ 00:00
                   }
@@ -225,9 +271,6 @@ const Promotion = () => {
                 />
               </div>
             </div>
-            <span className="text-gray-600 text-md">
-              Select the start and end dates for the project or token sale.
-            </span>
           </div>
         </div>
         <div className="flex justify-center">
@@ -240,7 +283,7 @@ const Promotion = () => {
           </Button>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -24,11 +24,11 @@ export async function POST(req: Request) {
         // if valid, update the user's email verification status in the database
         const updatedUser = await prismaClient.user.update({
             where: {
-                email: email,
                 address: address,
             },
             data: {
                 emailVerified: true, // Assuming you have an emailVerified field
+                email: email,
             }
         });
         if (!updatedUser) {
