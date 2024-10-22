@@ -55,7 +55,7 @@ const Promotion = () => {
               The rate at which tokens are exchanged for currency
             </span>
             <label className="m-2 input input-bordered flex items-center gap-2 mb-10">
-              Exchange rate
+              <p>Exchange rate&nbsp;</p>
               <div className="label">
               </div>
               <input
@@ -63,11 +63,11 @@ const Promotion = () => {
                 //     className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
                 // [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 className="grow"
-                placeholder="Set token exchange rate"
+                placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                 onChange={(e) => setTokenExchangeRate(e.target.value)}
               />
               <div className="label">
-                <span className="label-text-alt text-gray-500">(1 project token = X vtokens)</span>
+                <span className="label-text-alt text-gray-500">1 project token = X vtokens</span>
               </div>
             </label>
 
@@ -87,7 +87,7 @@ const Promotion = () => {
               The minimum fundraising goal for the project to be considered successful.
             </span>
             <label className="m-2 input input-bordered flex items-center gap-2 mb-10">
-              Soft cap
+              <p>Soft cap&emsp;&emsp;&emsp;&emsp;</p>
               <input
                 placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                 type="number"
@@ -97,15 +97,15 @@ const Promotion = () => {
                 onChange={(e) => setSoftcap(e.target.value)}
               />
               <div className="label">
-                <span className="label-text-alt text-gray-500">(vTokens)</span>
+                <span className="label-text-alt text-gray-500">vTokens</span>
               </div>
             </label>
 
-            <span className="label-text ext-gray-600 text-md">
+            <span className="label-text text-gray-600 text-md">
               The maximum fundraising goal for the project.
             </span>
             <label className="m-2 input input-bordered flex items-center gap-2 mb-10">
-              Hard cap
+              <p>Hard cap&emsp;&emsp;&emsp;&emsp;</p>
               <input
                 placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                 type="number"
@@ -115,7 +115,7 @@ const Promotion = () => {
                 onChange={(e) => setHardcap(e.target.value)}
               />
               <div className="label">
-                <span className="label-text-alt text-gray-500">(vTokens)</span>
+                <span className="label-text-alt text-gray-500">vTokens</span>
               </div>
             </label>
 
@@ -123,7 +123,7 @@ const Promotion = () => {
               The minimum amount a user can invest in this project.
             </span>
             <label className="m-2 input input-bordered flex items-center gap-2 mb-10">
-              Min investment
+              <p>Min invest&emsp;&emsp;&emsp;&ensp;</p>
               <input
                 placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                 type="number"
@@ -133,7 +133,7 @@ const Promotion = () => {
                 onChange={(e) => setMinInvestment(e.target.value)}
               />
               <div className="label">
-                <span className="label-text-alt text-gray-500">(vTokens)</span>
+                <span className="label-text-alt text-gray-500">vTokens</span>
               </div>
             </label>
 
@@ -141,7 +141,7 @@ const Promotion = () => {
               The maximum amount a user can invest in this project.
             </span>
             <label className="m-2 input input-bordered flex items-center gap-2 mb-10">
-              Max investment
+              <p>Max invest&emsp;&emsp;&emsp;&ensp;</p>
               <input
                 placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                 type="number"
@@ -151,7 +151,7 @@ const Promotion = () => {
                 onChange={(e) => setMaxInvestment(e.target.value)}
               />
               <div className="label">
-                <span className="label-text-alt text-gray-500">(vTokens)</span>
+                <span className="label-text-alt text-gray-500">vTokens</span>
               </div>
             </label>
 
@@ -159,7 +159,7 @@ const Promotion = () => {
               The reward rate base on the amount of token purchase.
             </span>
             <label className="m-2 input input-bordered flex items-center gap-2 mb-10">
-              Staker reward (%)
+              <p>Stake reward(%)&emsp;&nbsp;</p>
               <input
                 placeholder="xxxxxxx"
                 type="number"
