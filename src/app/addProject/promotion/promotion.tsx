@@ -50,11 +50,11 @@ const Promotion = () => {
         </div>
         <div className="border border-black bg-white rounded-2xl h-[900px] mb-12 overflow-hidden">
           {" "}
-          <div className="my-6 ml-8 w-full flex flex-col p-4">
+          <div className="my-6 w-full flex flex-col p-8">
             <span className="label-text text-gray-600 text-md">
               The rate at which tokens are exchanged for currency
             </span>
-            <label className="m-4 input input-bordered flex items-center gap-2 mb-10">
+            <label className="m-2 input input-bordered flex items-center gap-2 mb-10">
               Exchange rate
               <div className="label">
               </div>
@@ -86,7 +86,7 @@ const Promotion = () => {
             <span className="label-text text-gray-600 text-md">
               The minimum fundraising goal for the project to be considered successful.
             </span>
-            <label className="m-4 input input-bordered flex items-center gap-2 mb-10">
+            <label className="m-2 input input-bordered flex items-center gap-2 mb-10">
               Soft cap
               <input
                 placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -104,7 +104,7 @@ const Promotion = () => {
             <span className="label-text ext-gray-600 text-md">
               The maximum fundraising goal for the project.
             </span>
-            <label className="m-4 input input-bordered flex items-center gap-2 mb-10">
+            <label className="m-2 input input-bordered flex items-center gap-2 mb-10">
               Hard cap
               <input
                 placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -122,7 +122,7 @@ const Promotion = () => {
             <span className="text-gray-600 text-md">
               The minimum amount a user can invest in this project.
             </span>
-            <label className="m-4 input input-bordered flex items-center gap-2 mb-10">
+            <label className="m-2 input input-bordered flex items-center gap-2 mb-10">
               Min investment
               <input
                 placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -140,7 +140,7 @@ const Promotion = () => {
             <span className="text-gray-600 text-md">
               The maximum amount a user can invest in this project.
             </span>
-            <label className="m-4 input input-bordered flex items-center gap-2 mb-10">
+            <label className="m-2 input input-bordered flex items-center gap-2 mb-10">
               Max investment
               <input
                 placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -158,7 +158,7 @@ const Promotion = () => {
             <span className="text-gray-600 text-md">
               The reward rate base on the amount of token purchase.
             </span>
-            <label className="m-4 input input-bordered flex items-center gap-2 mb-10">
+            <label className="m-2 input input-bordered flex items-center gap-2 mb-10">
               Staker reward (%)
               <input
                 placeholder="xxxxxxx"
