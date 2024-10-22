@@ -1,18 +1,19 @@
-interface DBProject {
+export enum Status {
+  Pending = "pending",
+  Ended = "ended",
+}
+
+export interface DBProject {
   id: number;
   projectName: string;
   projectOwnerAddress: string;
   description: string;
   shortDescription: string;
-  projectImageUrls: String[];
-  txnHashCreated: String;
-  projectTitle: String;
-  projectLogoImageUrl: String[];
+  projectImageUrls: string[];
+  txnHashCreated: string;
+  projectTitle: string;
+  projectLogoImageUrl: string[];
   endDate: Date;
   startDate: Date;
-}
-
-export enum Status {
-  Pending,
-  Ended,
+  status: Status;
 }

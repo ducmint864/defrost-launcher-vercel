@@ -4,16 +4,15 @@ import Image from "next/image";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
 import { useAddress } from "@thirdweb-dev/react";
-import getMyProjectInfo from "@/utils/getMyProjectInfo";
-import { Status } from "@/interfaces/interface";
+import { DBProject, Status } from "@/interfaces/interface";
 import { format } from "date-fns";
 
 function MyProjectPage() {
-  const [showMoreEnded, setShowMoreEnded] = useState(false);
-  const [showMorePending, setShowMorePending] = useState(false);
-  const [availableProjects, setAvailableProjects] = useState([]);
-  const [endedProjects, setEndedProjects] = useState<any[]>([]);
-  const [pendingProjects, setPendingProjects] = useState<any[]>([]);
+  const [showMoreEnded, setShowMoreEnded] = useState<boolean>(false);
+  const [showMorePending, setShowMorePending] = useState<boolean>(false);
+  const [availableProjects, setAvailableProjects] = useState<DBProject[]>([]);
+  const [endedProjects, setEndedProjects] = useState<DBProject[]>([]);
+  const [pendingProjects, setPendingProjects] = useState<DBProject[]>([]);
   const projectOwnerAddress = useAddress();
   console.log("projectOwnerAddress: " + projectOwnerAddress);
 
@@ -24,31 +23,25 @@ function MyProjectPage() {
           address: projectOwnerAddress,
         });
 
-        const projects = response.data.projectsInfo;
+        const projects: DBProject[] = response.data.projectsInfo;
 
-        const endedProjects = projects.filter(
-          (project) => project.status === "ended"
+        const ended = projects.filter(
+          (project: DBProject) => project.status === Status.Ended
         );
-        const pendingProjects = projects.filter(
-          (project) => project.status === "pending"
+        const pending = projects.filter(
+          (project: DBProject) => project.status === Status.Pending
         );
 
-        setEndedProjects(endedProjects);
-        setPendingProjects(pendingProjects);
+        setEndedProjects(ended);
+        setPendingProjects(pending);
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
     };
-    fetchProjects();
+    if (projectOwnerAddress) {
+      fetchProjects();
+    }
   }, [projectOwnerAddress]);
-
-  // const displayedEndedProjects = showMoreEnded
-  //   ? projects.filter((project) => project.status === 1)
-  //   : projects.filter((project) => project.status === 1).slice(0, 3);
-
-  // const displayedPendingProjects = showMorePending
-  //   ? projects.filter((project) => project.status === 0)
-  //   : projects.filter((project) => project.status === 0).slice(0, 3);
 
   const displayedEndedProjects = showMoreEnded
     ? endedProjects
@@ -56,6 +49,7 @@ function MyProjectPage() {
   const displayedPendingProjects = showMorePending
     ? pendingProjects
     : pendingProjects.slice(0, 3);
+
   return (
     <div className="relative flex flex-col justify-start items-start min-h-screen bg-primary px-14">
       <div className="mt-20 mb-6 text-2xl font-bold text-white">
@@ -77,8 +71,8 @@ function MyProjectPage() {
               />
             </div>
             <div className="w-48">
-              <h3 className="text-xl font-bold">{project.projectTitle}</h3>{" "}
-              <p className="text-sm">{project.shortDescription}</p>{" "}
+              <h3 className="text-xl font-bold">{project.projectTitle}</h3>
+              <p className="text-sm">{project.shortDescription}</p>
             </div>
 
             <div className="flex space-x-7 p-5">
