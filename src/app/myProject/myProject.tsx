@@ -6,6 +6,7 @@ import axios from "axios";
 import { useAddress } from "@thirdweb-dev/react";
 import { DBProject, Status } from "@/interfaces/interface";
 import { format } from "date-fns";
+import getMyProjectInfo from "@/utils/getMyProjectInfo";
 
 function MyProjectPage() {
   const [showMoreEnded, setShowMoreEnded] = useState<boolean>(false);
@@ -25,9 +26,22 @@ function MyProjectPage() {
 
         const projects: DBProject[] = response.data.projectsInfo;
 
+        
+        
+        //how can i get the raised amount and add to the project field
+        const projectWithRaisedAmount = projects.map((project: any) => {
+          const { raisedAmount, isLoading, error, isProjectSoftCapReached, loading, softCapError } = getMyProjectInfo(
+            project.id
+          );
+          return { ...project, raisedAmount, isLoading, error, isProjectSoftCapReached, loading, softCapError };
+        });
+
+
+
         const ended = projects.filter(
-          (project: DBProject) => project.status === Status.Ended
+          (project) => project.status === Status.Ended
         );
+
         const pending = projects.filter(
           (project: DBProject) => project.status === Status.Pending
         );

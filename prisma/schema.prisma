@@ -33,7 +33,7 @@ model TaskDone {
 
 model Project {
   id                  String   @id @default(uuid())
-  projectID           String?  @unique
+  projectID           Int?  @unique
   projectOwnerAddress String?
   description         String
   shortDescription    String

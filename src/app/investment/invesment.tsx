@@ -1,11 +1,61 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@nextui-org/react";
+import axios from "axios";
+import { useAddress } from "@thirdweb-dev/react";
+import getMyProjectInfo from "@/utils/getMyProjectInfo";
+import { DBProject } from "@/interfaces/interface";
+
 
 function InvesmentPage() {
   const [showMoreEnded, setShowMoreEnded] = useState(false);
   const [showMorePending, setShowMorePending] = useState(false);
+  const [endedProjects, setEndedProjects] = useState<DBProject[]>([]);
+  const [pendingProjects, setPendingProjects] = useState<DBProject[]>([]);
+  const userAddress = useAddress();
+
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.post("/api/myInvestment", {
+          userAddress: userAddress,
+        });
+
+        console.log(response.data);
+
+        const projects: DBProject[] = response.data.projectsDetails;
+
+        console.log(projects);
+        console.log(projects[0]);
+
+        const projectWithRaisedAmount = projects.map((project: any) => {
+          const { raisedAmount, isLoading, error, isProjectSoftCapReached, loading, softCapError } = getMyProjectInfo(
+            project.id
+          );
+          return { ...project, raisedAmount, isLoading, error, isProjectSoftCapReached, loading, softCapError };
+        });
+
+        const ended = projectWithRaisedAmount.filter(
+          (project) => project.status
+        );
+
+        const pending = projectWithRaisedAmount.filter(
+          (project) => project.status
+        );
+
+        setEndedProjects(ended);
+        setPendingProjects(pending); 
+
+
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    }
+    fetchProjects();
+  }, [userAddress]);
+
 
   const projects = [
     {

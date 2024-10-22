@@ -4,7 +4,6 @@ import { getProjectPoolContract } from "./contracts"
 
 
 const getMyProjectInfo = (
-    projectOwnerAddress: string,
     projectId: number | string
     ) => {
         const poolContract = getProjectPoolContract(projectId);
@@ -13,7 +12,12 @@ const getMyProjectInfo = (
             "getProjectRaisedAmount"
         ) 
 
-        return { raisedAmount, isLoading, error }
+        const { data: isProjectSoftCapReached, isLoading: loading, error: softCapError  } = useContractRead(
+            poolContract,
+            "getProjectSoftCapReached"
+        )
+
+        return { raisedAmount, isLoading, error, isProjectSoftCapReached, loading, softCapError };
 }
 
 export default getMyProjectInfo;
