@@ -5,6 +5,7 @@ export enum Status {
 
 export interface DBProject {
   id: number;
+  projectID: string;
   projectName: string;
   projectOwnerAddress: string;
   description: string;
@@ -16,4 +17,5 @@ export interface DBProject {
   endDate: Date;
   startDate: Date;
   status: Status;
+  raisedAmount: string;
 }

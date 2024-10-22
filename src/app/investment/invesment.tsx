@@ -6,7 +6,7 @@ import axios from "axios";
 import { useAddress } from "@thirdweb-dev/react";
 import getMyProjectInfo from "@/utils/getMyProjectInfo";
 import { DBProject } from "@/interfaces/interface";
-
+import { format } from "date-fns";
 
 function InvesmentPage() {
   const [showMoreEnded, setShowMoreEnded] = useState(false);
@@ -14,7 +14,6 @@ function InvesmentPage() {
   const [endedProjects, setEndedProjects] = useState<DBProject[]>([]);
   const [pendingProjects, setPendingProjects] = useState<DBProject[]>([]);
   const userAddress = useAddress();
-
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -31,10 +30,23 @@ function InvesmentPage() {
         console.log(projects[0]);
 
         const projectWithRaisedAmount = projects.map((project: any) => {
-          const { raisedAmount, isLoading, error, isProjectSoftCapReached, loading, softCapError } = getMyProjectInfo(
-            project.id
-          );
-          return { ...project, raisedAmount, isLoading, error, isProjectSoftCapReached, loading, softCapError };
+          const {
+            raisedAmount,
+            isLoading,
+            error,
+            isProjectSoftCapReached,
+            loading,
+            softCapError,
+          } = getMyProjectInfo(project.id);
+          return {
+            ...project,
+            raisedAmount,
+            isLoading,
+            error,
+            isProjectSoftCapReached,
+            loading,
+            softCapError,
+          };
         });
 
         const ended = projectWithRaisedAmount.filter(
@@ -46,111 +58,20 @@ function InvesmentPage() {
         );
 
         setEndedProjects(ended);
-        setPendingProjects(pending); 
-
-
+        setPendingProjects(pending);
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
-    }
+    };
     fetchProjects();
   }, [userAddress]);
 
-
-  const projects = [
-    {
-      id: 1,
-      name: "Caskaido",
-      description: "Revolutionizing Online Gaming with Blockchain.",
-      remainingTime: "01/01/2025",
-      tokensRemaining: "9,789,230",
-      totalTokensMinted: "330,770",
-      mintPrice: "$1",
-      status: 1,
-      imageUrl:
-        "https://i.pinimg.com/originals/80/11/a5/8011a542756bc3ea49dc36a36f6543eb.png",
-    },
-    {
-      id: 2,
-      name: "NeoTech",
-      description: "Innovating the Future of AI.",
-      remainingTime: "01/01/2025",
-      tokensRemaining: "2,340,120",
-      totalTokensMinted: "200,000",
-      mintPrice: "$0.5",
-      status: 0,
-      imageUrl:
-        "https://i.pinimg.com/originals/d9/e3/c4/d9e3c47736b67051378f4a242072c1c6.png",
-    },
-    {
-      id: 3,
-      name: "SolarPeak",
-      description: "Clean and Sustainable Energy Solutions.",
-      remainingTime: "01/01/2025",
-      tokensRemaining: "5,600,450",
-      totalTokensMinted: "480,000",
-      mintPrice: "$2",
-      status: 1,
-      imageUrl:
-        "https://i.pinimg.com/originals/80/11/a5/8011a542756bc3ea49dc36a36f6543eb.png",
-    },
-    {
-      id: 4,
-      name: "HealthNet",
-      description: "Blockchain for Healthcare.",
-      remainingTime: "01/01/2025",
-      tokensRemaining: "7,500,000",
-      totalTokensMinted: "700,000",
-      mintPrice: "$3",
-      status: 0,
-      imageUrl:
-        "https://i.pinimg.com/originals/d9/e3/c4/d9e3c47736b67051378f4a242072c1c6.png",
-    },
-    {
-      id: 5,
-      name: "AeroSpaceX",
-      description: "Next Generation Space Exploration.",
-      remainingTime: "01/01/2025",
-      tokensRemaining: "10,000,000",
-      totalTokensMinted: "900,000",
-      mintPrice: "$5",
-      status: 1,
-      imageUrl:
-        "https://i.pinimg.com/originals/80/11/a5/8011a542756bc3ea49dc36a36f6543eb.png",
-    },
-    {
-      id: 6,
-      name: "AgriChain",
-      description: "Transforming Agriculture with Blockchain.",
-      remainingTime: "01/01/2025",
-      tokensRemaining: "3,200,000",
-      totalTokensMinted: "270,000",
-      mintPrice: "$1.5",
-      status: 0,
-      imageUrl:
-        "https://i.pinimg.com/originals/d9/e3/c4/d9e3c47736b67051378f4a242072c1c6.png",
-    },
-    {
-      id: 7,
-      name: "GreenTech",
-      description: "Innovative Green Technologies.",
-      remainingTime: "01/01/2025",
-      tokensRemaining: "4,500,000",
-      totalTokensMinted: "370,000",
-      mintPrice: "$2.5",
-      status: 1,
-      imageUrl:
-        "https://i.pinimg.com/originals/80/11/a5/8011a542756bc3ea49dc36a36f6543eb.png",
-    },
-  ];
-
   const displayedEndedProjects = showMoreEnded
-    ? projects.filter((project) => project.status === 1)
-    : projects.filter((project) => project.status === 1).slice(0, 3);
-
+    ? endedProjects
+    : endedProjects.slice(0, 3);
   const displayedPendingProjects = showMorePending
-    ? projects.filter((project) => project.status === 0)
-    : projects.filter((project) => project.status === 0).slice(0, 3);
+    ? pendingProjects
+    : pendingProjects.slice(0, 3);
 
   return (
     <div className="relative flex flex-col justify-start items-start min-h-screen bg-primary px-14">
@@ -165,34 +86,34 @@ function InvesmentPage() {
           <div className="flex items-center flex-grow space-x-4 p-3">
             <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
               <Image
-                src={project.imageUrl}
-                alt={project.name}
+                src={project.projectLogoImageUrl[0]}
+                alt={project.projectTitle}
                 width={52}
                 height={52}
                 className="object-cover object-center w-full h-full"
               />
             </div>
             <div className="w-48">
-              <h3 className="text-xl font-bold">{project.name}</h3>
-              <p className="text-sm">{project.description}</p>
+              <h3 className="text-xl font-bold">{project.projectTitle}</h3>
+              <p className="text-sm">{project.shortDescription}</p>
             </div>
 
             <div className="flex space-x-7 p-5">
               <div className="text-center">
-                <p className="font-semibold">Remaining</p>
-                <p>{project.remainingTime}</p>
+                <p className="font-semibold">End Date</p>
+                <p>
+                  {format(new Date(project.endDate), "dd/MM/yyyy HH:mm:ss")}
+                </p>
               </div>
               <div className="text-center">
-                <p className="font-semibold">Tokens Remaining</p>
-                <p>{project.tokensRemaining}</p>
+                <p className="font-semibold">Start Date</p>
+                <p>
+                  {format(new Date(project.startDate), "dd/MM/yyyy HH:mm:ss")}
+                </p>
               </div>
               <div className="text-center">
-                <p className="font-semibold">Total Tokens Minted</p>
-                <p>{project.totalTokensMinted}</p>
-              </div>
-              <div className="text-center">
-                <p className="font-semibold">Mint Price</p>
-                <p>{project.mintPrice}</p>
+                <p className="font-semibold">Amount</p>
+                <p>10000</p>
               </div>
             </div>
           </div>
@@ -233,34 +154,34 @@ function InvesmentPage() {
           <div className="flex items-center flex-grow space-x-4 p-3">
             <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
               <Image
-                src={project.imageUrl}
-                alt={project.name}
+                src={project.projectLogoImageUrl[0]}
+                alt={project.projectTitle}
                 width={52}
                 height={52}
                 className="object-cover object-center w-full h-full"
               />
             </div>
             <div className="w-48">
-              <h3 className="text-xl font-bold">{project.name}</h3>
-              <p className="text-sm">{project.description}</p>
+              <h3 className="text-xl font-bold">{project.projectTitle}</h3>
+              <p className="text-sm">{project.shortDescription}</p>
             </div>
 
             <div className="flex space-x-7 p-5">
               <div className="text-center">
-                <p className="font-semibold">Remaining</p>
-                <p>{project.remainingTime}</p>
+                <p className="font-semibold">End Date</p>
+                <p>
+                  {format(new Date(project.endDate), "dd/MM/yyyy HH:mm:ss")}
+                </p>
               </div>
               <div className="text-center">
-                <p className="font-semibold">Tokens Remaining</p>
-                <p>{project.tokensRemaining}</p>
+                <p className="font-semibold">Start Date</p>
+                <p>
+                  {format(new Date(project.startDate), "dd/MM/yyyy HH:mm:ss")}
+                </p>
               </div>
               <div className="text-center">
-                <p className="font-semibold">Total Tokens Minted</p>
-                <p>{project.totalTokensMinted}</p>
-              </div>
-              <div className="text-center">
-                <p className="font-semibold">Mint Price</p>
-                <p>{project.mintPrice}</p>
+                <p className="font-semibold">Amount</p>
+                <p>10000</p>
               </div>
             </div>
           </div>

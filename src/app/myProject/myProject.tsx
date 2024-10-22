@@ -3,10 +3,20 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
-import { useAddress } from "@thirdweb-dev/react";
+import {
+  useAddress,
+  useChain,
+  useContract,
+  useContractRead,
+} from "@thirdweb-dev/react";
 import { DBProject, Status } from "@/interfaces/interface";
 import { format } from "date-fns";
 import getMyProjectInfo from "@/utils/getMyProjectInfo";
+import { getProjectPoolContract } from "@/utils/contracts";
+import { ethers } from "ethers";
+import { chainConfig } from "@/config";
+import { ProjectPoolABI, ProjectPoolFactoryABI } from "@/abi";
+import { Provider } from "react-redux";
 
 function MyProjectPage() {
   const [showMoreEnded, setShowMoreEnded] = useState<boolean>(false);
@@ -14,8 +24,33 @@ function MyProjectPage() {
   const [availableProjects, setAvailableProjects] = useState<DBProject[]>([]);
   const [endedProjects, setEndedProjects] = useState<DBProject[]>([]);
   const [pendingProjects, setPendingProjects] = useState<DBProject[]>([]);
+  const [factoryAddress, setFactoryAddress] = useState<string | undefined>(
+    undefined
+  );
+  const [factoryContract, setFactoryContract] = useState<ethers.Contract>();
   const projectOwnerAddress = useAddress();
   console.log("projectOwnerAddress: " + projectOwnerAddress);
+  const chain = useChain();
+  const userAddress = useAddress();
+
+  useEffect(() => {
+    if (!chain) {
+      return;
+    }
+
+    const address: string =
+      chainConfig[chain.chainId.toString() as keyof typeof chainConfig]
+        ?.contracts?.ProjectPoolFactory?.address;
+
+    setFactoryAddress(address);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const factoryContract = new ethers.Contract(
+      address,
+      ProjectPoolFactoryABI,
+      provider
+    );
+    setFactoryContract(factoryContract);
+  }, [chain]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -23,26 +58,39 @@ function MyProjectPage() {
         const response = await axios.post("/api/myProject", {
           address: projectOwnerAddress,
         });
-
         const projects: DBProject[] = response.data.projectsInfo;
+        console.log(projects);
+        const projectsWithDetails = [];
 
-        
-        
-        //how can i get the raised amount and add to the project field
-        const projectWithRaisedAmount = projects.map((project: any) => {
-          const { raisedAmount, isLoading, error, isProjectSoftCapReached, loading, softCapError } = getMyProjectInfo(
-            project.id
+        // Dùng for...of để xử lý tuần tự
+        console.log("len:" + projects.length);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        for (let i = 0; i < projects.length; i++) {
+          let project = projects[i];
+          const poolAddress = await factoryContract!.getProjectPoolAddress(
+            project.projectID
           );
-          return { ...project, raisedAmount, isLoading, error, isProjectSoftCapReached, loading, softCapError };
-        });
+          const signer = provider.getSigner();
+          const contract = new ethers.Contract(
+            poolAddress,
+            ProjectPoolABI,
+            provider
+          );
+          const raisedAmount = await contract.getProjectRaisedAmount();
+          const isProjectSoftCapReached =
+            await contract.getProjectSoftCapReached();
+          projectsWithDetails.push(
+            Object.assign(project, {
+              raisedAmount,
+              isProjectSoftCapReached,
+            })
+          );
+        }
 
-
-
-        const ended = projects.filter(
-          (project) => project.status === Status.Ended
+        const ended = projectsWithDetails.filter(
+          (project: DBProject) => project.status === Status.Ended
         );
-
-        const pending = projects.filter(
+        const pending = projectsWithDetails.filter(
           (project: DBProject) => project.status === Status.Pending
         );
 
@@ -55,7 +103,7 @@ function MyProjectPage() {
     if (projectOwnerAddress) {
       fetchProjects();
     }
-  }, [projectOwnerAddress]);
+  }, [projectOwnerAddress, factoryContract]);
 
   const displayedEndedProjects = showMoreEnded
     ? endedProjects
@@ -101,6 +149,10 @@ function MyProjectPage() {
                 <p>
                   {format(new Date(project.startDate), "dd/MM/yyyy HH:mm:ss")}
                 </p>
+              </div>
+              <div className="text-center">
+                <p className="font-semibold">Amount</p>
+                <p>{project.raisedAmount}</p>
               </div>
             </div>
           </div>
@@ -165,6 +217,10 @@ function MyProjectPage() {
                 <p>
                   {format(new Date(project.startDate), "dd/MM/yyyy HH:mm:ss")}
                 </p>
+              </div>
+              <div className="text-center">
+                <p className="font-semibold">Amount</p>
+                <p>{project.raisedAmount}</p>
               </div>
             </div>
           </div>
