@@ -54,6 +54,16 @@ model OTP {
   expiresAt DateTime
 }
 
+// SMART CONTRACT EVENTS
+model InvestEvent {
+  id          String @id @default(uuid())
+  userAddress String
+  projectId   Int
+  amount      String // repr. string as bigint
+
+  @@index([userAddress]) // set index for faster query
+}
+
 enum TaskType {
   follow
   like
