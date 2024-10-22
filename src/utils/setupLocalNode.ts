@@ -67,6 +67,11 @@ export async function deployContract(
     const nameInConfig = !!nameAlias ? nameAlias : contractName;
     if (Object.keys(chainConfigJSON[31337]?.contracts)?.findIndex((v) => v === nameInConfig) != -1) {
         chainConfigJSON[31337]["contracts"][nameInConfig]["address"] = contract.address;
+
+        if (nameInConfig === "MockVToken") {
+            let vAsset: any = (chainConfigJSON[31337]["vAssets"] as object[]).find((obj: any) => obj["symbol"] === "vASTR")
+            vAsset["address"] = contract.address;
+        }
     }
     writeFileSync("src/config/chainConfig.json", JSON.stringify(chainConfigJSON, null, 2));
     console.log('\x1b[32m%s\x1b[0m', `Saved ${nameInConfig} contract address to src/config/chainConfig.json`);
@@ -79,10 +84,9 @@ export async function getCurrentBlockTimestamp(provider: ethers.providers.Provid
 }
 
 async function run(): Promise<void> {
-    startAnvil();
+    // startAnvil();
 
-    const provider = getProvider("http://127.0.0.1:8545");
-    // const provider = getProvider("http://localhost:8545");
+    const provider = getProvider("http://localhost:8545");
 
     const foundryTestPrivKey = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
     const signer = getSigner(foundryTestPrivKey, provider)
@@ -129,7 +133,9 @@ async function run(): Promise<void> {
         BigInt(50), // 0.5%,
         mockVTokenAddr,
     );
-    await tx.wait();
+
+    const waitTx = await tx.wait();
+    // console.log(waitTx);
     const poolAddr = await factoryContract.getProjectPoolAddress(1);
 
     console.log('\x1b[36m%s\x1b[0m', `ProjectPoolFactory contract deployed to ${factoryAddr}`);
