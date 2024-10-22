@@ -14,7 +14,43 @@
       "ProjectPool": {
         "address": []
       }
-    }
+    },
+    "vAssets": [
+      {
+        "name": "voucher Astar",
+        "symbol": "vASTR",
+        "address": "0xfffFffff00000000000000010000000000000010"
+      }
+    ]
+  },
+  "592": {
+    "chainId": 592,
+    "parachainId": "2006",
+    "chainName": "astar",
+    "testnet": false,
+    "contracts": {
+      "SLPX": {
+        "address": "0xc6bf0C5C78686f1D0E2E54b97D6de6e2cEFAe9fD"
+      },
+      "ProjectPoolFactory": {
+        "address": ""
+      },
+      "ProjectPool": {
+        "address": []
+      }
+    },
+    "vAssets": [
+      {
+        "name": "voucher Astar",
+        "symbol": "vASTR",
+        "address": "0xfffFffff00000000000000010000000000000010"
+      },
+      {
+        "name": "voucher Dot",
+        "symbol": "vDOT",
+        "address": "0x0000"
+      }
+    ]
   },
   "31337": {
     "chainId": 31337,
@@ -34,6 +70,14 @@
       "ProjectPoolFactory": {
         "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
       }
-    }
+    },
+    "vAssets": [
+      {
+        "name": "voucher Astar",
+        "symbol": "vASTR",
+        "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+        "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvWgkOiR1hhHPj-S4ECiQOSEVwsPVFYBcWEOBYslnHs9DWI3Ne2y_zh7NnD9HVn49zn60&usqp=CAU"
+      }
+    ]
   }
 }
