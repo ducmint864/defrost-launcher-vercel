@@ -1,17 +1,20 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { CiImageOn } from "react-icons/ci";
 import { Button } from "@nextui-org/react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateGeneralDetailPageData } from "@/lib/store/formSlice";
 import { useRouter } from "next/navigation";
+import { useChain } from "@thirdweb-dev/react";
+import { chainConfig } from "@/config";
 
 const GeneralDetail = () => {
   const [projectTitle, setProjectTitle] = useState<string>("");
   const [shortDescription, setShortDescription] = useState<string>("");
   const [longDescription, setLongDescription] = useState<string>("");
-  const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
+  const [selectedCoin, setSelectedCoin] = useState<string | null>(null); // address of the vAsset that is selected
+  const [selectedCoinIdx, setSelectedCoinIdx] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const fileInputRefLogo = useRef<HTMLInputElement | null>(null);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
@@ -22,9 +25,32 @@ const GeneralDetail = () => {
     console.log(state);
     return state.form.generalDetailData;
   });
+  const [vAssets, setVAssets] = useState<Record<string, any>[]>([]);
+  const chain = useChain();
 
-  const handleSelectCoin = (coin: string) => {
-    setSelectedCoin(coin);
+  // updat vAssets when user switch chain
+  useEffect(() => {
+    if (!chain) {
+      return;
+    }
+
+    const chainId: number = chain.chainId;
+    const vAssets = chainConfig[chainId.toString() as keyof typeof chainConfig].vAssets;
+    setSelectedCoin(vAssets[0].address)
+    console.debug(`selected vToken is ${vAssets[0].address}`)
+    setVAssets(vAssets);
+  }, [chain])
+
+  const handleSelectCoin = (coinAddr: string, idx: number) => {
+    if (!coinAddr) {
+      console.error("Address of selected vAsset is empty");
+      alert("Address of selected vAsset is empty");
+      return;
+    }
+    console.log(`selected coin is ${vAssets.at(selectedCoinIdx)?.name}`)
+
+    setSelectedCoinIdx(idx);
+    setSelectedCoin(coinAddr);
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,61 +101,32 @@ const GeneralDetail = () => {
     <div className="flex justify-center min-h-screen bg-primary">
       <div className="w-3/5 mx-auto">
         <div className="mt-12 mb-6 text-2xl font-bold text-white">
-          Choose Token
+          Choose accepted asset
         </div>
-        <div className="border border-black rounded-2xl h-auto mb-12 bg-white p-4">
-          <div className="ml-10 w-full">
-            <div className="mb-6 text-xl text-black">Coin accepted</div>
-          </div>
-
-          <div className="flex items-center ml-10 space-x-7">
-            <div
-              onClick={() => handleSelectCoin("BNB")}
-              className={`flex items-center cursor-pointer transition ease-in-out duration-300 ${
-                selectedCoin === "BNB" ? "brightness-100" : "brightness-50"
-              } hover:brightness-75`}
-            >
-              <Image
-                src="https://cryptologos.cc/logos/bnb-bnb-logo.png"
-                alt="BNB Logo"
-                width={24}
-                height={24}
-                className="mr-2 rounded-full"
-              />
-              <span className="text-black text-lg">BNB</span>
-            </div>
-
-            <div
-              onClick={() => handleSelectCoin("ETH")}
-              className={`flex items-center cursor-pointer transition ease-in-out duration-300 ${
-                selectedCoin === "ETH" ? "brightness-100" : "brightness-50"
-              } hover:brightness-75`}
-            >
-              <Image
-                src="https://w7.pngwing.com/pngs/268/1013/png-transparent-ethereum-eth-hd-logo-thumbnail.png"
-                alt="ETH Logo"
-                width={24}
-                height={24}
-                className="mr-2 rounded-full"
-              />
-              <span className="text-black text-lg">ETH</span>
-            </div>
-
-            <div
-              onClick={() => handleSelectCoin("USDT")}
-              className={`flex items-center cursor-pointer transition ease-in-out duration-300 ${
-                selectedCoin === "USDT" ? "brightness-100" : "brightness-50"
-              } hover:brightness-75`}
-            >
-              <Image
-                src="https://cryptologos.cc/logos/tether-usdt-logo.png"
-                alt="USDT Logo"
-                width={24}
-                height={24}
-                className="mr-2 rounded-full"
-              />
-              <span className="text-black text-lg">USDT</span>
-            </div>
+        <div className="border border-black rounded-2xl h-auto mb-12 bg-white p-2">
+          <div className="flex items-center ml-3 mr-3 space-x-7 mb-4 mt-4">
+            {vAssets.map((vAsset, idx) => (
+              // <div
+              //   onClick={() => handleSelectCoin(vAsset.address, idx)}
+              //   className={`flex items-center cursor-pointer transition ease-in-out duration-300 ${selectedCoin === "BNB" ? "brightness-100" : "brightness-50"
+              //     } hover:brightness-75`}
+              // >
+              <button
+                className={`btn text-accent rounded-full ${selectedCoinIdx === idx ? "bg-gradient-to-r from-cyan-500 to-accent" : "bg-gray"}`}
+                onClick={() => handleSelectCoin(vAsset.address, idx)}
+              >
+                <Image
+                  // src={`${vAsset.icon}`}
+                  src="https://w7.pngwing.com/pngs/268/1013/png-transparent-ethereum-eth-hd-logo-thumbnail.png"
+                  alt={`${vAsset.name} logo`}
+                  width={24}
+                  height={24}
+                  className="mr-2 rounded-full"
+                />
+                <span className="text-black text-lg font-normal">{vAsset.symbol}</span>
+                {/* </div> */}
+              </button>
+            ))}
           </div>
         </div>
 

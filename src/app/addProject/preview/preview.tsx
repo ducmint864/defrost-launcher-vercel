@@ -7,11 +7,18 @@ import { Button } from "@nextui-org/react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import createProjectPool from "@/utils/addProject";
-import { useAddress } from "@thirdweb-dev/react";
+// import createProjectPool from "@/utils/addProject";
+import {
+  useContract,
+  useContractRead,
+  useContractWrite,
+  useChain,
+  useAddress,
+  useContractEvents,
+} from "@thirdweb-dev/react";
+import { chainConfig } from "@/config";
+import { ProjectPoolFactoryABI } from "@/abi";
 
-import useCreateProjectPool from "@/utils/addProject";
-// import GeneralDetail from "../generalDetail/generalDetail";
 const tokenSaleData = [
   {
     id: 1,
@@ -58,6 +65,11 @@ const tokenSaleData = [
 const PreviewPage = () => {
   const [currentImage, setCurrentImage] = useState(0);
   const [activeTab, setActiveTab] = useState<Key>("description");
+  const [alertText, setAlertText] = useState<string>("");
+  const [factoryAddress, setFactoryAddress] = useState<string | undefined>(undefined);
+  const [txHashWatching, setTxHashWatching] = useState<string | null>(null);
+
+
   const formDataVerifyToken = useSelector((state: any) => {
     console.log(state);
     return state.form.verifyTokenData;
@@ -69,24 +81,11 @@ const PreviewPage = () => {
     (state: any) => state.form.promotionData
   );
   const route = useRouter();
-  const { handleWrite, isLoading, createProjectError, eventData } =
-    useCreateProjectPool(
-      formDataVerifyToken, //verifyToken
-      formDataPromotion.tokenExchangeRate, //tokenExchangeRate
-      new Date(formDataPromotion.startDate), //startDate
-      new Date(formDataPromotion.endDate), //endDate
-      formDataPromotion.minInvestment, //minInvestment
-      formDataPromotion.maxInvestment, //maxInvestment
-      formDataPromotion.softcap, //softcap
-      formDataPromotion.hardcap, //hardcap
-      formDataPromotion.reward, //reward
-      // formDataGeneralDetail.selectedVToken //selectedVToken
-      "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
-    );
   const combinedData = {
     verifyTokenData: formDataVerifyToken,
     generalDetailData: formDataGeneralDetail,
     promotionData: formDataPromotion,
+    eventData: {},
   };
 
   const images = combinedData.generalDetailData.selectedImages;
@@ -111,9 +110,19 @@ const PreviewPage = () => {
    * @notice contract section
    */
   const chain = useChain();
-  const factoryAddress = chain?.chainId
-    ? chainConfig[chain.chainId.toString() as keyof typeof chainConfig]?.contracts?.ProjectPoolFactory?.address
-    : undefined;
+  const userAddress = useAddress();
+
+  useEffect(() => {
+    if (!chain) {
+      return;
+    }
+
+    const address: string = chainConfig[chain.chainId.toString() as keyof typeof chainConfig]
+      ?.contracts
+      ?.ProjectPoolFactory?.address
+
+    setFactoryAddress(address);
+  }, [chain])
 
   const { contract: factoryContract, error: factoryConnErr } = useContract(
     factoryAddress, // Contract address
@@ -121,10 +130,23 @@ const PreviewPage = () => {
   );
 
   const { contract: VTContract, error: VTConnErr } = useContract(
-    // formDataGeneralDetail.selectedVToken, //selectedVToken
-    "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    formDataGeneralDetail.selectedCoin, //selectedVToken
     "token",
-  )
+  );
+
+  // const { contract: PTContract, error: PTConnErr } = useContract(
+  //   formDataVerifyToken,
+  //   "token",
+  // )
+
+  // const {
+  //   mutateAsync: callApprove,
+  //   isLoading: isCallingApprove,
+  //   error: approveError,
+  // } = useContractWrite(
+  //   PTContract,
+  //   "approve",
+  // )
 
   const {
     mutateAsync: callCreateProject,
@@ -138,49 +160,114 @@ const PreviewPage = () => {
   const { data: VTDecimals, error: VTDecimalsReadErr } = useContractRead(
     VTContract,
     "decimals",
-
   );
+
+  // const { data: PTDecimals, error: PTDecimalsReadErr } = useContractRead(
+  //   PTContract,
+  //   "decimals",
+  // )
+
   const [hasMounted, setHasMounted] = useState(false);
 
-  const {
-    data: eventData,
-    isLoading: isWaitingForEvent,
+  let {
+    data: poolCreatedEvt,
+    isLoading: isWaitingForPoolCreated,
     error: eventListenerError,
-  } = useContractEvents(factoryContract, "ProjectPoolCreated");
+  } = useContractEvents(
+    factoryContract,
+    "ProjectPoolCreated",
+    {
+      queryFilter: {
+        filters: {
+          projectOwner: userAddress
+        },
+        order: "desc",
+      },
+      subscribe: true,
+    }
+  );
 
+  /**
+   * @notice handle when ProjectPoolCreated event occurred
+   */
   useEffect(() => {
-    if (!hasMounted) return; // Skip the first render
+    if (!txHashWatching) {
+      console.trace(`Not looking forward to any event from any contract at this moment`);
+      return;
+    }
 
     const justDoIt = async () => {
       if (
-        isWaitingForEvent === false
-        && !!eventData
+        // isWaitingForPoolCreated === false
+        !!poolCreatedEvt
         && !eventListenerError
       ) {
-        console.trace("Here");
-        console.debug(`isWaitingForEvent = ${isWaitingForEvent}`);
-        console.debug(`eventData = ${eventData}`);
+        console.trace("Processing events");
+        console.debug(`isWaitingForEvent = ${isWaitingForPoolCreated}`);
+        console.debug(`eventData = ${poolCreatedEvt}`);
         console.debug(`eventListenerError = ${eventListenerError}`);
-        showAlertWithText("Transaction event successful");
+
+        // if (!txHashWatching) {
+        //   console.trace("Khong co nhu cau xu ly event ngay luc nay")
+        //   return;
+        // }
+
+        showAlertWithText("Transaction event occurred");
+
+        for (const evt of poolCreatedEvt) {
+          if (evt.transaction.transactionHash !== txHashWatching) {
+            console.trace(`skip tx hash: ${evt.transaction.transactionHash}`);
+            continue;
+          }
+          combinedData.eventData = evt.data;
+
+          const response = await axios.post("/api/addProject", combinedData);
+
+          if (response.data.success) {
+            showAlertWithText("Transaction succeed!");
+            route.push("/myProject");
+          } else {
+            showAlertWithText("Transaction finished but failed to be saved")
+          }
+
+          setTxHashWatching(null);
+          poolCreatedEvt = undefined;
+          isWaitingForPoolCreated = false;
+          eventListenerError = undefined;
+
+          break;
+        }
       } else if (eventListenerError) {
         console.trace("Hehe");
-        showAlertWithText(`Could not receive event from smart contract:\n${eventListenerError}`);
+        showAlertWithText(`Could not receive event from smart contract due to error`);
+        console.error(`Could not receive event from smart contract due to error:\n${eventListenerError}`)
       }
     }
 
     justDoIt();
-  }, [eventData, isWaitingForEvent, eventListenerError, hasMounted]);
+
+    // cleanup
+    return () => {
+      setTxHashWatching(null);
+      poolCreatedEvt = undefined;
+      isWaitingForPoolCreated = false;
+      eventListenerError = undefined;
+    }
+
+  }, [txHashWatching]);
+
   const showAlertWithText = (text: string) => {
     setAlertText(text);
     (document.getElementById("alertDialog") as HTMLDialogElement).showModal();
   }
 
+
   useEffect(() => {
     if (!createProjectError) {
       return;
     }
-    showAlertWithText(`Cannot create project due to error:\n${createProjectError}`);
-
+    showAlertWithText(`Cannot create project due to error`);
+    console.error(`Cannot create project due to error:\n${createProjectError}`);
   }, [createProjectError])
 
   // verifyToken: string, tokenExchangeRate: string, unixTime: Date, unixTimeEnd: Date,
@@ -190,18 +277,71 @@ const PreviewPage = () => {
   if (factoryConnErr) {
     alert("failed to connect to factory contract");
   }
+
   const handleSubmit = async () => {
     if (VTConnErr) {
       console.error(`Failed to connect to vToken contract:\n${VTConnErr}`);
       return;
     }
 
+    // if (PTConnErr) {
+    //   console.error(`Failed to connect project token contract:\n${PTConnErr}`);
+    //   return;
+    // }
+
     console.log("Success Smartcontract");
 
-    const response = await axios.post("/api/addProject", combinedData);
-    if (response.data.success) {
-      route.push("/myProject");
+    if (VTDecimalsReadErr) {
+      showAlertWithText("Failed to read vToken decimals")
+      console.error(VTDecimalsReadErr);
+      return;
     }
+
+    // if (PTDecimalsReadErr) {
+    //   showAlertWithText(`Failed to retrieve information about project token`);
+    //   console.error(PTDecimalsReadErr);
+    // }
+
+    console.trace(`VTDecimals is ${VTDecimals}`)
+    console.debug(`factoryAddress is : ${factoryAddress}`);
+    console.debug(`user address is :${userAddress}`);
+
+    console.trace("Requesting ERC20 approval from project owner");
+
+    console.debug(`factory contract address is ${factoryContract?.getAddress()}`);
+
+    const mult = BigInt(10 ** VTDecimals)
+
+    const resp = await callCreateProject({
+      args: [
+        formDataVerifyToken, //verifyToken
+        (BigInt(formDataPromotion.tokenExchangeRate) * mult).toString(), //tokenExchangeRate
+        new Date(formDataPromotion.startDate).getTime() / 1000, //startDate
+        new Date(formDataPromotion.endDate).getTime() / 1000, //endDate
+        (BigInt(formDataPromotion.minInvestment) * mult).toString(), //minInvestment
+        (BigInt(formDataPromotion.maxInvestment) * mult).toString(), //maxInvestment
+        (BigInt(formDataPromotion.hardcap) * mult).toString(), //hardcap
+        (BigInt(formDataPromotion.softcap) * mult).toString(), //softcap
+        (BigInt(formDataPromotion.reward) * BigInt(10 ** 4)).toString(), //reward
+        formDataGeneralDetail.selectedCoin //selectedVToken
+      ]
+    })
+
+    if (createProjectError) {
+      console.error(`cannot create project due to error:\n${createProjectError}`);
+      return;
+    }
+
+    if (!resp) {
+      console.error("resp is undefined");
+      return;
+    }
+
+    const receipt = resp.receipt;
+    const txHash = receipt.transactionHash;
+    console.debug("Transaction Hash watching:", txHash);
+    setTxHashWatching(txHash);
+    console.trace("Set txHash watching");
   };
 
   return (
@@ -410,10 +550,12 @@ const PreviewPage = () => {
         )}
         <Button
           className="mt-2 mb-8 bg-neutral text-[#ffffff] py-2 px-4 rounded-full"
-          disabled={isCallingCreateProject === true}
+          disabled={isCallingCreateProject === true || txHashWatching !== null}
           onClick={handleSubmit}
         >
-          {isCallingCreateProject === true ? <span className="loading loading-dots loading-md"></span> : "verify"}
+          {(txHashWatching !== null || isCallingCreateProject === true)
+            ? <span className="loading loading-dots loading-md"></span>
+            : "verify"}
         </Button>
       </div>
     </div>
