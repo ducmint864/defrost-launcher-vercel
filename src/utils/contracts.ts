@@ -7,7 +7,7 @@ import { chainConfig } from "@/config";
 import {
     ProjectPoolFactoryABI,
     ProjectPoolABI,
-    MockProjectTokenABI,
+    MockVTokenABI,
 } from "@/abi";
 import { BaseContract } from "ethers";
 import { SmartContract } from "@thirdweb-dev/react";
@@ -57,10 +57,10 @@ export function getProjectPoolContract(projectID: number | string): SmartContrac
     return poolContract;
 }
 
-export function getProjectTokenContract(
+export function getVTokenContract(
     poolContract: SmartContract<BaseContract>
 ): SmartContract<BaseContract> | undefined {
-    const { data: projectTokenAddr, error: poolReadErr } = useContractRead(
+    const { data: vTokenAddr, error: poolReadErr } = useContractRead(
         poolContract,
         "getAcceptedVAsset",
     );
@@ -70,15 +70,15 @@ export function getProjectTokenContract(
         return;
     }
 
-    const { contract: projectTokenContract, error: projectTokenConnErr }
+    const { contract: vTokenContract, error: vTokenConnErr }
         = useContract(
-            projectTokenAddr,
-            MockProjectTokenABI,
+            vTokenAddr,
+            MockVTokenABI,
         );
-    if (projectTokenConnErr) {
+    if (vTokenConnErr) {
         alert("failed to connect to project token contract");
         return;
     }
 
-    return projectTokenContract;
+    return vTokenContract;
 }

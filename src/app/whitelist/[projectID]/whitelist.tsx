@@ -8,10 +8,17 @@ import "@heroicons/react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { CiCircleCheck } from "react-icons/ci";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-import { ProjectPoolFactoryABI, ProjectPoolABI } from "@/abi/"
-import { useAddress, useChain } from "@thirdweb-dev/react";
-import { getProjectPoolContract } from "@/utils/contracts";
+import {
+  useAddress,
+  useChain,
+  useContractRead,
+  useContractWrite,
+} from "@thirdweb-dev/react";
+import {
+  getProjectPoolContract,
+  getVTokenContract
+} from "@/utils/contracts";
+
 
 export default function Whitelist({ projectID }: WhitelistProps) {
   const route = useRouter();
@@ -20,6 +27,58 @@ export default function Whitelist({ projectID }: WhitelistProps) {
   const address = useAddress();
   const chain = useChain();
   const poolContract = getProjectPoolContract(projectID);
+  const vTokenContract = getVTokenContract(poolContract!);
+
+  const {
+    mutateAsync: callJoinWhitelilst,
+    isLoading: isCallingJoinWhitelist,
+    error: joinWhitelistError,
+  } = useContractWrite(
+    poolContract,
+    "joinWhitelist",
+  )
+  const {
+    mutateAsync: callApprove,
+    isLoading: isCallingApprove,
+    error: approveError,
+  } = useContractWrite(
+    vTokenContract,
+    "approve"
+  )
+
+  const { data: reserveAmt, error: readReserveAmtErr } = useContractRead(
+    poolContract,
+    "getReserveInvestment"
+  );
+
+  useEffect(() => {
+    if (!poolContract) {
+      return;
+    }
+    console.debug("Found project pool contract! Fetchng project token contract");
+  }, [poolContract])
+
+  // Update the error state when the hook's error changes
+  useEffect(() => {
+    if (joinWhitelistError === null) {
+      return;
+    }
+    showAlertWithText(`Cannot join whitelist due to error\n${joinWhitelistError}`);
+  }, [joinWhitelistError]);
+
+  useEffect(() => {
+    if (!approveError) {
+      return;
+    }
+
+    showAlertWithText(`Cannot approve due to error\n${approveError}`);
+  }, [approveError]);
+
+
+  const showAlertWithText = (text: string) => {
+    setAlertText(text);
+    (document.getElementById("alertDialog") as HTMLDialogElement).showModal();
+  }
 
   // Social tasks states
   const [tasks, setTasks] = useState<SocialTask[]>([
@@ -93,12 +152,19 @@ export default function Whitelist({ projectID }: WhitelistProps) {
   const [OTP, setOTP] = useState<string>("");
   const [isOTPTimedOut, setIsOTPTimedOut] = useState<boolean | null>(null);
   const [isSendingOTP, setIsSendingOTP] = useState<boolean>(false);
+  const [isCheckingEmail, setIsCheckingEmail] = useState<boolean>(false);
+  const [alertText, setAlertText] = useState<string>("");
 
-  const checkEmailVerified = async () => {
+  const checkEmailVerified = async (): Promise<boolean> => {
     if (!email) {
-      return
+      return false;
     }
 
+    if (isEmailVerified) {
+      return true;
+    }
+
+    let verified: boolean = false;
     try {
       const response = await fetch("/api/auth/email/verified", {
         method: "POST",
@@ -110,41 +176,43 @@ export default function Whitelist({ projectID }: WhitelistProps) {
 
       if (response.ok) {
         const data = await response.json();
-        const isVerified = Boolean(data['verfiied'])
-        setIsOTPTimedOut(isVerified);
-      } else {
-        alert("Failed to send OTP. Please try again.");
+        verified = data['verified'].toLocaleLowerCase() === "true" ? true : false;
       }
     } catch (error) {
-      console.error("Error sending OTP:", error);
-      alert("An error occurred. Please try again.");
-    } finally {
-      setIsSendingOTP(false);
+      console.error("Error checking email verification:", error);
     }
 
-
-    const isVerified = true;
-    setIsEmailVerified(isVerified);
+    return verified;;
   };
 
-
-  const handleVerifyEmailClick = () => {
+  const handleVerifyEmailClick = async () => {
     // validate input
+    console.trace("wtf1")
     if (!address) {
-      (document.getElementById("connectWalletAlert") as HTMLDialogElement)?.showModal();
+      showAlertWithText("Please connect your wallet first");
       return;
     }
 
+    console.trace("wtf2")
     if (!email || !fullName) {
       // TODO: show error message
       return;
     }
+
+    console.trace("wtf3")
+    console.debug(`isOTPTimedOut = ${isOTPTimedOut}`);
     if (isOTPTimedOut === null) {
       setIsSendingOTP(true);
-      sendOTPViaEmail();
+      const sendSucceed: boolean = await sendOTPViaEmail();
+      setIsSendingOTP(false);
+      if (sendSucceed) {
+        setIsOTPTimedOut(false);
+        (document.getElementById("emailOTPModal") as HTMLDialogElement)?.showModal();
+      }
+      console.log("OTP sent");
+    } else {
+      (document.getElementById("emailOTPModal") as HTMLDialogElement)?.showModal();
     }
-
-    (document.getElementById("emailOTPModal") as HTMLDialogElement)?.showModal();
   };
 
   const handleResendOTP = () => {
@@ -174,14 +242,15 @@ export default function Whitelist({ projectID }: WhitelistProps) {
       });
 
       if (response.ok) {
-        alert("OTP verified successfully!");
         setIsEmailVerified(true);
+        (document.getElementById("emailOTPModal") as HTMLDialogElement).close()
+        showAlertWithText("Email verified");
       } else {
-        alert("OTP verification failed. Please try again.");
+        showAlertWithText("OTP verification failed. Please try again.");
       }
     } catch (error) {
       console.error("Error verifying OTP:", error);
-      alert("An error occurred. Please try again.");
+      showAlertWithText("An error occurred. Please try again.");
     } finally {
       setIsVerifying(false);
     }
@@ -189,27 +258,29 @@ export default function Whitelist({ projectID }: WhitelistProps) {
     return true;
   };
 
-  // check email verification status periodically
-  // useEffect(() => {
-  //   if (email) {
-  //     // 2 seconds delay b4 checking email verification status
-  //     const intervalId = setInterval(checkEmailVerified, 2000);
-  //     return () => clearInterval(intervalId);
-  //   }
-  // }, []);
-
   // check email verification status on page load
   useEffect(() => {
-    // Check immediately on page load
-    checkEmailVerified();
+    if (!email) {
+      setIsEmailVerified(false);
+      return;
+    }
 
-    // Set up periodic checking
-    const intervalId = setInterval(checkEmailVerified, 2000); // Check every 2 seconds
+    if (isCheckingEmail) {
+      return;
+    }
 
-    return () => clearInterval(intervalId);
-  }, []);
+    setIsCheckingEmail(true);
 
-  const sendOTPViaEmail = async () => {
+    (async () => {
+      await new Promise<void>((resolve) => setInterval(resolve, 1000)); // 2 secs delay before checking
+      const verified: boolean = await checkEmailVerified();
+      setIsEmailVerified(verified);
+    })();
+
+    setIsCheckingEmail(false);
+  }, [email]);
+
+  const sendOTPViaEmail = async (): Promise<boolean> => {
     try {
       const response = await fetch("/api/auth/email/send-otp", {
         method: "POST",
@@ -220,15 +291,19 @@ export default function Whitelist({ projectID }: WhitelistProps) {
       });
 
       if (response.ok) {
-        setIsOTPTimedOut(false);
+        console.log("OTP sent");
+        return true;
       } else {
-        alert("Failed to send OTP. Please try again.");
+        const respBody = await response.json();
+        const { error } = respBody;
+        console.debug(`errMsg = ${error}`);
+        showAlertWithText(error);
+        return false;
       }
     } catch (error) {
       console.error("Error sending OTP:", error);
-      alert("An error occurred. Please try again.");
-    } finally {
-      setIsSendingOTP(false);
+      showAlertWithText("Error occurred while sending OTP")
+      return false;
     }
   };
 
@@ -256,48 +331,79 @@ export default function Whitelist({ projectID }: WhitelistProps) {
     const formattedSecond = second < 10 ? `0${second}` : second;
 
     return (
-      <p>
+      <p className="text-[#c2c5ca]">
         OTP expires in: {formattedMinute}:{formattedSecond}
       </p>
     );
   };
 
-  const handleSubmitWhitelist = async () => {
-    // validate input
-    if (!isEmailVerified) {
-      alert("Please verify your email first.");
+  const handleSubmitWhitelist = async (e: any) => {
+    e?.preventDefault();
+
+    // check email is verified
+    const isEmailVerifiedAPI: boolean = await checkEmailVerified();
+    if (!isEmailVerified && !isEmailVerifiedAPI) {
+      showAlertWithText("Please verify your email first");
       return;
     }
-    const data = {
-      email,
-      fullName,
-      projectID,
-      tasks
+
+    if (readReserveAmtErr) {
+      console.error(`error reading reserve amount: ${readReserveAmtErr}`);
+      return;
     }
 
-    const response = await axios.post("/api/whitelist", data);
-    if (response.status === 200) {
-      alert("Whitelisted successfully!");
-      route.push("/whitelist/success");
-    } else {
-      alert("Failed to whitelist. Please try again.");
+    if (!reserveAmt) {
+      console.error("reserveAmt is undefined");
+      return;
     }
-    route.push(`/projectDetail/${projectID}`);
+
+    console.trace(`reserve amount is ${reserveAmt}`);
+    console.debug(`vToken contract address is: ${vTokenContract?.getAddress()}`);
+    try {
+      const approveResp = await callApprove({
+        args: [
+          poolContract?.getAddress(),
+          reserveAmt,
+        ]
+      });
+      if (!approveResp) {
+        console.log("approveResp is undefined!");
+        return;
+      }
+    } catch (err) {
+      console.error(`error sending approve tx: ${err}`);
+      return;
+    }
+
+    try {
+      const joinWhitelistResp = await callJoinWhitelilst({ args: [] });
+      if (!joinWhitelistResp) {
+        console.log("whitelistResp is undefined!");
+        return;
+      }
+      console.log(`whitelist response:\n${joinWhitelistResp}`);
+      route.push(`/projectDetail/${projectID}`);
+    } catch (err) {
+      console.error(`error sending whitelist tx: ${err}`);
+      return;
+    }
+
+    // if (joinWhitelistError === null) {
+    // }
   }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl relative overflow-hidden">
-      <div className="fixed inset-0 w-full h-full bg-gradient-to-tr from-transparent via-blue-300/40 to-purple-400/30 animate-[pulse_7s_ease-in-out_infinite] -z-10"></div>
+      <div className="fixed inset-0 w-full h-full bg-gradient-to-tr from-[#0f1b30] via-bg-transparent via-[#133c68] to-[#172756] -z-10"></div>
+      <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-bg-neutral/30 via-bg-secondary/30 to-bg-accent/30 opacity-10 animate-[pulse_7s_ease-in-out_infinite] blur-xl"></div>
       <div className="relative">
         <div className="shadow-full backdrop-blur-sm rounded-2xl p-6 bg-[#1E293B] border-2 border-opacity-20 border-white/20 bg-gradient-to-br from-white/10 to-white/5">
-          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-bg-[#1E293B]/30 via-bg-secondary/30 to-bg-accent/30 opacity-20 blur-xl"></div>
           <div className="relative z-10">
-            <h1 className="text-2xl font-bold text-center mb-6 text-[#1E293B]-content">
-              WELCOME TO THE PROJECT WITH ID {projectID} WHITE LIST
+            <h1 className="text-2xl font-bold text-center mb-6 text-[#c8cbd0]">
+              Join project with ID {projectID} white list
               <div>connected to address {address}</div><br></br>
               <div>{!!chain ? <p>`Conncted to chain with ID {chain.chainId}`</p> : <p>'Unsupported network!'</p>}</div>
             </h1>
-
 
             <p className="py-4">
               {poolContract ?
@@ -306,12 +412,12 @@ export default function Whitelist({ projectID }: WhitelistProps) {
               }
             </p>
 
-            <p className="text-center mb-6">
+            <p className="text-center mb-6 text-[#c8cbd0]">
               Fill in the form to be eligible for the whitelist
             </p>
 
             <form>
-              <label className="bg-[#1E293B] mb-4 input input-bordered flex items-center gap-2">
+              <label className="bg-[#1E293B] mb-4 text-[#c8cbd0] input input-bordered flex items-center gap-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 16 16"
@@ -328,33 +434,36 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                 />
               </label>
 
-              <label className="bg-[#1E293B] mb-4 input input-bordered flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  className="h-4 w-4 opacity-70"
-                >
-                  <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
-                  <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
-                </svg>
+              <label className="bg-[#1E293B] mb-4 text-[#c8cbd0] input input-bordered flex items-center gap-2">
+                {isCheckingEmail === true
+                  ? <span className="loading loading-spinner loading-xs"></span>
+                  : <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                    className="h-4 w-4 opacity-70"
+                  >
+                    <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
+                    <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
+                  </svg>
+                }
                 <input
                   type="text"
-                  className="grow"
+                  className="grow text-[#c8cbd0]"
                   placeholder="Email"
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </label>
 
-              {/* hidden modal */}
-              <dialog id="connectWalletAlert" className="modal modal-bottom sm:modal-middle">
+              {/* this modal is hidden unless we call modal.showModal() */}
+              <dialog id="alertDialog" className="modal modal-bottom sm:modal-middle">
                 <div className="modal-box bg-primary text-primary-content">
-                  <h3 className="font-bold text-lg">Connect wallet</h3>
-                  <p className="py-4">Please connect your wallet first</p>
+                  <h3 className="font-bold text-lg">Alert</h3>
+                  <p id="alertText" className="py-4">{alertText}</p>
                   <div className="modal-action">
                     <form method="dialog">
                       {/* if there is a button in form, it will close the modal */}
-                      <button className="btn">Close</button>
+                      <button className="btn hover:text-black">Close</button>
                     </form>
                   </div>
                 </div>
@@ -367,7 +476,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                     id="modalContent"
                     className="modal-box backdrop-blur-lg transition-all duration-300 bg-transparent"
                   >
-                    <h3 className="font-bold text-lg">Email Verification</h3>
+                    <h3 className="font-bold text-lg text-[#c2c5ca]">Email Verification</h3>
                     <p className="py-1 text-sm">
                       {isOTPTimedOut === true ? (
                         "OTP timed out!"
@@ -380,7 +489,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                       )}
                     </p>
                     <br />
-                    <p className="py-4">
+                    <p className="py-4 text-[#c2c5ca]">
                       Enter the 6-digit OTP sent to your email:
                     </p>
                     <form className="flex flex-col items-center">
@@ -427,7 +536,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                       </div>
                       <button
                         type="button"
-                        className="btn btn-primary"
+                        className="btn btn-primary text-[#061f2d] bg-[#38bdf8] hover:bg-[#0b729e]"
                         disabled={isOTPVerifying || isOTPTimedOut === true}
                         onClick={handleOTPSubmit}
                       >
@@ -450,7 +559,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                     )}
                     <div className="modal-action">
                       <form method="dialog">
-                        <button className="btn">Close</button>
+                        <button className="btn bg-[#0c1425] text-[#b7bac1] hover:text-black">Close</button>
                       </form>
                     </div>
                   </div>
@@ -460,7 +569,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
               <button
                 type="button"
                 onClick={handleVerifyEmailClick}
-                disabled={isEmailVerified === true}
+                disabled={isEmailVerified === true || isCheckingEmail === true}
                 className={`mb-6 mt-2 px-4 py-2 rounded-md flex items-center justify-center border border-black ${isEmailVerified
                   ? "bg-white text-black"
                   : "bg-white text-black hover:bg-gray-100"
@@ -471,16 +580,16 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                     <p className="mr-2">Email Verified</p>
                     <CiCircleCheck />
                   </div>
-                ) : isSendingOTP ? (
+                ) : isSendingOTP === true ? (
                   <span className="loading loading-ring loading-md">
-                    Sendig email
+                    sending OTP
                   </span>
                 ) : (
                   "Verify Email"
                 )}
               </button>
               <div className="mb-6">
-                <label className="block mb-2 font-bold text-lg">
+                <label className="block mb-2 font-bold text-lg text-[#c8cbd0]">
                   Connect your social accounts for identity verification:
                 </label>
                 <div className="flex  justify-center gap-2 ">
@@ -489,7 +598,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
                       key={social.name}
                       type="button"
                       onClick={() => handleSocialConnect(social.name)}
-                      className="flex items-center justify-center p-2 border rounded-full hover:bg-gray-100 transition-colors w-[200px]"
+                      className="flex items-center text-[#c8cbd0] justify-center p-2 border rounded-full hover:text-black hover:bg-gray-100 transition-colors w-[200px]"
                     >
                       <Image
                         src={social.icon}
@@ -505,7 +614,7 @@ export default function Whitelist({ projectID }: WhitelistProps) {
               </div>
 
               <div className="mb-6">
-                <label className="block mb-2 font-medium">
+                <label className="block mb-2 font-medium text-[#c8cbd0]">
                   Proof of engagement
                 </label>
                 <div className="space-y-2">
@@ -541,30 +650,33 @@ export default function Whitelist({ projectID }: WhitelistProps) {
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"
-                  className="px-4 py-2 bg-[#1E293B] text-[#1E293B]-content rounded-md"
+                  className="px-4 py-2 bg-[#1E293B] text-[#c8cbd0] rounded-md"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-success text-success-content rounded-md"
+                  className="px-4 py-2 bg-[#2dd4bf] hover:bg-[#388c82] text-[#0d473f] rounded-md"
                   onClick={handleSubmitWhitelist}
                 >
-                  Continue
+                  {isCallingJoinWhitelist
+                    ? <span className="loading loading-spinner text-success"></span>
+                    : <span>Continue</span>
+                  }
                 </button>
               </div>
             </form>
           </div>
         </div>
-      </div>
+      </div >
       <div className="mt-8">
-        <h2 className="text-xl font-bold mb-4">WHITELIST GUIDE</h2>
+        <h2 className="text-xl font-bold mb-4 text-[#c2c5ca]">WHITELIST GUIDE</h2>
         <div className="space-y-2">
           {[...Array(5)].map((_, index) => (
             <div key={index} className="h-px bg-gray-300"></div>
           ))}
         </div>
       </div>
-    </div>
+    </div >
   );
 }

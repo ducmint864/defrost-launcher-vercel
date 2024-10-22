@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prismaClient } from '@/*';
 import Email from 'next-auth/providers/email';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export async function POST(req: Request) {
     const { email: inputEmail, address: inputAddress } = await req.json();
@@ -26,6 +27,15 @@ export async function POST(req: Request) {
         return NextResponse.json({ verified: isVerified.toString() }, { status: 200 });
     } catch (error) {
         console.error('Error verifying email:', error);
-        return NextResponse.json({ error: 'Error verifying email' }, { status: 500 });
+        let errMsg = "";
+        if (error instanceof PrismaClientKnownRequestError) {
+            const prismaErr = (error as PrismaClientKnownRequestError)
+            switch (prismaErr.code) {
+                case "p2002":
+                    errMsg = `A user with address ${inputAddress}`;
+                    break;
+            }
+        }
+        return NextResponse.json({ error: errMsg }, { status: 500 });
     }
 }

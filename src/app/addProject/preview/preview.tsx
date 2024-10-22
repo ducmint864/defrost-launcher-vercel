@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Tabs, Tab } from "@nextui-org/react";
 import { Key } from "react";
@@ -87,9 +87,10 @@ const PreviewPage = () => {
     verifyTokenData: formDataVerifyToken,
     generalDetailData: formDataGeneralDetail,
     promotionData: formDataPromotion,
-    smartContractEventData: eventData,
   };
+
   const images = combinedData.generalDetailData.selectedImages;
+  console.log(combinedData);
   const nextImage = () => {
     setCurrentImage((prevImage) => (prevImage + 1) % images.length);
   };
@@ -106,18 +107,92 @@ const PreviewPage = () => {
     setIsFullscreen(!isFullscreen);
   };
 
+  /**
+   * @notice contract section
+   */
+  const chain = useChain();
+  const factoryAddress = chain?.chainId
+    ? chainConfig[chain.chainId.toString() as keyof typeof chainConfig]?.contracts?.ProjectPoolFactory?.address
+    : undefined;
+
+  const { contract: factoryContract, error: factoryConnErr } = useContract(
+    factoryAddress, // Contract address
+    ProjectPoolFactoryABI // Contract abi
+  );
+
+  const { contract: VTContract, error: VTConnErr } = useContract(
+    // formDataGeneralDetail.selectedVToken, //selectedVToken
+    "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    "token",
+  )
+
+  const {
+    mutateAsync: callCreateProject,
+    isLoading: isCallingCreateProject,
+    error: createProjectError
+  } = useContractWrite(
+    factoryContract,
+    "createProjectPool",
+  );
+
+  const { data: VTDecimals, error: VTDecimalsReadErr } = useContractRead(
+    VTContract,
+    "decimals",
+
+  );
+  const [hasMounted, setHasMounted] = useState(false);
+
+  const {
+    data: eventData,
+    isLoading: isWaitingForEvent,
+    error: eventListenerError,
+  } = useContractEvents(factoryContract, "ProjectPoolCreated");
+
+  useEffect(() => {
+    if (!hasMounted) return; // Skip the first render
+
+    const justDoIt = async () => {
+      if (
+        isWaitingForEvent === false
+        && !!eventData
+        && !eventListenerError
+      ) {
+        console.trace("Here");
+        console.debug(`isWaitingForEvent = ${isWaitingForEvent}`);
+        console.debug(`eventData = ${eventData}`);
+        console.debug(`eventListenerError = ${eventListenerError}`);
+        showAlertWithText("Transaction event successful");
+      } else if (eventListenerError) {
+        console.trace("Hehe");
+        showAlertWithText(`Could not receive event from smart contract:\n${eventListenerError}`);
+      }
+    }
+
+    justDoIt();
+  }, [eventData, isWaitingForEvent, eventListenerError, hasMounted]);
+  const showAlertWithText = (text: string) => {
+    setAlertText(text);
+    (document.getElementById("alertDialog") as HTMLDialogElement).showModal();
+  }
+
+  useEffect(() => {
+    if (!createProjectError) {
+      return;
+    }
+    showAlertWithText(`Cannot create project due to error:\n${createProjectError}`);
+
+  }, [createProjectError])
+
+  // verifyToken: string, tokenExchangeRate: string, unixTime: Date, unixTimeEnd: Date,
+  //   minInvest: number, maxInvest: number, softCap: number, hardCap: number,
+  //     reward: number, selectedVToken: string) => {
+
+  if (factoryConnErr) {
+    alert("failed to connect to factory contract");
+  }
   const handleSubmit = async () => {
-    console.log(combinedData);
-    // console.log(combinedData.generalDetailData[0]);
-    // console.log(combinedData.generalDetailData.selectedCoin);
-    // console.log(combinedData.promotionData[2]);
-
-    await handleWrite();
-
-    // console.log(isLoading);
-
-    if (createProjectError) {
-      console.log(createProjectError);
+    if (VTConnErr) {
+      console.error(`Failed to connect to vToken contract:\n${VTConnErr}`);
       return;
     }
 
@@ -131,10 +206,18 @@ const PreviewPage = () => {
 
   return (
     <div className="flex justify-center items-center bg-primary min-h-screen relative">
-      <p>{isLoading}</p>
-
-      <p>{String(createProjectError)}</p>
-
+      <dialog id="alertDialog" className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box bg-primary text-primary-content">
+          <h3 className="font-bold text-lg">Alert</h3>
+          <p id="alertText" className="py-4">{alertText}</p>
+          <div className="modal-action">
+            <form method="dialog">
+              {/* if there is a button in form, it will close the modal */}
+              <button className="btn hover:text-black">Close</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
       <div
         className="absolute top-0 left-0 w-full h-[720px] bg-cover bg-center blur-md"
         style={{
@@ -205,9 +288,8 @@ const PreviewPage = () => {
                   alt={`Thumbnail ${index + 1}`}
                   width={100}
                   height={100}
-                  className={`cursor-pointer rounded-lg object-cover ${
-                    currentImage === index ? "ring-4 ring-blue-500" : ""
-                  }`}
+                  className={`cursor-pointer rounded-lg object-cover ${currentImage === index ? "ring-4 ring-blue-500" : ""
+                    }`}
                   onClick={() => setCurrentImage(index)}
                 />
               ))}
@@ -241,11 +323,10 @@ const PreviewPage = () => {
               key="description"
               title={
                 <span
-                  className={`${
-                    activeTab === "description"
-                      ? "text-white border-b-2 border-blue-500"
-                      : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
-                  } pb-[11px]`}
+                  className={`${activeTab === "description"
+                    ? "text-white border-b-2 border-blue-500"
+                    : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
+                    } pb-[11px]`}
                 >
                   Description
                 </span>
@@ -255,11 +336,10 @@ const PreviewPage = () => {
               key="tokensale"
               title={
                 <span
-                  className={`${
-                    activeTab === "tokensale"
-                      ? "text-white border-b-2 border-blue-500"
-                      : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
-                  } pb-[11px]`}
+                  className={`${activeTab === "tokensale"
+                    ? "text-white border-b-2 border-blue-500"
+                    : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
+                    } pb-[11px]`}
                 >
                   Token Sale
                 </span>
@@ -330,9 +410,10 @@ const PreviewPage = () => {
         )}
         <Button
           className="mt-2 mb-8 bg-neutral text-[#ffffff] py-2 px-4 rounded-full"
+          disabled={isCallingCreateProject === true}
           onClick={handleSubmit}
         >
-          Verify
+          {isCallingCreateProject === true ? <span className="loading loading-dots loading-md"></span> : "verify"}
         </Button>
       </div>
     </div>
