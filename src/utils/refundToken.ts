@@ -1,11 +1,9 @@
 import { useContractEvents, useContractWrite } from "@thirdweb-dev/react";
 import { getProjectPoolContract } from "./contracts"
 
-const withDrawFund = (projectId: string) => {
-    const poolContract = getProjectPoolContract(
-        projectId
-    );
-
+const refund = (projectId: string) => {
+    const poolContract = getProjectPoolContract(projectId);
+    
     if (!poolContract) {
         alert("failed to get pool contract");
         return;
@@ -13,19 +11,15 @@ const withDrawFund = (projectId: string) => {
 
     const { mutateAsync, isLoading, error } = useContractWrite(
         poolContract,
-        "withdrawFund"
+        "refundToken"
     )
 
-    const { data: eventData, isLoading: eventLoading, error: eventError } = useContractEvents(
-        poolContract,
-        "ProjectWithDrawn"
+    const { data: eventData, isLoading: eventLoading, error: eventError } = useContractEvents(poolContract,
+        "Redeemed"
     );
-    
-
-
 
     return { mutateAsync, isLoading, error, eventData, eventLoading, eventError };
 
 }
 
-export default withDrawFund;
+export default refund;

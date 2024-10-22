@@ -3,19 +3,54 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
-import { useAddress } from "@thirdweb-dev/react";
-import getMyProjectInfo from "@/utils/getMyProjectInfo";
-import { Status } from "@/interfaces/interface";
+import {
+  useAddress,
+  useChain,
+  useContract,
+  useContractRead,
+} from "@thirdweb-dev/react";
+import { DBProject, Status } from "@/interfaces/interface";
 import { format } from "date-fns";
+import getMyProjectInfo from "@/utils/getMyProjectInfo";
+import { getProjectPoolContract } from "@/utils/contracts";
+import { ethers } from "ethers";
+import { chainConfig } from "@/config";
+import { ProjectPoolABI, ProjectPoolFactoryABI } from "@/abi";
+import { Provider } from "react-redux";
 
 function MyProjectPage() {
-  const [showMoreEnded, setShowMoreEnded] = useState(false);
-  const [showMorePending, setShowMorePending] = useState(false);
-  const [availableProjects, setAvailableProjects] = useState([]);
-  const [endedProjects, setEndedProjects] = useState<any[]>([]);
-  const [pendingProjects, setPendingProjects] = useState<any[]>([]);
+  const [showMoreEnded, setShowMoreEnded] = useState<boolean>(false);
+  const [showMorePending, setShowMorePending] = useState<boolean>(false);
+  const [availableProjects, setAvailableProjects] = useState<DBProject[]>([]);
+  const [endedProjects, setEndedProjects] = useState<DBProject[]>([]);
+  const [pendingProjects, setPendingProjects] = useState<DBProject[]>([]);
+  const [factoryAddress, setFactoryAddress] = useState<string | undefined>(
+    undefined
+  );
+  const [factoryContract, setFactoryContract] = useState<ethers.Contract>();
   const projectOwnerAddress = useAddress();
   console.log("projectOwnerAddress: " + projectOwnerAddress);
+  const chain = useChain();
+  const userAddress = useAddress();
+
+  useEffect(() => {
+    if (!chain) {
+      return;
+    }
+
+    const address: string =
+      chainConfig[chain.chainId.toString() as keyof typeof chainConfig]
+        ?.contracts?.ProjectPoolFactory?.address;
+
+    setFactoryAddress(address);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const factoryContract = new ethers.Contract(
+      address,
+      ProjectPoolFactoryABI,
+      provider
+    );
+    setFactoryContract(factoryContract);
+  }, [chain]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -23,32 +58,52 @@ function MyProjectPage() {
         const response = await axios.post("/api/myProject", {
           address: projectOwnerAddress,
         });
+        const projects: DBProject[] = response.data.projectsInfo;
+        console.log(projects);
+        const projectsWithDetails = [];
 
-        const projects = response.data.projectsInfo;
+        // Dùng for...of để xử lý tuần tự
+        console.log("len:" + projects.length);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        for (let i = 0; i < projects.length; i++) {
+          let project = projects[i];
+          const poolAddress = await factoryContract!.getProjectPoolAddress(
+            project.projectID
+          );
+          const signer = provider.getSigner();
+          const contract = new ethers.Contract(
+            poolAddress,
+            ProjectPoolABI,
+            provider
+          );
+          const raisedAmount = await contract.getProjectRaisedAmount();
+          const isProjectSoftCapReached =
+            await contract.getProjectSoftCapReached();
+          projectsWithDetails.push(
+            Object.assign(project, {
+              raisedAmount,
+              isProjectSoftCapReached,
+            })
+          );
+        }
 
-        const endedProjects = projects.filter(
-          (project) => project.status === "ended"
+        const ended = projectsWithDetails.filter(
+          (project: DBProject) => project.status === Status.Ended
         );
-        const pendingProjects = projects.filter(
-          (project) => project.status === "pending"
+        const pending = projectsWithDetails.filter(
+          (project: DBProject) => project.status === Status.Pending
         );
 
-        setEndedProjects(endedProjects);
-        setPendingProjects(pendingProjects);
+        setEndedProjects(ended);
+        setPendingProjects(pending);
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
     };
-    fetchProjects();
-  }, [projectOwnerAddress]);
-
-  // const displayedEndedProjects = showMoreEnded
-  //   ? projects.filter((project) => project.status === 1)
-  //   : projects.filter((project) => project.status === 1).slice(0, 3);
-
-  // const displayedPendingProjects = showMorePending
-  //   ? projects.filter((project) => project.status === 0)
-  //   : projects.filter((project) => project.status === 0).slice(0, 3);
+    if (projectOwnerAddress) {
+      fetchProjects();
+    }
+  }, [projectOwnerAddress, factoryContract]);
 
   const displayedEndedProjects = showMoreEnded
     ? endedProjects
@@ -56,6 +111,7 @@ function MyProjectPage() {
   const displayedPendingProjects = showMorePending
     ? pendingProjects
     : pendingProjects.slice(0, 3);
+
   return (
     <div className="relative flex flex-col justify-start items-start min-h-screen bg-primary px-14">
       <div className="mt-20 mb-6 text-2xl font-bold text-white">
@@ -77,8 +133,8 @@ function MyProjectPage() {
               />
             </div>
             <div className="w-48">
-              <h3 className="text-xl font-bold">{project.projectTitle}</h3>{" "}
-              <p className="text-sm">{project.shortDescription}</p>{" "}
+              <h3 className="text-xl font-bold">{project.projectTitle}</h3>
+              <p className="text-sm">{project.shortDescription}</p>
             </div>
 
             <div className="flex space-x-7 p-5">
@@ -93,6 +149,10 @@ function MyProjectPage() {
                 <p>
                   {format(new Date(project.startDate), "dd/MM/yyyy HH:mm:ss")}
                 </p>
+              </div>
+              <div className="text-center">
+                <p className="font-semibold">Amount</p>
+                <p>{project.raisedAmount}</p>
               </div>
             </div>
           </div>
@@ -157,6 +217,10 @@ function MyProjectPage() {
                 <p>
                   {format(new Date(project.startDate), "dd/MM/yyyy HH:mm:ss")}
                 </p>
+              </div>
+              <div className="text-center">
+                <p className="font-semibold">Amount</p>
+                <p>{project.raisedAmount}</p>
               </div>
             </div>
           </div>
