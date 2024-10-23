@@ -1,6 +1,8 @@
 # ❄ DEFROST LAUNCHPAD 🚀
 
-![Defrost Launchpad Banner](https://your-repo-url.com/banner.png) <!-- Replace with your actual banner image URL -->
+ <!-- Replace with your actual banner image URL -->
+
+<img src="https://i.pinimg.com/736x/9b/25/85/9b2585e8d357db63f6900494ae65fd5c.jpg" alt="logo-white" width="120" height="120"/>
 
 ## Table of Contents 🏆
 - [Introduction](#introduction)
@@ -21,7 +23,7 @@
 
 Whether you're an investor looking to support innovative projects or a developer seeking funding for your crypto venture, Defrost Launchpad provides the tools and incentives to foster growth and success in the decentralized ecosystem.
 
-![Defrost Overview](https://your-repo-url.com/overview.png) <!-- Replace with your actual overview image URL -->
+<img src="https://i.pinimg.com/736x/9b/25/85/9b2585e8d357db63f6900494ae65fd5c.jpg" alt="logo-white" width="120" height="120"/>
 
 ## Features ☕
 

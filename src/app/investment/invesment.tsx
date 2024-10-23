@@ -3,58 +3,95 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
-import { useAddress } from "@thirdweb-dev/react";
-import getMyProjectInfo from "@/utils/getMyProjectInfo";
-import { DBProject } from "@/interfaces/interface";
+import {
+  useAddress,
+  useChain,
+  useContract,
+  useContractRead,
+} from "@thirdweb-dev/react";
+import { DBProject, Status } from "@/interfaces/interface";
 import { format } from "date-fns";
+import getMyProjectInfo from "@/utils/getMyProjectInfo";
+import { getProjectPoolContract } from "@/utils/contracts";
+import { ethers } from "ethers";
+import { chainConfig } from "@/config";
+import { ProjectPoolABI, ProjectPoolFactoryABI } from "@/abi";
+import { Provider } from "react-redux";
 
 function InvesmentPage() {
-  const [showMoreEnded, setShowMoreEnded] = useState(false);
-  const [showMorePending, setShowMorePending] = useState(false);
+  const [showMoreEnded, setShowMoreEnded] = useState<boolean>(false);
+  const [showMorePending, setShowMorePending] = useState<boolean>(false);
+  const [availableProjects, setAvailableProjects] = useState<DBProject[]>([]);
   const [endedProjects, setEndedProjects] = useState<DBProject[]>([]);
   const [pendingProjects, setPendingProjects] = useState<DBProject[]>([]);
+  const [factoryAddress, setFactoryAddress] = useState<string | undefined>(
+    undefined
+  );
+  const [factoryContract, setFactoryContract] = useState<ethers.Contract>();
+  const projectOwnerAddress = useAddress();
+  console.log("projectOwnerAddress: " + projectOwnerAddress);
+  const chain = useChain();
   const userAddress = useAddress();
+
+  useEffect(() => {
+    if (!chain) {
+      return;
+    }
+
+    const address: string =
+      chainConfig[chain.chainId.toString() as keyof typeof chainConfig]
+        ?.contracts?.ProjectPoolFactory?.address;
+
+    setFactoryAddress(address);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const factoryContract = new ethers.Contract(
+      address,
+      ProjectPoolFactoryABI,
+      provider
+    );
+    setFactoryContract(factoryContract);
+  }, [chain]);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.post("/api/myInvestment", {
-          userAddress: userAddress,
+        const response = await axios.post("/api/myProject", {
+          address: projectOwnerAddress,
         });
-
-        console.log(response.data);
-
-        const projects: DBProject[] = response.data.projectsDetails;
-
+        const projects: DBProject[] = response.data.projectsInfo;
         console.log(projects);
-        console.log(projects[0]);
+        const projectsWithDetails = [];
 
-        const projectWithRaisedAmount = projects.map((project: any) => {
-          const {
-            raisedAmount,
-            isLoading,
-            error,
-            isProjectSoftCapReached,
-            loading,
-            softCapError,
-          } = getMyProjectInfo(project.id);
-          return {
-            ...project,
-            raisedAmount,
-            isLoading,
-            error,
-            isProjectSoftCapReached,
-            loading,
-            softCapError,
-          };
-        });
+        // Dùng for...of để xử lý tuần tự
+        console.log("len:" + projects.length);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        for (let i = 0; i < projects.length; i++) {
+          let project = projects[i];
+          const poolAddress = await factoryContract!.getProjectPoolAddress(
+            project.projectID
+          );
+          const signer = provider.getSigner();
+          const contract = new ethers.Contract(
+            poolAddress,
+            ProjectPoolABI,
+            provider
+          );
+          const raisedAmount = await contract.getProjectRaisedAmount();
+          const isProjectSoftCapReached =
+            await contract.getProjectSoftCapReached();
+          projectsWithDetails.push(
+            Object.assign(project, {
+              raisedAmount,
+              isProjectSoftCapReached,
+            })
+          );
+        }
 
-        const ended = projectWithRaisedAmount.filter(
-          (project) => project.status
+        const ended = projectsWithDetails.filter(
+          (project: DBProject) => project.status === Status.Ended
         );
-
-        const pending = projectWithRaisedAmount.filter(
-          (project) => project.status
+        const pending = projectsWithDetails.filter(
+          (project: DBProject) => project.status === Status.Pending
         );
 
         setEndedProjects(ended);
@@ -63,8 +100,10 @@ function InvesmentPage() {
         console.error("Error fetching projects:", error);
       }
     };
-    fetchProjects();
-  }, [userAddress]);
+    if (projectOwnerAddress) {
+      fetchProjects();
+    }
+  }, [projectOwnerAddress, factoryContract]);
 
   const displayedEndedProjects = showMoreEnded
     ? endedProjects
@@ -86,7 +125,7 @@ function InvesmentPage() {
           <div className="flex items-center flex-grow space-x-4 p-3">
             <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
               <Image
-                src={project.projectLogoImageUrl[0]}
+                src={JSON.parse(project.projectLogoImageUrl[0])}
                 alt={project.projectTitle}
                 width={52}
                 height={52}
@@ -113,7 +152,7 @@ function InvesmentPage() {
               </div>
               <div className="text-center">
                 <p className="font-semibold">Amount</p>
-                <p>10000</p>
+                <p>{project.raisedAmount}</p>
               </div>
             </div>
           </div>
@@ -154,7 +193,7 @@ function InvesmentPage() {
           <div className="flex items-center flex-grow space-x-4 p-3">
             <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
               <Image
-                src={project.projectLogoImageUrl[0]}
+                src={JSON.parse(project.projectLogoImageUrl[0])}
                 alt={project.projectTitle}
                 width={52}
                 height={52}
@@ -181,7 +220,7 @@ function InvesmentPage() {
               </div>
               <div className="text-center">
                 <p className="font-semibold">Amount</p>
-                <p>10000</p>
+                <p>{project.raisedAmount}</p>
               </div>
             </div>
           </div>
