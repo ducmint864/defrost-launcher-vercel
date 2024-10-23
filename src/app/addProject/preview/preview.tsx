@@ -17,6 +17,7 @@ import {
 } from "@thirdweb-dev/react";
 import { chainConfig } from "@/config";
 import { ProjectPoolFactoryABI } from "@/abi";
+import { convertNumToOnChainFormat, countDecimals } from "@/utils/decimals";
 
 const tokenSaleData = [
   {
@@ -232,7 +233,7 @@ const PreviewPage = () => {
         try {
           const response = await axios.post("/api/addProject", combinedData);
           if (response.status === 200) {
-            showAlertWithText("Transaction succeed!");
+            showAlertWithText("Success! Your transaction was processed");
             cleanup();
             route.push("/myProject");
           }
@@ -274,7 +275,7 @@ const PreviewPage = () => {
     if (!createProjectError) {
       return;
     }
-    showAlertWithText(`Cannot create project due to error`);
+    showAlertWithText(`Error occurred! Could not create project`);
     console.error(`Cannot create project due to error:\n${createProjectError}`);
   }, [createProjectError])
 
@@ -318,19 +319,17 @@ const PreviewPage = () => {
 
     console.debug(`factory contract address is ${factoryContract?.getAddress()}`);
 
-    const mult = BigInt(10 ** VTDecimals)
-
     const resp = await callCreateProject({
       args: [
         formDataVerifyToken, //verifyToken
-        (BigInt(formDataPromotion.tokenExchangeRate) * mult).toString(), //tokenExchangeRate
+        convertNumToOnChainFormat(Number(formDataPromotion.tokenExchangeRate), VTDecimals), //tokenExchangeRate
         new Date(formDataPromotion.startDate).getTime() / 1000, //startDate
         new Date(formDataPromotion.endDate).getTime() / 1000, //endDate
-        (BigInt(formDataPromotion.minInvestment) * mult).toString(), //minInvestment
-        (BigInt(formDataPromotion.maxInvestment) * mult).toString(), //maxInvestment
-        (BigInt(formDataPromotion.hardcap) * mult).toString(), //hardcap
-        (BigInt(formDataPromotion.softcap) * mult).toString(), //softcap
-        (BigInt(formDataPromotion.reward) * BigInt(10 ** 4)).toString(), //reward
+        convertNumToOnChainFormat(Number(formDataPromotion.minInvestment), VTDecimals), //minInvestment
+        convertNumToOnChainFormat(Number(formDataPromotion.maxInvestment), VTDecimals), //maxInvestment
+        convertNumToOnChainFormat(Number(formDataPromotion.hardcap), VTDecimals), //hardcap
+        convertNumToOnChainFormat(Number(formDataPromotion.softcap), VTDecimals), //softcap
+        convertNumToOnChainFormat(Number(formDataPromotion.reward) / 100, 4), //reward percentage
         formDataGeneralDetail.selectedCoin //selectedVToken
       ]
     })

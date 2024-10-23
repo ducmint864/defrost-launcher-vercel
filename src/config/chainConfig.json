@@ -77,6 +77,12 @@
         "symbol": "vASTR",
         "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
         "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvWgkOiR1hhHPj-S4ECiQOSEVwsPVFYBcWEOBYslnHs9DWI3Ne2y_zh7NnD9HVn49zn60&usqp=CAU"
+      },
+      {
+        "name": "voucher Dot",
+        "symbol": "vDOT",
+        "address": "0x0000",
+        "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvWgkOiR1hhHPj-S4ECiQOSEVwsPVFYBcWEOBYslnHs9DWI3Ne2y_zh7NnD9HVn49zn60&usqp=CAU"
       }
     ]
   }
