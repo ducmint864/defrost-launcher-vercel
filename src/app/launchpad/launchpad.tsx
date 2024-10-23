@@ -15,96 +15,6 @@ import { chainConfig } from "@/config";
 import { ethers } from "ethers";
 import { ProjectPoolABI, ProjectPoolFactoryABI } from "@/abi";
 import { DBProject, Status } from "@/interfaces/interface";
-const projectsData = [
-  {
-    id: 1,
-    title: "Earn'M",
-    description: "Transforming the Smartphone into the EarnPhone",
-    fundraiseGoal: "$TBA",
-    maxAllocation: "$TBA",
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMxujFuNX3mOdiIXO2Zzyoz-mWHXhz_WeBLw&s",
-  },
-  {
-    id: 2,
-    title: "Kima Network",
-    description: "Uniting Web2 & Web3.",
-    fundraiseGoal: "$250,000",
-    maxAllocation: "$TBA",
-    image:
-      "https://t3.ftcdn.net/jpg/05/71/06/76/360_F_571067620_JS5T5TkDtu3gf8Wqm78KoJRF1vobPvo6.jpg",
-  },
-  {
-    id: 3,
-    title: "Lympid",
-    description: "The Finest RWA Assets on the Blockchain",
-    fundraiseGoal: "$TBA",
-    maxAllocation: "$TBA",
-    image:
-      "https://i.pinimg.com/736x/a8/2c/4b/a82c4b062593c35f4ebcf1617e83cacd.jpg",
-  },
-  {
-    id: 4,
-    title: "New Project 1",
-    description: "Description of New Project 1",
-    fundraiseGoal: "$500,000",
-    maxAllocation: "$TBA",
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxCzEXi6R41EnGcBPEx2VqXZ4l31BEMYBshw&s",
-  },
-];
-
-const tableData = [
-  {
-    id: 1,
-    title: "NOTAI",
-    description: "PRIVATE SALE",
-    participants: 478,
-    raisedFund: "$250,000",
-    endDate: "September 4th 2024",
-  },
-  {
-    id: 2,
-    title: "SCOOKIE",
-    description: "TOKEN SALE",
-    participants: 1677,
-    raisedFund: "$400,000",
-    endDate: "June 12th 2024",
-  },
-  {
-    id: 3,
-    title: "Arrow Markets",
-    description: "TOKEN SALE",
-    participants: 1115,
-    raisedFund: "$250,000",
-    endDate: "May 21st 2024",
-  },
-  {
-    id: 4,
-    title: "New Project 1",
-    description: "PRIVATE SALE",
-    participants: 478,
-    raisedFund: "$250,000",
-    endDate: "September 4th 2024",
-  },
-  {
-    id: 5,
-    title: "SCOOKIE",
-    description: "TOKEN SALE",
-    participants: 1677,
-    raisedFund: "$400,000",
-    endDate: "June 12th 2024",
-  },
-  {
-    id: 6,
-    title: "Arrow Markets",
-    description: "TOKEN SALE",
-    participants: 1115,
-    raisedFund: "$250,000",
-    endDate: "May 21st 2024",
-  },
-];
-
 
 function LaunchpadPage() {
   const [projectList, setProjectList] = useState([]);
@@ -112,13 +22,10 @@ function LaunchpadPage() {
   const [factoryAddress, setFactoryAddress] = useState<string | undefined>(
     undefined
   );
-  const [factoryContract, setFactoryContract] = useState<ethers.Contract | null>(
-    null
-  );
+  const [factoryContract, setFactoryContract] =
+    useState<ethers.Contract | null>(null);
   const [otherProjects, setOtherProjects] = useState<DBProject[]>([]);
   const [upcomingProjects, setUpcomingProjects] = useState<DBProject[]>([]);
-
-
 
   const settings = {
     dots: true,
@@ -162,19 +69,18 @@ function LaunchpadPage() {
     const fetchProjectsList = async () => {
       try {
         const response = await axios.post("/api/launchpad");
-  
+        console.log("Long ne: " + response);
+
         const projectList = response.data.projectList;
-        
+
         console.log(projectList);
-    
+
         const launchpadData = response.data.launchpadData;
-    
+
         console.log(launchpadData);
-        
-  
+
         setProjectList(projectList);
         setLaunchpadData(launchpadData);
-   
 
         // Dùng for...of để xử lý tuần tự
         console.log("len:" + projectList.length);
@@ -195,10 +101,12 @@ function LaunchpadPage() {
           const raisedAmount = await contract.getProjectRaisedAmount();
           const isProjectSoftCapReached =
             await contract.getProjectSoftCapReached();
+          const hardCap = await contract.getProjectHardCapAmount();
           projectsWithDetails.push(
             Object.assign(project, {
               raisedAmount,
               isProjectSoftCapReached,
+              hardCap,
             })
           );
         }
@@ -212,43 +120,42 @@ function LaunchpadPage() {
         );
 
         setUpcomingProjects(upcomingProjects);
-        setOtherProjects(otherProjects);        
+        setOtherProjects(otherProjects);
 
-    //     const ended = projectsWithDetails.filter(
-    //       (project: DBProject) => project.status === Status.Ended
-    //     );
-    //     const pending = projectsWithDetails.filter(
-    //       (project: DBProject) => project.status === Status.Pending
-    //     );
+        //     const ended = projectsWithDetails.filter(
+        //       (project: DBProject) => project.status === Status.Ended
+        //     );
+        //     const pending = projectsWithDetails.filter(
+        //       (project: DBProject) => project.status === Status.Pending
+        //     );
 
-    //     setEndedProjects(ended);
-    //     setPendingProjects(pending);
+        //     setEndedProjects(ended);
+        //     setPendingProjects(pending);
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
     };
     // if (projectOwnerAddress) {
-      // }
-        fetchProjectsList();
-  }, [ factoryContract]);
+    // }
+    fetchProjectsList();
+  }, [factoryContract]);
 
   // useEffect(() => {
   //   const fetchProjectList = async () => {
-  
+
   //     const response = await axios.post("/api/launchpad");
-  
+
   //     const projectList = response.data.projectList;
-      
+
   //     console.log(projectList);
-  
+
   //     const launchpadData = response.data.launchpadData;
-  
+
   //     console.log(launchpadData);
-      
 
   //     setProjectList(projectList);
   //     setLaunchpadData(launchpadData);
-      
+
   //   }
   //   fetchProjectList();
   // }, [])
@@ -280,7 +187,7 @@ function LaunchpadPage() {
           </div>
 
           <Slider {...settings}>
-            {projectsData.map((project) => (
+            {upcomingProjects.map((project) => (
               <div
                 key={project.id}
                 className="w-full p-2"
@@ -289,22 +196,24 @@ function LaunchpadPage() {
                 <div className="h-96 rounded-lg bg-secondary p-4 text-white flex flex-col justify-between transition-transform transform hover:-translate-y-2 duration-300">
                   <div>
                     <Image
-                      src={project.image}
-                      alt={project.title}
+                      src={project.projectLogoImageUrl[0]}
+                      alt={project.projectTitle}
                       width={1000}
                       height={2000}
                       className="w-full h-24 object-cover rounded-lg mb-2"
                     />
-                    <h3 className="text-lg font-bold mb-2">{project.title}</h3>
+                    <h3 className="text-lg font-bold mb-2">
+                      {project.projectTitle}
+                    </h3>
                     <p>{project.description}</p>
                     <p className="mt-4">
                       Fundraise Goal:{" "}
-                      <span className="font-bold">{project.fundraiseGoal}</span>
+                      <span className="font-bold">{project.hardCap}</span>
                     </p>
-                    <p>
+                    {/* <p>
                       Max allocation:{" "}
                       <span className="font-bold">{project.maxAllocation}</span>
-                    </p>
+                    </p> */}
                   </div>
                   <button className="mt-4 bg-neutral text-[#ffffff] py-2 px-4 rounded-lg">
                     TOKEN SALE
@@ -316,29 +225,35 @@ function LaunchpadPage() {
         </div>
 
         {/* Funded Projects Section */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-10">
-            <h2 className="text-xl font-bold text-white">Funded Projects: </h2>
-            <div className="flex justify-between flex-1">
-              <div className="bg-gradient-to-r from-[#153E52] to-[#0A0B0D] via-[#0A0B0D] border border-[#25607E] p-4 rounded-lg flex-1 mx-2 text-right">
-                <span className="text-[#2DACDC] block">Funded Projects: </span>
-                <span className="font-bold text-white block">113</span>
-              </div>
-              <div className="bg-gradient-to-r from-[#555B3D] to-[#0A0B0D] via-[#0A0B0D] border border-[#737D37] p-4 rounded-lg flex-1 mx-2 text-right">
-                <span className="text-[#8c955c] block">
-                  Unique Participants:
-                </span>
-                <span className="font-bold text-white block">30,294</span>
-              </div>
-              <div className="bg-gradient-to-r from-[#754b4b] to-[#0A0B0D] via-[#0A0B0D] border border-[#745734] p-4 rounded-lg flex-1 mx-2 text-right">
-                <span className="text-[#c97f7f] block">Raised Capital: </span>
-                <span className="font-bold text-white block">
-                  $41,582,502.04
-                </span>
+        {upcomingProjects.map((project) => (
+          <div className="mb-6" key={project.id}>
+            <div className="flex items-center justify-between mb-10">
+              <h2 className="text-xl font-bold text-white">
+                Funded Projects:{" "}
+              </h2>
+              <div className="flex justify-between flex-1">
+                <div className="bg-gradient-to-r from-[#153E52] to-[#0A0B0D] via-[#0A0B0D] border border-[#25607E] p-4 rounded-lg flex-1 mx-2 text-right">
+                  <span className="text-[#2DACDC] block">
+                    Funded Projects:{" "}
+                  </span>
+                  <span className="font-bold text-white block">113</span>
+                </div>
+                <div className="bg-gradient-to-r from-[#555B3D] to-[#0A0B0D] via-[#0A0B0D] border border-[#737D37] p-4 rounded-lg flex-1 mx-2 text-right">
+                  <span className="text-[#8c955c] block">
+                    Unique Participants:
+                  </span>
+                  <span className="font-bold text-white block">30,294</span>
+                </div>
+                <div className="bg-gradient-to-r from-[#754b4b] to-[#0A0B0D] via-[#0A0B0D] border border-[#745734] p-4 rounded-lg flex-1 mx-2 text-right">
+                  <span className="text-[#c97f7f] block">Raised Capital: </span>
+                  <span className="font-bold text-white block">
+                    $41,582,502.04
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        ))}
 
         {/* Table Section */}
         <div className=" rounded-[15px] bg-[#18181B]">
@@ -347,23 +262,25 @@ function LaunchpadPage() {
               <tr className="bg-[#27272A] text-left text-sm text-[#aeaeae]">
                 <th className="p-4 rounded-tl-[15px]">Project Name</th>
                 <th className="p-4">Type</th>
-                <th className="p-4">Participants</th>
+                {/* <th className="p-4">Participants</th> */}
                 <th className="p-4">Raised Fund</th>
                 <th className="p-4 rounded-tr-[15px]">End Date</th>
               </tr>
             </thead>
 
             <tbody>
-              {tableData.map((project) => (
+              {otherProjects.map((project) => (
                 <tr
                   key={project.id}
                   className="hover:border-2 hover:border-neutral"
                 >
-                  <td className="p-4">{project.title}</td>
+                  <td className="p-4">{project.projectTitle}</td>
                   <td className="p-4">{project.description}</td>
-                  <td className="p-4">{project.participants}</td>
-                  <td className="p-4">{project.raisedFund}</td>
-                  <td className="p-4">{project.endDate}</td>
+                  {/* <td className="p-4">{project.participants}</td> */}
+                  <td className="p-4">{project.raisedAmount}</td>
+                  <td className="p-4">
+                    {new Date(project.endDate).toLocaleDateString()}
+                  </td>
                 </tr>
               ))}
             </tbody>

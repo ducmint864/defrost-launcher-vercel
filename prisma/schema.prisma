@@ -32,10 +32,10 @@ model TaskDone {
 }
 
 model Launchpad {
-  id String @id @default(uuid())
-  totalUniqueUsers Int
-  totalRaisedAmount String
-  totalFundedProjects Int 
+  id                  String @id @default(uuid())
+  totalUniqueUsers    Int
+  totalRaisedAmount   String
+  totalFundedProjects Int
 }
 
 model Project {
@@ -80,4 +80,5 @@ enum TaskType {
 enum ProjectStatus {
   pending
   ended
+  upcoming
 }

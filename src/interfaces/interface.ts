@@ -19,4 +19,5 @@ export interface DBProject {
   startDate: Date;
   status: Status;
   raisedAmount: string;
+  hardCap: string;
 }

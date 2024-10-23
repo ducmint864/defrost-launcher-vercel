@@ -125,7 +125,7 @@ function MyProjectPage() {
           <div className="flex items-center flex-grow space-x-4 p-3">
             <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
               <Image
-                src={project.projectLogoImageUrl[0]}
+                src={JSON.parse(project.projectLogoImageUrl)[0]}
                 alt={project.projectTitle}
                 width={52}
                 height={52}
@@ -193,7 +193,7 @@ function MyProjectPage() {
           <div className="flex items-center flex-grow space-x-4 p-3">
             <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
               <Image
-                src={project.projectLogoImageUrl[0]}
+                src={JSON.parse(project.projectLogoImageUrl)[0]}
                 alt={project.projectTitle}
                 width={52}
                 height={52}
