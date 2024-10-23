@@ -50,10 +50,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 projectImageUrls: selectedImages as string[],
                 startDate: startDate as Date,
                 endDate: endDate as Date,
-                projectID: eventData.projectID as number,
+                projectID: eventData.projectId as number,
                 txnHashCreated: eventData.txnHashCreated as string,
-                projectOwnerAddress: eventData.projectOwnerAddress as string,
-                status: "pending" as string,
+                projectOwnerAddress: eventData.projectOwner as string,
+                status: "pending",
             },
         });
         if (!project) {
@@ -64,6 +64,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
         return NextResponse.json({ success: true }, { status: 200 });
     } catch (error) {
         console.log(error);
-        return NextResponse.json({ success: false, error: error }, { status: 400 });
+        return NextResponse.json({ success: false, error: error }, { status: 500 });
     }
 }

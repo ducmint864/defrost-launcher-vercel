@@ -5,9 +5,8 @@ import { Tabs, Tab } from "@nextui-org/react";
 import { Key } from "react";
 import { Button } from "@nextui-org/react";
 import { useSelector } from "react-redux";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
-// import createProjectPool from "@/utils/addProject";
 import {
   useContract,
   useContractRead,
@@ -68,6 +67,7 @@ const PreviewPage = () => {
   const [alertText, setAlertText] = useState<string>("");
   const [factoryAddress, setFactoryAddress] = useState<string | undefined>(undefined);
   const [txHashWatching, setTxHashWatching] = useState<string | null>(null);
+  const [isSendingHTTPRequest, setIsSendingHTTPRequest] = useState<boolean>(false);
 
 
   const formDataVerifyToken = useSelector((state: any) => {
@@ -197,62 +197,70 @@ const PreviewPage = () => {
     }
 
     const justDoIt = async () => {
-      if (
-        // isWaitingForPoolCreated === false
-        !!poolCreatedEvt
-        && !eventListenerError
-      ) {
+      if (eventListenerError) {
+        console.trace("Lmao, eventListenerError");
+        showAlertWithText(`Contract event error occurred`);
+        console.error(`Co event from smart contract due to error:\n${eventListenerError}`)
+      }
+
+      if (poolCreatedEvt && !eventListenerError) {
         console.trace("Processing events");
         console.debug(`isWaitingForEvent = ${isWaitingForPoolCreated}`);
         console.debug(`eventData = ${poolCreatedEvt}`);
         console.debug(`eventListenerError = ${eventListenerError}`);
 
-        // if (!txHashWatching) {
-        //   console.trace("Khong co nhu cau xu ly event ngay luc nay")
-        //   return;
-        // }
+        const wantedEvent = poolCreatedEvt.find(evt => {
+          return evt.transaction.transactionHash === txHashWatching
+        });
 
-        showAlertWithText("Transaction event occurred");
-
-        for (const evt of poolCreatedEvt) {
-          if (evt.transaction.transactionHash !== txHashWatching) {
-            console.trace(`skip tx hash: ${evt.transaction.transactionHash}`);
-            continue;
-          }
-          combinedData.eventData = evt.data;
-
-          const response = await axios.post("/api/addProject", combinedData);
-
-          if (response.data.success) {
-            showAlertWithText("Transaction succeed!");
-            route.push("/myProject");
-          } else {
-            showAlertWithText("Transaction finished but failed to be saved")
-          }
-
-          setTxHashWatching(null);
-          poolCreatedEvt = undefined;
-          isWaitingForPoolCreated = false;
-          eventListenerError = undefined;
-
-          break;
+        if (!wantedEvent) {
+          console.trace("Wanted event not found in list of emitted events");
         }
-      } else if (eventListenerError) {
-        console.trace("Hehe");
-        showAlertWithText(`Could not receive event from smart contract due to error`);
-        console.error(`Could not receive event from smart contract due to error:\n${eventListenerError}`)
+
+        let wantedData = wantedEvent?.data;
+        if (!wantedData) {
+          console.trace("wantedEvent.data is undefined! what the F?");
+          return;
+        }
+
+        wantedData.projectOwner = wantedData.projectOwner.toString();
+        wantedData.projectId = Number(wantedData.projectId as bigint);
+        wantedData.txnHashCreated = wantedEvent!.transaction.transactionHash;
+        combinedData.eventData = wantedData;
+
+        setIsSendingHTTPRequest(true);
+        try {
+          const response = await axios.post("/api/addProject", combinedData);
+          if (response.status === 200) {
+            showAlertWithText("Transaction succeed!");
+            cleanup();
+            route.push("/myProject");
+          }
+        } catch (err) {
+          setIsSendingHTTPRequest(false);
+          console.error(`error while calling POST api:\n${err}`);
+          if (err instanceof AxiosError) {
+            if (err.response) {
+              console.error(`error status code: ${err.response.statusText}`)
+            }
+            showAlertWithText("Transaction finished but failed to be saved");
+          }
+        }
       }
+    }
+
+    const cleanup = () => {
+      setTxHashWatching(null);
+      poolCreatedEvt = undefined;
+      isWaitingForPoolCreated = false;
+      eventListenerError = undefined;
+      setIsSendingHTTPRequest(false);
     }
 
     justDoIt();
 
     // cleanup
-    return () => {
-      setTxHashWatching(null);
-      poolCreatedEvt = undefined;
-      isWaitingForPoolCreated = false;
-      eventListenerError = undefined;
-    }
+    return cleanup;
 
   }, [txHashWatching]);
 
@@ -553,13 +561,16 @@ const PreviewPage = () => {
           disabled={isCallingCreateProject === true || txHashWatching !== null}
           onClick={handleSubmit}
         >
-          {(txHashWatching !== null || isCallingCreateProject === true)
+          {(txHashWatching !== null
+            || isCallingCreateProject === true
+            || isSendingHTTPRequest === true)
             ? <span className="loading loading-dots loading-md"></span>
             : "verify"}
         </Button>
       </div>
     </div>
   );
+
 };
 
 export default PreviewPage;
