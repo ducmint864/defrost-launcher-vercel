@@ -1,4 +1,5 @@
 export enum Status {
+  Upcoming = "upcoming",
   Pending = "pending",
   Ended = "ended",
 }

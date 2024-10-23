@@ -31,6 +31,13 @@ model TaskDone {
   doneAt  DateTime @default(now())
 }
 
+model Launchpad {
+  id String @id @default(uuid())
+  totalUniqueUsers Int
+  totalRaisedAmount String
+  totalFundedProjects Int 
+}
+
 model Project {
   id                  String        @id @default(uuid())
   projectID           Int?          @unique

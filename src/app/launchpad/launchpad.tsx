@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -9,6 +9,12 @@ import "slick-carousel/slick/slick-theme.css";
 // import image4 from "../../../public/images/bg4.jpg";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import { useChain } from "@thirdweb-dev/react";
+import { chainConfig } from "@/config";
+import { ethers } from "ethers";
+import { ProjectPoolABI, ProjectPoolFactoryABI } from "@/abi";
+import { DBProject, Status } from "@/interfaces/interface";
 const projectsData = [
   {
     id: 1,
@@ -99,7 +105,21 @@ const tableData = [
   },
 ];
 
+
 function LaunchpadPage() {
+  const [projectList, setProjectList] = useState([]);
+  const [launchpadData, setLaunchpadData] = useState({});
+  const [factoryAddress, setFactoryAddress] = useState<string | undefined>(
+    undefined
+  );
+  const [factoryContract, setFactoryContract] = useState<ethers.Contract | null>(
+    null
+  );
+  const [otherProjects, setOtherProjects] = useState<DBProject[]>([]);
+  const [upcomingProjects, setUpcomingProjects] = useState<DBProject[]>([]);
+
+
+
   const settings = {
     dots: true,
     infinite: true,
@@ -118,7 +138,120 @@ function LaunchpadPage() {
   };
 
   const route = useRouter();
+  const chain = useChain();
+  useEffect(() => {
+    if (!chain) {
+      return;
+    }
 
+    const address: string =
+      chainConfig[chain.chainId.toString() as keyof typeof chainConfig]
+        ?.contracts?.ProjectPoolFactory?.address;
+
+    setFactoryAddress(address);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const factoryContract = new ethers.Contract(
+      address,
+      ProjectPoolFactoryABI,
+      provider
+    );
+    setFactoryContract(factoryContract);
+  }, [chain]);
+
+  useEffect(() => {
+    const fetchProjectsList = async () => {
+      try {
+        const response = await axios.post("/api/launchpad");
+  
+        const projectList = response.data.projectList;
+        
+        console.log(projectList);
+    
+        const launchpadData = response.data.launchpadData;
+    
+        console.log(launchpadData);
+        
+  
+        setProjectList(projectList);
+        setLaunchpadData(launchpadData);
+   
+
+        // Dùng for...of để xử lý tuần tự
+        console.log("len:" + projectList.length);
+        const projectsWithDetails = [];
+
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        for (let i = 0; i < projectList.length; i++) {
+          let project = projectList[i];
+          const poolAddress = await factoryContract!.getProjectPoolAddress(
+            project.projectID
+          );
+          // const signer = provider.getSigner();
+          const contract = new ethers.Contract(
+            poolAddress,
+            ProjectPoolABI,
+            provider
+          );
+          const raisedAmount = await contract.getProjectRaisedAmount();
+          const isProjectSoftCapReached =
+            await contract.getProjectSoftCapReached();
+          projectsWithDetails.push(
+            Object.assign(project, {
+              raisedAmount,
+              isProjectSoftCapReached,
+            })
+          );
+        }
+
+        const upcomingProjects = projectsWithDetails.filter(
+          (project: DBProject) => project.status === Status.Upcoming
+        );
+
+        const otherProjects = projectsWithDetails.filter(
+          (project: DBProject) => project.status !== Status.Upcoming
+        );
+
+        setUpcomingProjects(upcomingProjects);
+        setOtherProjects(otherProjects);        
+
+    //     const ended = projectsWithDetails.filter(
+    //       (project: DBProject) => project.status === Status.Ended
+    //     );
+    //     const pending = projectsWithDetails.filter(
+    //       (project: DBProject) => project.status === Status.Pending
+    //     );
+
+    //     setEndedProjects(ended);
+    //     setPendingProjects(pending);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+    // if (projectOwnerAddress) {
+      // }
+        fetchProjectsList();
+  }, [ factoryContract]);
+
+  // useEffect(() => {
+  //   const fetchProjectList = async () => {
+  
+  //     const response = await axios.post("/api/launchpad");
+  
+  //     const projectList = response.data.projectList;
+      
+  //     console.log(projectList);
+  
+  //     const launchpadData = response.data.launchpadData;
+  
+  //     console.log(launchpadData);
+      
+
+  //     setProjectList(projectList);
+  //     setLaunchpadData(launchpadData);
+      
+  //   }
+  //   fetchProjectList();
+  // }, [])
   const handleClick = () => {
     route.push("./addProject/verifyToken");
   };

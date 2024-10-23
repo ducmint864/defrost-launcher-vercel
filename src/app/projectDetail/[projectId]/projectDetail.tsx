@@ -1,12 +1,13 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Tabs, Tab } from "@nextui-org/react";
 import { Key } from "react";
 import { Button } from "@nextui-org/react";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+
 
 const tokenSaleData = [
   {
@@ -54,6 +55,9 @@ const tokenSaleData = [
 const ProjectDetailPage = () => {
   const [currentImage, setCurrentImage] = useState(0);
   const [activeTab, setActiveTab] = useState<Key>("description");
+  const [projectDetails, setProjectDetails] = useState<any>([]);
+
+
   const formDataVerifyToken = useSelector((state: any) => {
     console.log(state);
     return state.form.verifyTokenData;
@@ -70,6 +74,24 @@ const ProjectDetailPage = () => {
     generalDetailData: formDataGeneralDetail,
     promotionData: formDataPromotion,
   };
+  
+  useEffect(() => {
+    const fetchProjectDetails = async () => {
+      const pageParam = useParams();
+      console.log(pageParam);
+      const { projectId } = pageParam;
+      console.log(projectId);
+      const response = await axios.post("/api/projectDetail", projectId);
+      console.log(response.data);
+      if(response.data.projectDetailsData){
+        console.log(response.data.projectDetailsData);
+        setProjectDetails(response.data.projectDetailsData);
+      }
+
+    }
+    fetchProjectDetails();
+  }, [])
+
   const images = combinedData.generalDetailData[1];
   const nextImage = () => {
     setCurrentImage((prevImage) => (prevImage + 1) % images.length);
