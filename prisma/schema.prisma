@@ -39,19 +39,20 @@ model Launchpad {
 }
 
 model Project {
-  id                  String   @id @default(uuid())
-  projectID           Int?     @unique
+  id                  String        @id @default(uuid())
+  projectID           Int?          @unique
   projectOwnerAddress String?
   description         String
   shortDescription    String
   projectImageUrls    String[]
-  txnHashCreated      String?  @unique
+  txnHashCreated      String?       @unique
   projectTitle        String
   projectLogoImageUrl String[]
-  endDate             DateTime @default(now())
-  startDate           DateTime @default(now())
-  isWithdrawn         Boolean  @default(false)
+  endDate             DateTime      @default(now())
+  startDate           DateTime      @default(now())
+  isWithdrawn         Boolean       @default(false)
   // status              ProjectStatus @default(pending)
+  investEvents        InvestEvent[]
 }
 
 model OTP {
@@ -64,10 +65,11 @@ model OTP {
 
 // SMART CONTRACT EVENTS
 model InvestEvent {
-  id          String @id @default(uuid())
+  id          String  @id @default(uuid())
   userAddress String
   projectId   Int
   amount      String // repr. string as bigint
+  project     Project @relation(fields: [projectId], references: [projectID], onDelete: NoAction, onUpdate: NoAction, map: "fk_InvestEvent_projectId")
 
   @@index([userAddress]) // set index for faster query
 }

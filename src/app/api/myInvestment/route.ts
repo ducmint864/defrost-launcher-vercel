@@ -1,56 +1,47 @@
 import { prismaClient } from "@/*";
+import { DBProject, ProjectStatus } from "@/interfaces/interface";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest, res: NextResponse) {
-  //   let projects = [];
+    try {
+        const body = await req.json();
+        const { userAddress } = body;
 
-  //   for (let i = 0; i < 5; i++) {
-  //     let project = await prismaClient.investEvent.create({
-  //       data: {
-  //         userAddress: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-  //         projectId: i,
-  //         amount: "1000",
-  //       },
-  //     });
-  //     projects.push(project);
-  //   }
+        // list of investments that user with 'useraAddress' has made
+        const investmentsMade = await prismaClient.investEvent.findMany({
+            where: {
+                userAddress: userAddress as string,
+            },
+            select: {
+                amount: true,
+                project: true
+            }
+        });
 
-  //   console.log(projects);
+        console.log(investmentsMade);
 
-  try {
-    const body = await req.json();
-    const { userAddress } = body;
-
-    const projectsInfo = await prismaClient.investEvent.findMany({
-      where: {
-        userAddress: userAddress,
-      },
-    });
-
-    console.log(projectsInfo);
-
-    projectsInfo.forEach((project) => {
-      console.log(`
-                Project Id: ${project.id}
-                User Address: ${project.userAddress}
-                Project Id: ${project.projectId}
-                Amount Invested: ${project.amount}
+        investmentsMade.forEach((investment) => {
+            console.log(`
+                Project Id: ${investment.project.projectID}
+                Amount Invested: ${investment.amount}
                 `);
-    });
+        });
 
-    let projectsDetails: any[] = [];
-    projectsInfo.forEach(async (project) => {
-      let projectDetail = await prismaClient.project.findMany({
-        where: {
-          projectID: project.projectId,
-        },
-      });
-      projectsDetails.push(projectDetail);
-    });
+        // transform data for better frontend integration
+        const investedProjects: DBProject[] = investmentsMade.map((investment) => {
+            const presentTime = new Date().getTime() / 1000;
+            const projectEndTime = investment.project.endDate.getTime() / 1000;
+            const status: ProjectStatus = presentTime > projectEndTime ? "ended" : "pending";
+            return {
+                ...investment.project,
+                amount: investment.amount,
+                status: status,
+            }
+        })
 
-    return NextResponse.json({ projectsDetails }, { status: 200 });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json({ success: false, error: error }, { status: 400 });
-  }
+        return NextResponse.json({ investedProjects }, { status: 200 });
+    } catch (error) {
+        console.log(error);
+        return NextResponse.json({ success: false, error: error }, { status: 500 });
+    }
 }
