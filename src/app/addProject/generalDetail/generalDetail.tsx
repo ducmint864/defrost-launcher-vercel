@@ -19,6 +19,7 @@ const GeneralDetail = () => {
   const fileInputRefLogo = useRef<HTMLInputElement | null>(null);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [selectedLogo, setSelectedLogo] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const route = useRouter();
   const dispatch = useDispatch();
   const updateData = useSelector((state: any) => {
@@ -93,8 +94,11 @@ const GeneralDetail = () => {
       shortDescription,
       longDescription,
     };
+    setIsLoading(true);
     dispatch(updateGeneralDetailPageData(formDatas));
     console.log(updateData);
+    console.trace("Boutta navigate to promotion page");
+    setIsLoading(false);
     route.push("/addProject/promotion");
   };
   return (

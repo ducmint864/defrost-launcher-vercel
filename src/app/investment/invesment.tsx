@@ -162,7 +162,7 @@ function InvesmentPage() {
           <div className="ml-auto">
             <Button
               className="bg-neutral text-white px-4 py-2 rounded-full transition duration-300 hover:shadow-lg hover:bg-opacity-80"
-              onClick={(e) => handleRedeem(e, proeject)}
+              onClick={(e) => handleRedeem(e, project)}
             >
               Redeem token
             </Button>

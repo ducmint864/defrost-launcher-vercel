@@ -66,11 +66,10 @@ const PreviewPage = () => {
   const [currentImage, setCurrentImage] = useState(0);
   const [activeTab, setActiveTab] = useState<Key>("description");
   const [alertText, setAlertText] = useState<string>("");
-  const [factoryAddress, setFactoryAddress] = useState<string | undefined>(
-    undefined
-  );
+  const [factoryAddress, setFactoryAddress] = useState<string | undefined>(undefined);
   const [txHashWatching, setTxHashWatching] = useState<string | null>(null);
   const [isSendingHTTPRequest, setIsSendingHTTPRequest] = useState<boolean>(false);
+
 
   const formDataVerifyToken = useSelector((state: any) => {
     console.log(state);
@@ -119,12 +118,12 @@ const PreviewPage = () => {
       return;
     }
 
-    const address: string =
-      chainConfig[chain.chainId.toString() as keyof typeof chainConfig]
-        ?.contracts?.ProjectPoolFactory?.address;
+    const address: string = chainConfig[chain.chainId.toString() as keyof typeof chainConfig]
+      ?.contracts
+      ?.ProjectPoolFactory?.address
 
     setFactoryAddress(address);
-  }, [chain]);
+  }, [chain])
 
   const { contract: factoryContract, error: factoryConnErr } = useContract(
     factoryAddress, // Contract address
@@ -133,7 +132,7 @@ const PreviewPage = () => {
 
   const { contract: VTContract, error: VTConnErr } = useContract(
     formDataGeneralDetail.selectedCoin, //selectedVToken
-    "token"
+    "token",
   );
 
   // const { contract: PTContract, error: PTConnErr } = useContract(
@@ -153,12 +152,15 @@ const PreviewPage = () => {
   const {
     mutateAsync: callCreateProject,
     isLoading: isCallingCreateProject,
-    error: createProjectError,
-  } = useContractWrite(factoryContract, "createProjectPool");
+    error: createProjectError
+  } = useContractWrite(
+    factoryContract,
+    "createProjectPool",
+  );
 
   const { data: VTDecimals, error: VTDecimalsReadErr } = useContractRead(
     VTContract,
-    "decimals"
+    "decimals",
   );
 
   // const { data: PTDecimals, error: PTDecimalsReadErr } = useContractRead(
@@ -172,24 +174,26 @@ const PreviewPage = () => {
     data: poolCreatedEvt,
     isLoading: isWaitingForPoolCreated,
     error: eventListenerError,
-  } = useContractEvents(factoryContract, "ProjectPoolCreated", {
-    queryFilter: {
-      filters: {
-        projectOwner: userAddress,
+  } = useContractEvents(
+    factoryContract,
+    "ProjectPoolCreated",
+    {
+      queryFilter: {
+        filters: {
+          projectOwner: userAddress
+        },
+        order: "desc",
       },
-      order: "desc",
-    },
-    subscribe: true,
-  });
+      subscribe: true,
+    }
+  );
 
   /**
    * @notice handle when ProjectPoolCreated event occurred
    */
   useEffect(() => {
     if (!txHashWatching) {
-      console.trace(
-        `Not looking forward to any event from any contract at this moment`
-      );
+      console.trace(`Not looking forward to any event from any contract at this moment`);
       return;
     }
 
@@ -244,7 +248,7 @@ const PreviewPage = () => {
           }
         }
       }
-    };
+    }
 
     const cleanup = () => {
       setTxHashWatching(null);
@@ -259,13 +263,13 @@ const PreviewPage = () => {
     // cleanup
     return cleanup;
 
-
   }, [txHashWatching]);
 
   const showAlertWithText = (text: string) => {
     setAlertText(text);
     (document.getElementById("alertDialog") as HTMLDialogElement).showModal();
-  };
+  }
+
 
   useEffect(() => {
     if (!createProjectError) {
@@ -273,7 +277,7 @@ const PreviewPage = () => {
     }
     showAlertWithText(`Error occurred! Could not create project`);
     console.error(`Cannot create project due to error:\n${createProjectError}`);
-  }, [createProjectError]);
+  }, [createProjectError])
 
   // verifyToken: string, tokenExchangeRate: string, unixTime: Date, unixTimeEnd: Date,
   //   minInvest: number, maxInvest: number, softCap: number, hardCap: number,
@@ -297,7 +301,7 @@ const PreviewPage = () => {
     console.log("Success Smartcontract");
 
     if (VTDecimalsReadErr) {
-      showAlertWithText("Failed to read vToken decimals");
+      showAlertWithText("Failed to read vToken decimals")
       console.error(VTDecimalsReadErr);
       return;
     }
@@ -307,15 +311,11 @@ const PreviewPage = () => {
     //   console.error(PTDecimalsReadErr);
     // }
 
-    console.trace(`VTDecimals is ${VTDecimals}`);
+    console.trace(`VTDecimals is ${VTDecimals}`)
     console.debug(`factoryAddress is : ${factoryAddress}`);
     console.debug(`user address is :${userAddress}`);
 
-    console.trace("Requesting ERC20 approval from project owner");
-
-    console.debug(
-      `factory contract address is ${factoryContract?.getAddress()}`
-    );
+    console.debug(`factory contract address is ${factoryContract?.getAddress()}`);
 
     const resp = await callCreateProject({
       args: [
@@ -333,9 +333,7 @@ const PreviewPage = () => {
     })
 
     if (createProjectError) {
-      console.error(
-        `cannot create project due to error:\n${createProjectError}`
-      );
+      console.error(`cannot create project due to error:\n${createProjectError}`);
       return;
     }
 
@@ -356,9 +354,7 @@ const PreviewPage = () => {
       <dialog id="alertDialog" className="modal modal-bottom sm:modal-middle">
         <div className="modal-box bg-primary text-primary-content">
           <h3 className="font-bold text-lg">Alert</h3>
-          <p id="alertText" className="py-4">
-            {alertText}
-          </p>
+          <p id="alertText" className="py-4">{alertText}</p>
           <div className="modal-action">
             <form method="dialog">
               {/* if there is a button in form, it will close the modal */}
@@ -473,8 +469,8 @@ const PreviewPage = () => {
               title={
                 <span
                   className={`${activeTab === "description"
-                      ? "text-white border-b-2 border-blue-500"
-                      : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
+                    ? "text-white border-b-2 border-blue-500"
+                    : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
                     } pb-[11px]`}
                 >
                   Description
@@ -486,8 +482,8 @@ const PreviewPage = () => {
               title={
                 <span
                   className={`${activeTab === "tokensale"
-                      ? "text-white border-b-2 border-blue-500"
-                      : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
+                    ? "text-white border-b-2 border-blue-500"
+                    : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
                     } pb-[11px]`}
                 >
                   Token Sale
@@ -567,7 +563,6 @@ const PreviewPage = () => {
             || isSendingHTTPRequest === true)
             ? <span className="loading loading-dots loading-md"></span>
             : "verify"}
-
         </Button>
       </div>
     </div>

@@ -1,5 +1,7 @@
 import { Project } from "@prisma/client";
 
+export type ProjectStatus = "pending" | "ended" | "upcoming";
+
 export interface DBProject extends Project {
     // id: number;
     // projectID: string;
@@ -15,6 +17,7 @@ export interface DBProject extends Project {
     // startDate: Date;
     // status: Status;
     raisedAmount?: string; // bigint as string
-    isProjectSoftcapReached: boolean;
+    isProjectSoftcapReached?: boolean;
     isProjectFullyToppedUp?: boolean;
+    status?: ProjectStatus
 }

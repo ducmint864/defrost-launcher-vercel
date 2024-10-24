@@ -211,12 +211,15 @@ const Promotion = () => {
                   selected={startDate}
                   onChange={(date) => {
                     const now = new Date(); // Lấy thời gian hiện tại
-                    if (date && date >= now) {
-                      // Kiểm tra nếu startDate lớn hơn hoặc bằng thời gian hiện tại
-                      setStartDate(date); // Lưu ngày và thời gian đã chọn
-                      if (date >= endDate) {
-                        setEndDate(new Date(date.getTime() + 15 * 60 * 1000)); // Tự động đặt endDate lớn hơn startDate ít nhất 15 phút
-                      }
+                    // if (date && date >= now) {
+                    // }
+                    if (!date) {
+                      console.trace("start date is null, returning");
+                    }
+                    // Kiểm tra nếu startDate lớn hơn hoặc bằng thời gian hiện tại
+                    setStartDate(date!); // Lưu ngày và thời gian đã chọn
+                    if (date! >= endDate!) {
+                      setEndDate(new Date(date!.getTime() + 15 * 60 * 1000)); // Tự động đặt endDate lớn hơn startDate ít nhất 15 phút
                     }
                   }}
                   selectsStart
@@ -225,10 +228,10 @@ const Promotion = () => {
                   placeholderText="Select Start Date and Time"
                   className="border-none outline-none w-full"
                   dateFormat="dd/MM/yyyy h:mm aa"
-                  minDate={new Date()} // Chỉ cho phép chọn ngày từ hôm nay trở đi
+                  // minDate={new Date()} // Chỉ cho phép chọn ngày từ hôm nay trở đi
                   showTimeSelect
                   timeFormat="HH:mm"
-                  timeIntervals={15}
+                  timeIntervals={1}
                   timeCaption="Time"
                   minTime={
                     startDate &&
@@ -245,9 +248,18 @@ const Promotion = () => {
                 <DatePicker
                   selected={endDate}
                   onChange={(date) => {
-                    if (date && date >= startDate) {
-                      setEndDate(date); // Chỉ cho phép lưu endDate nếu nó lớn hơn hoặc bằng startDate
+                    if (!date) {
+                      console.trace("end date is null, returning");
+                      return;
                     }
+                    // if (date && date >= startDate!) {
+                    // }
+                    if (date < startDate!) {
+                      console.trace("end date must not be before start date, returning!");
+                      return;
+                    }
+                    console.debug(`setEndDate`)
+                    setEndDate(date); // Chỉ cho phép lưu endDate nếu nó lớn hơn hoặc bằng startDate
                   }}
                   selectsEnd
                   startDate={startDate}
@@ -257,7 +269,7 @@ const Promotion = () => {
                   placeholderText="End Date"
                   className="border-none outline-none w-full"
                   dateFormat="dd/MM/yyyy h:mm aa"
-                  timeIntervals={15}
+                  timeIntervals={1}
                   timeFormat="HH:mm"
                   timeCaption="Time"
                   minTime={

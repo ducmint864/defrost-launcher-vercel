@@ -59,10 +59,12 @@
     "testnet": true,
     "contracts": {
       "MockProjectToken": {
-        "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+        "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+        "decimals": "18"
       },
       "MockVToken": {
-        "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+        "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+        "decimals": "18"
       },
       "SLPX": {
         "address": ""
@@ -71,12 +73,19 @@
         "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
       }
     },
+    "nativeAsset": {
+      "name": "Astar",
+      "symbol": "ASTR",
+      "address": "0x0000000000000000000000000000000000000000",
+      "decimals": "18",
+      "icon": "https://s2.coinmarketcap.com/static/img/coins/200x200/12885.png"
+    },
     "vAssets": [
       {
         "name": "voucher Astar",
         "symbol": "vASTR",
         "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-        "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvWgkOiR1hhHPj-S4ECiQOSEVwsPVFYBcWEOBYslnHs9DWI3Ne2y_zh7NnD9HVn49zn60&usqp=CAU"
+        "icon": "https://www.stakingrewards.com/_next/image?url=https%3A%2F%2Fstorage.googleapis.com%2Fstakingrewards-static%2Fimages%2Fassets%2Fproduction%2Fbifrost-voucher-astr_logo.png%3Fv%3D1717150606436&w=3840&q=75"
       },
       {
         "name": "voucher Dot",

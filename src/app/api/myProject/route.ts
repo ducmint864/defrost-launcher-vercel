@@ -1,6 +1,9 @@
 import { prismaClient } from "@/*";
 import { NextRequest, NextResponse } from "next/server";
-import { ProjectStatus } from "@prisma/client";
+import { DBProject, ProjectStatus } from "@/interfaces/interface";
+import { dateInput } from "@nextui-org/react";
+import next from "next";
+
 /**
  * @Note This function is used to query the postgres database to get all the projects created by the user
  */
@@ -11,36 +14,15 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const { projectOwnerAddress } = body;
     console.debug(`projectOwnerAddress is: ${projectOwnerAddress}`);
 
-    // let projects: any[] = [];
-    // for (let i = 12; i < 17; i++) {
-    //   let projectA = await prismaClient.project.create({
-    //     data: {
-    //       projectID: i.toString(),
-    //       projectOwnerAddress: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-    //       description: "This is a test project",
-    //       shortDescription: "This is a short description",
-    //       projectImageUrls: ["https://www.google.com"],
-    //       txnHashCreated: "0x123456789" + 10 * i,
-    //       projectTitle: "Test Project",
-    //       projectLogoImageUrl: [
-    //         "https://suno.vn/blog/wp-content/uploads/2014/12/nike-lich-su-thiet-ke-logo.jpg",
-    //       ],
-    //       endDate: new Date(),
-    //       startDate: new Date(),
-    //       status: "pending",
-    //     },
-    //   });
-    //   projects.push(projectA);
-    // }
-    // console.log(projects);
+    try {
+        const projects = await prismaClient.project.findMany({
+            where: {
+                projectOwnerAddress: projectOwnerAddress as string,
+            },
+        });
 
-    const projectsInfo = await prismaClient.project.findMany({
-        where: {
-            projectOwnerAddress: projectOwnerAddress as string,
-        },
-    });
-    projectsInfo.forEach((project) => {
-        console.log(`
+        projects.forEach((project) => {
+            console.log(`
             Project Id: ${project.id}
             Project Title: ${project.projectTitle}
             Project Description: ${project.description}
@@ -50,24 +32,31 @@ export async function POST(req: NextRequest, res: NextResponse) {
             Start Date: ${project.startDate}
             End Date: ${project.endDate}
             Transaction Hash Created: ${project.txnHashCreated}
-            Status: ${project.status}
-        `);
-    });
-    //   const currentDate = new Date();
-    //   const projectWithStatus = projectsInfo.map((project) => {
-    //     let status = Status.Pending;
-    //     if (project.endDate <= currentDate) {
-    //       status = Status.Ended;
-    //     } else {
-    //       status = Status.Pending;
-    //     }
-    //     console.log("projectWithStatus: " + projectWithStatus);
-    //     return {
-    //       ...project,
-    //       status: status /**@notice */,
-    //     };
-    //   });
-    // console.log(projectsInfo);
+            `);
+        });
 
-    return NextResponse.json({ projectsInfo }, { status: 200 });
+        const projectDTOs: DBProject[] = projects.map((project) => {
+            console.trace(`mapping project with id of ${project.projectID}`);
+
+            let projectStatus: ProjectStatus = "pending";
+            if (project.endDate.getTime() < new Date().getTime()) {
+                projectStatus = "ended"
+            }
+
+            const DTO = {
+                ...project,
+                status: projectStatus,
+            };
+            return DTO;
+        })
+        return NextResponse.json({ projectsInfo: projectDTOs }, { status: 200 });
+    } catch (err) {
+        console.error(err);
+        return NextResponse.json({
+            success: false,
+            data: null,
+            message: "Error fetching projects"
+        }, { status: 500 });
+    }
+
 }
