@@ -53,7 +53,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 projectID: eventData.projectId as number,
                 txnHashCreated: eventData.txnHashCreated as string,
                 projectOwnerAddress: eventData.projectOwner as string,
-                status: "pending",
+                // status: "pending",
             },
         });
         if (!project) {
