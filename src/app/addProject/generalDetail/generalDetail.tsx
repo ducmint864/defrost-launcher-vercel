@@ -8,6 +8,7 @@ import { updateGeneralDetailPageData } from "@/lib/store/formSlice";
 import { useRouter } from "next/navigation";
 import { useChain } from "@thirdweb-dev/react";
 import { chainConfig } from "@/config";
+// import { setServers } from "dns/promises";
 
 const GeneralDetail = () => {
   const [projectTitle, setProjectTitle] = useState<string>("");
@@ -15,6 +16,7 @@ const GeneralDetail = () => {
   const [longDescription, setLongDescription] = useState<string>("");
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null); // address of the vAsset that is selected
   const [selectedCoinIdx, setSelectedCoinIdx] = useState<number>(0);
+  const [imageByteArrays, setImageByteArrays] = useState<Uint8Array[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const fileInputRefLogo = useRef<HTMLInputElement | null>(null);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
@@ -29,6 +31,23 @@ const GeneralDetail = () => {
   const [vAssets, setVAssets] = useState<Record<string, any>[]>([]);
   const chain = useChain();
 
+  // Hàm chuyển base64 thành byte array
+  const base64ToByteArray = (base64: string) => {
+    const base64String = base64.split(",")[1];
+    const binaryString = window.atob(base64String); // Giải mã base64 thành chuỗi nhị phân
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+  };
+
+  // Chuyển đổi byte array thành định dạng chuỗi vd "{14, 26, 50, ...}"
+  const formatByteArray = (byteArray: Uint8Array) => {
+    return `{${Array.from(byteArray).join(", ")}}`;
+  };
+
   // updat vAssets when user switch chain
   useEffect(() => {
     if (!chain) {
@@ -36,11 +55,12 @@ const GeneralDetail = () => {
     }
 
     const chainId: number = chain.chainId;
-    const vAssets = chainConfig[chainId.toString() as keyof typeof chainConfig].vAssets;
-    setSelectedCoin(vAssets[0].address)
-    console.debug(`selected vToken is ${vAssets[0].address}`)
+    const vAssets =
+      chainConfig[chainId.toString() as keyof typeof chainConfig].vAssets;
+    setSelectedCoin(vAssets[0].address);
+    console.debug(`selected vToken is ${vAssets[0].address}`);
     setVAssets(vAssets);
-  }, [chain])
+  }, [chain]);
 
   const handleSelectCoin = (coinAddr: string, idx: number) => {
     if (!coinAddr) {
@@ -48,28 +68,77 @@ const GeneralDetail = () => {
       alert("Address of selected vAsset is empty");
       return;
     }
-    console.log(`selected coin is ${vAssets.at(selectedCoinIdx)?.name}`)
+    console.log(`selected coin is ${vAssets.at(selectedCoinIdx)?.name}`);
 
     setSelectedCoinIdx(idx);
     setSelectedCoin(coinAddr);
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    if (files.length > 4) {
-      alert("You can only upload up to 4 images");
-      return;
-    }
-    setSelectedImages(files.map((file) => URL.createObjectURL(file)));
+    const files = event.target.files;
+    if (!files) return;
+
+    const imageUrls: string[] = [];
+    const byteArrays: string[] = []; // Sử dụng string[] để lưu trữ định dạng byte array
+
+    const promises = Array.from(files).map((file) => {
+      return new Promise<void>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (reader.result) {
+            const base64 = reader.result as string;
+            imageUrls.push(base64);
+
+            // Chuyển base64 thành byte array và lưu vào mảng byteArrays
+            const byteArray = base64ToByteArray(base64);
+            const formattedByteArray = formatByteArray(byteArray);
+            byteArrays.push(formattedByteArray); // Lưu định dạng byte array thành chuỗi
+          }
+          resolve();
+        };
+        reader.readAsDataURL(file); // Đọc file dưới dạng base64
+      });
+    });
+
+    Promise.all(promises).then(() => {
+      setSelectedImages(imageUrls);
+      setImageByteArrays(byteArrays); // Lưu mảng các byte array đã định dạng
+      console.log("Formatted Byte Arrays:", byteArrays);
+    });
   };
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    if (files.length > 1) {
-      alert("You can only upload up to 1 Logo");
-      return;
-    }
-    setSelectedLogo(files.map((file) => URL.createObjectURL(file)));
+    const files = event.target.files;
+    if (!files) return;
+
+    const imageUrls: string[] = [];
+    const byteArrays: string[] = []; // Sử dụng string[] để lưu trữ định dạng byte array
+
+    const promises = Array.from(files).map((file) => {
+      return new Promise<void>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (reader.result) {
+            const base64 = reader.result as string;
+            imageUrls.push(base64);
+
+            // Chuyển base64 thành byte array và lưu vào mảng byteArrays
+            const byteArray = base64ToByteArray(base64);
+            const formattedByteArray = formatByteArray(byteArray);
+            byteArrays.push(formattedByteArray); // Lưu định dạng byte array thành chuỗi
+          }
+          resolve();
+        };
+        reader.readAsDataURL(file); // Đọc file dưới dạng base64
+      });
+    });
+
+    // Sau khi tất cả ảnh được đọc
+    Promise.all(promises).then(() => {
+      setSelectedLogo(imageUrls);
+      setImageByteArrays(byteArrays); // Lưu mảng các byte array đã định dạng
+      console.log("Formatted Byte Arrays:", byteArrays); // Bạn có thể kiểm tra byte arrays trong console
+    });
   };
 
   const triggerFileInput = () => {
@@ -116,7 +185,12 @@ const GeneralDetail = () => {
               //     } hover:brightness-75`}
               // >
               <button
-                className={`btn text-accent rounded-full ${selectedCoinIdx === idx ? "bg-gradient-to-r from-cyan-500 to-accent" : "bg-gray"}`}
+                key={idx}
+                className={`btn text-accent rounded-full ${
+                  selectedCoinIdx === idx
+                    ? "bg-gradient-to-r from-cyan-500 to-accent"
+                    : "bg-gray"
+                }`}
                 onClick={() => handleSelectCoin(vAsset.address, idx)}
               >
                 <Image
@@ -127,7 +201,9 @@ const GeneralDetail = () => {
                   height={24}
                   className="mr-2 rounded-full"
                 />
-                <span className="text-black text-lg font-normal">{vAsset.symbol}</span>
+                <span className="text-black text-lg font-normal">
+                  {vAsset.symbol}
+                </span>
                 {/* </div> */}
               </button>
             ))}
