@@ -248,6 +248,7 @@ const PreviewPage = () => {
               console.error(`error status code: ${err.response.statusText}`);
             }
             showAlertWithText("Transaction finished but failed to be saved");
+            setTxHashWatching(null);
           }
         }
       }

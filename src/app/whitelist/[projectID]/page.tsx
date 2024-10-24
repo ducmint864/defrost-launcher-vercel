@@ -36,6 +36,7 @@ export default function Whitelist({ params }: { params: { projectID: string } })
     poolContract,
     "joinWhitelist",
   )
+
   const {
     mutateAsync: callApprove,
     isLoading: isCallingApprove,
@@ -441,7 +442,7 @@ export default function Whitelist({ params }: { params: { projectID: string } })
         <div className="shadow-full backdrop-blur-sm rounded-2xl p-6 bg-[#1E293B] border-2 border-opacity-20 border-white/20 bg-gradient-to-br from-white/10 to-white/5">
           <div className="relative z-10">
             <h1 className="text-2xl font-bold text-center mb-6 text-[#c8cbd0]">
-              Project {projectTitle}
+              {projectTitle}
             </h1>
             <h2 className="text-center mb-7 mx-auto text-[#c8cbd0]">join Whitelist</h2>
             <p className="text-center mb-6 text-[#c8cbd0]">

@@ -11,12 +11,9 @@ import {
 } from "@thirdweb-dev/react";
 import { DBProject, ProjectStatus } from "@/interfaces/interface";
 import { format } from "date-fns";
-import getMyProjectInfo from "@/utils/getMyProjectInfo";
-import { getProjectPoolContract } from "@/utils/contracts";
 import { ethers } from "ethers";
 import { chainConfig } from "@/config";
 import { ProjectPoolABI, ProjectPoolFactoryABI } from "@/abi";
-import { Provider } from "react-redux";
 
 function InvesmentPage() {
   const [showMoreEnded, setShowMoreEnded] = useState<boolean>(false);
@@ -53,7 +50,7 @@ function InvesmentPage() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.post("/api/myProject", {
+        const response = await axios.post("/api/myInvestment", {
           address: userAddress,
         });
         const projects: DBProject[] = response.data.projectsInfo;
@@ -69,14 +66,14 @@ function InvesmentPage() {
             project.projectID
           );
           const signer = provider.getSigner();
-          const contract = new ethers.Contract(
+          const poolContract = new ethers.Contract(
             poolAddress,
             ProjectPoolABI,
             provider
           );
-          const raisedAmount = await contract.getProjectRaisedAmount();
+          const raisedAmount = await poolContract.getProjectRaisedAmount();
           const isProjectSoftCapReached =
-            await contract.getProjectSoftCapReached();
+            await poolContract.getProjectSoftCapReached();
           projectsWithDetails.push(
             Object.assign(project, {
               raisedAmount,

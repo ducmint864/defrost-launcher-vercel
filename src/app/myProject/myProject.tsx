@@ -12,13 +12,9 @@ import {
 import { DBProject } from "@/interfaces/interface";
 import { ProjectStatus } from "@/interfaces/interface";
 import { format } from "date-fns";
-import { Signer, ethers } from "ethers";
+import { ethers } from "ethers";
 import { chainConfig } from "@/config";
 import { IERC20ABI, ProjectPoolABI, ProjectPoolFactoryABI } from "@/abi";
-import { Provider } from "react-redux";
-import { requestAsyncStorage } from "next/dist/client/components/request-async-storage";
-import { MdOutlineCurtainsClosed } from "react-icons/md";
-import { getProjectPoolContract } from "@/utils/contracts";
 
 function MyProjectPage() {
   const [showMoreEnded, setShowMoreEnded] = useState<boolean>(false);
@@ -45,9 +41,6 @@ function MyProjectPage() {
   /**
    * @dev these states are for TopUpModal
    */
-  // const [projectName, setProjectName] = useState<string>("");
-  // const [topUpAmount, setTopUpAmount] = useState<string>("0");
-
   const showTxSuccessToast = async (duration?: number) => {
     setTxSuccessToastVisible(true);
     await new Promise((resolve) =>
@@ -337,11 +330,10 @@ function MyProjectPage() {
             <div
               className={`card bg-secondary rounded-box grid h-20 flex-grow place-items-center backdrop-blur-sm
               hover:cursor-pointer select-none
-              shadow-lg ${
-                withdrawType == 1
+              shadow-lg ${withdrawType == 1
                   ? "font-bold brightness-100 border-dashed border-t-4 border-indigo-500"
                   : "brightness-75"
-              }`}
+                }`}
               onClick={() => setWithdrawType(1)}
             >
               <img
@@ -355,11 +347,10 @@ function MyProjectPage() {
             <div
               className={`card bg-secondary rounded-box grid h-20 flex-grow  backdrop-blur-sm 
             hover:cursor-pointer select-none
-            shadow-lg place-items-center ${
-              withdrawType == 2
-                ? "font-bold brightess-100 border-dashed border-t-4 border-indigo-500"
-                : "brightness-75"
-            }`}
+            shadow-lg place-items-center ${withdrawType == 2
+                  ? "font-bold brightess-100 border-dashed border-t-4 border-indigo-500"
+                  : "brightness-75"
+                }`}
               onClick={() => setWithdrawType(2)}
             >
               <img
@@ -561,9 +552,8 @@ function MyProjectPage() {
         <div
           id="txSuccessToast"
           role="alert"
-          className={`alert alert-success ${
-            txSuccessToastVisible ? "" : "hidden"
-          } `}
+          className={`alert alert-success ${txSuccessToastVisible ? "" : "hidden"
+            } `}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -585,9 +575,8 @@ function MyProjectPage() {
         <div
           id="txErrorToast"
           role="alert"
-          className={`alert alert-error ${
-            txErrorToastVisible ? "" : "hidden"
-          } `}
+          className={`alert alert-error ${txErrorToastVisible ? "" : "hidden"
+            } `}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
