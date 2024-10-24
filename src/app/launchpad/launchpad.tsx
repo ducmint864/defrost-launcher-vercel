@@ -115,9 +115,13 @@ function LaunchpadPage() {
           (project: DBProject) => project.status === "upcoming"
         );
 
+        console.log("Upcoming project" + upcomingProjects);
+
         const otherProjects = projectsWithDetails.filter(
           (project: DBProject) => project.status !== "upcoming"
         );
+
+        console.log("Other project" + otherProjects);
 
         setUpcomingProjects(upcomingProjects);
         setOtherProjects(otherProjects);
