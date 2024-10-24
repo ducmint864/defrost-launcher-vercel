@@ -210,17 +210,22 @@ function MyProjectPage() {
   const makeWithdrawTransaction = async (e?: any) => {
     e.preventDefault();
 
+    if (!withdrawProject) {
+      console.trace(`withdrawProject is empty`);
+    }
+
     console.trace(`Boutta make withdraw tx. project ID is: ${withdrawProject?.projectID}`);
     setIsCallingContract(true);
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     console.trace(`metamask provided signer with address ${await signer.getAddress()}`);
+    console.trace(`projectID is ${withdrawProject?.projectID}`);
     const poolAddr = await factoryContract!.getProjectPoolAddress(withdrawProject?.projectID);
     console.trace(`got poolAddr: ${poolAddr}`);
     const poolContract = new ethers.Contract(
       poolAddr,
       ProjectPoolABI,
-      provider
+      signer,
     );
     console.trace("connected to to poolContract");
 
@@ -229,7 +234,18 @@ function MyProjectPage() {
         console.trace("calling withdrawFund()");
         const resp = await poolContract.withdrawFund();
         console.trace(`contract call withdrawFund() succeed! here is the tx resp:\n${resp}`);
-        showTxSuccessToast();
+        const response = await fetch("/api/myProject/withdraw", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ projectId: withdrawProject!.projectID }),
+        });
+        if (response.ok) {
+          showTxSuccessToast();
+        } else {
+          throw new Error(`fetching api /api/myProject/withdraw returned an error response:\n${response}`);
+        }
       } catch (err) {
         console.error(`Error when sending withdrawFund() tx:\n${err}`);
         showTxErrorToast();
@@ -241,12 +257,13 @@ function MyProjectPage() {
     }
 
     setIsCallingContract(false);
-    (document.getElementById("withdrawDialog") as HTMLDialogElement).showModal();
+    (document.getElementById("withdrawDialog") as HTMLDialogElement).close();
   }
 
   const handleWithdraw = async (e: any, project: DBProject) => {
-    e.preventDefault();
+    e?.preventDefault();
     (document.getElementById("withdrawDialog") as HTMLDialogElement).showModal();
+    setWithdrawProject(project);
     console.trace(`setWithdrawProject to ${project}`);
   }
 
@@ -318,7 +335,7 @@ function MyProjectPage() {
               <button className="btn btn-ghost ml-4 my-auto">Close</button>
               <button
                 className="btn btn-outline hover:text-black btn-success mx-auto my-auto"
-                onClick={(e) => makeWithdrawTransaction()}
+                onClick={(e) => makeWithdrawTransaction(e)}
               >
                 Continue
               </button>
@@ -378,12 +395,14 @@ function MyProjectPage() {
                 ? <button
                   className="mr-4 rounded-lg btn btn-success"
                   onClick={(e) => handleWithdraw(e, project)}
+                  disabled={project.isWithdrawn === true}
                 >
                   Withdraw fund
                 </button>
                 : <button
                   className="mr-4 rounded-lg btn btn-ghost"
                   onClick={(e) => handleRefund(e, project)}
+                  disabled={project.isWithdrawn === true}
                 >
                   Refund
                 </button>
