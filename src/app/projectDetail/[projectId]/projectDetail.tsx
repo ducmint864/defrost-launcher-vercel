@@ -12,7 +12,7 @@ import { format } from "date-fns";
 import { useChain } from "@thirdweb-dev/react";
 import { chainConfig } from "@/config";
 import { ethers } from "ethers";
-import { ProjectPoolFactoryABI } from "@/abi";
+import { ProjectPoolABI, ProjectPoolFactoryABI } from "@/abi";
 
 // const tokenSaleData = [
 //   {
@@ -86,11 +86,13 @@ const ProjectDetailPage = () => {
 
     setFactoryAddress(address);
     const provider = new ethers.providers.Web3Provider(window.ethereum);
+    console.log("Provider: " + provider);
     const factoryContract = new ethers.Contract(
       address,
       ProjectPoolFactoryABI,
       provider
     );
+
     setFactoryContract(factoryContract);
   }, [chain]);
 
@@ -101,35 +103,55 @@ const ProjectDetailPage = () => {
       const { projectId } = pageParam;
       console.log(projectId);
       const response = await axios.post("/api/projectDetail", projectId);
-      console.log(response.data);
+      console.log("Respnse data: " + response.data);
       const projectDetail = response.data.projectDetailsData;
       if (projectDetail) {
-        const images = projectDetail.projectImageUrl;
+        const images = projectDetail[0].projectImageUrls;
         setImages(images);
+        console.log("This is image" + images);
+
         console.log(projectDetail);
         setProjectDetails(projectDetail);
       } else {
         route.push("/404");
       }
 
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);      
+      const projectDetailId = BigInt(projectDetail[0].projectID);
+      console.log("Project detail id: " + projectDetailId);
+      console.log("Factory contract: " + factoryContract);
+      if (!factoryContract) {
+        console.log("Factory contract is not ready");
+        return;
+      }
       const poolAddress = await factoryContract!.getProjectPoolAddress(
-        projectDetail.projectID
+        projectDetailId
       );
+      console.log("Pool address: " + poolAddress);
+
+
+      const code = await provider.getCode(poolAddress);
+      if (code === "0x") {
+        console.error("Contract not found at address:", poolAddress);
+        return;
+      }
+      console.log("Code: " + code);
+
 
       const contract = new ethers.Contract(
         poolAddress,
-        ProjectPoolFactoryABI,
+        ProjectPoolABI,
         provider
       );
+      console.log("Contract: " + contract);
 
-      const tokenPrice = contract!.getPricePerToken(); //chua co
+      const tokenPrice = await contract!.getPricePerToken(); //chua co
       console.log(tokenPrice);
 
-      const softcap = contract!.getProjectSoftCapAmount();
-      const hardcap = contract!.getHardCapAmount();
-      const minInvestment = contract!.getProjectMinInvest();
-      const maxInvestment = contract!.getProjectMaxInvest();
+      const softcap = await contract!.getProjectSoftCapAmount();
+      const hardcap = await contract!.getHardCapAmount();
+      const minInvestment = await contract!.getProjectMinInvest();
+      const maxInvestment = await contract!.getProjectMaxInvest();
 
       setTokenPrice(tokenPrice);
       setSoftCap(softcap);
@@ -241,9 +263,8 @@ const ProjectDetailPage = () => {
                     alt={`Thumbnail ${index + 1}`}
                     width={100}
                     height={100}
-                    className={`cursor-pointer rounded-lg object-cover ${
-                      currentImage === index ? "ring-4 ring-blue-500" : ""
-                    }`}
+                    className={`cursor-pointer rounded-lg object-cover ${currentImage === index ? "ring-4 ring-blue-500" : ""
+                      }`}
                     onClick={() => setCurrentImage(index)}
                   />
                 ))}
@@ -277,11 +298,10 @@ const ProjectDetailPage = () => {
                 key="description"
                 title={
                   <span
-                    className={`${
-                      activeTab === "description"
+                    className={`${activeTab === "description"
                         ? "text-white border-b-2 border-blue-500"
                         : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
-                    } pb-[11px]`}
+                      } pb-[11px]`}
                   >
                     Description
                   </span>
@@ -291,11 +311,10 @@ const ProjectDetailPage = () => {
                 key="tokensale"
                 title={
                   <span
-                    className={`${
-                      activeTab === "tokensale"
+                    className={`${activeTab === "tokensale"
                         ? "text-white border-b-2 border-blue-500"
                         : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
-                    } pb-[11px]`}
+                      } pb-[11px]`}
                   >
                     Token Sale
                   </span>

@@ -50,6 +50,7 @@ model Project {
   projectLogoImageUrl String[]
   endDate             DateTime @default(now())
   startDate           DateTime @default(now())
+  isWithdrawn         Boolean  @default(false)
   // status              ProjectStatus @default(pending)
 }
 

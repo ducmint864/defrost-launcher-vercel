@@ -20,4 +20,6 @@ export interface DBProject extends Project {
     isProjectSoftcapReached?: boolean;
     isProjectFullyToppedUp?: boolean;
     status?: ProjectStatus;
+    hardCap?: string;
+    softCap?: string;
 }
