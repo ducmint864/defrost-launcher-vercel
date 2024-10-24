@@ -56,8 +56,7 @@ const Promotion = () => {
             </span>
             <label className="m-2 input input-bordered flex items-center gap-2 mb-10">
               <p>Exchange rate&nbsp;</p>
-              <div className="label">
-              </div>
+              <div className="label"></div>
               <input
                 type="number"
                 //     className="border border-black rounded-2xl w-[1050px] text-lg pl-5 focus:outline-none focus:ring-0 w-15 h-12
@@ -67,7 +66,9 @@ const Promotion = () => {
                 onChange={(e) => setTokenExchangeRate(e.target.value)}
               />
               <div className="label">
-                <span className="label-text-alt text-gray-500">1 project token = X vtokens</span>
+                <span className="label-text-alt text-gray-500">
+                  1 project token = X vtokens
+                </span>
               </div>
             </label>
 
@@ -84,7 +85,8 @@ const Promotion = () => {
             </span> */}
 
             <span className="label-text text-gray-600 text-md">
-              The minimum fundraising goal for the project to be considered successful.
+              The minimum fundraising goal for the project to be considered
+              successful.
             </span>
             <label className="m-2 input input-bordered flex items-center gap-2 mb-10">
               <p>Soft cap&emsp;&emsp;&emsp;&emsp;</p>
@@ -169,15 +171,16 @@ const Promotion = () => {
                 onChange={(e) => setReward(e.target.value)}
               />
               <div className="label">
-                <span className="label-text-alt text-gray-500">e.g, 1 for 1%</span>
+                <span className="label-text-alt text-gray-500">
+                  e.g, 1 for 1%
+                </span>
               </div>
             </label>
-
 
             <span className="text-gray-600 text-md">
               Select the start and end dates for the project or token sale.
             </span>
-            <div className="flex items-center border border-black rounded-2xl w-[1050px] h-12 text-lg px-3">
+            <div className="m-2 input input-bordered flex items-center gap-2 mb-10">
               <FaCalendarAlt className="text-gray-500 mr-2" />
               {/* <DatePicker
                 selected={startDate}
@@ -214,7 +217,7 @@ const Promotion = () => {
                     if (date && date >= now) {
                       // Kiểm tra nếu startDate lớn hơn hoặc bằng thời gian hiện tại
                       setStartDate(date); // Lưu ngày và thời gian đã chọn
-                      if (date >= endDate) {
+                      if (date >= (endDate ?? new Date())) {
                         setEndDate(new Date(date.getTime() + 15 * 60 * 1000)); // Tự động đặt endDate lớn hơn startDate ít nhất 15 phút
                       }
                     }
@@ -232,7 +235,7 @@ const Promotion = () => {
                   timeCaption="Time"
                   minTime={
                     startDate &&
-                      startDate.toDateString() === new Date().toDateString()
+                    startDate.toDateString() === new Date().toDateString()
                       ? new Date() // Nếu chọn hôm nay, giới hạn thời gian nhỏ nhất là thời gian hiện tại
                       : new Date(new Date().setHours(0, 0, 0, 0)) // Nếu chọn ngày trong tương lai, thời gian nhỏ nhất là 00:00
                   }
@@ -245,7 +248,7 @@ const Promotion = () => {
                 <DatePicker
                   selected={endDate}
                   onChange={(date) => {
-                    if (date && date >= startDate) {
+                    if (date && date >= (startDate ?? new Date())) {
                       setEndDate(date); // Chỉ cho phép lưu endDate nếu nó lớn hơn hoặc bằng startDate
                     }
                   }}
@@ -262,8 +265,8 @@ const Promotion = () => {
                   timeCaption="Time"
                   minTime={
                     startDate &&
-                      endDate &&
-                      startDate.toDateString() === endDate.toDateString()
+                    endDate &&
+                    startDate.toDateString() === endDate.toDateString()
                       ? startDate // Nếu cùng ngày, endDate phải lớn hơn thời gian của startDate
                       : new Date(new Date().setHours(0, 0, 0, 0)) // Nếu không cùng ngày, thời gian bắt đầu từ 00:00
                   }
@@ -283,7 +286,7 @@ const Promotion = () => {
           </Button>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 

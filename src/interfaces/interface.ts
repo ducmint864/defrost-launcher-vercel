@@ -19,5 +19,9 @@ export interface DBProject {
   startDate: Date;
   status: Status;
   raisedAmount: string;
+  tokenPrice: string;
   hardCap: string;
+  softcap: string;
+  minInvestment: string;
+  maxInvestment: string;
 }

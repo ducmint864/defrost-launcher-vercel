@@ -66,12 +66,11 @@ const ProjectDetailPage = () => {
     undefined
   );
   const [factoryContract, setFactoryContract] = useState<ethers.Contract>();
-  const [ softCap, setSoftCap] = useState<number>(0);
-  const [ hardCap, setHardCap] = useState<number>(0);
-  const [ minInvestment, setMinInvestment] = useState<number>(0);
-  const [ maxInvestment, setMaxInvestment] = useState<number>(0);
-
-
+  const [tokenPrice, setTokenPrice] = useState<number>(0);
+  const [softCap, setSoftCap] = useState<number>(0);
+  const [hardCap, setHardCap] = useState<number>(0);
+  const [minInvestment, setMinInvestment] = useState<number>(0);
+  const [maxInvestment, setMaxInvestment] = useState<number>(0);
 
   const route = useRouter();
   const chain = useChain();
@@ -95,9 +94,9 @@ const ProjectDetailPage = () => {
     setFactoryContract(factoryContract);
   }, [chain]);
 
+  const pageParam = useParams();
   useEffect(() => {
     const fetchProjectDetails = async () => {
-      const pageParam = useParams();
       console.log(pageParam);
       const { projectId } = pageParam;
       console.log(projectId);
@@ -109,10 +108,10 @@ const ProjectDetailPage = () => {
         setImages(images);
         console.log(projectDetail);
         setProjectDetails(projectDetail);
-      }else{
-        route.push('/404')
+      } else {
+        route.push("/404");
       }
-      
+
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const poolAddress = await factoryContract!.getProjectPoolAddress(
         projectDetail.projectID
@@ -124,7 +123,7 @@ const ProjectDetailPage = () => {
         provider
       );
 
-      const tokenPrice = contract!.getPricePerToken();
+      const tokenPrice = contract!.getPricePerToken(); //chua co
       console.log(tokenPrice);
 
       const softcap = contract!.getProjectSoftCapAmount();
@@ -132,14 +131,14 @@ const ProjectDetailPage = () => {
       const minInvestment = contract!.getProjectMinInvest();
       const maxInvestment = contract!.getProjectMaxInvest();
 
+      setTokenPrice(tokenPrice);
       setSoftCap(softcap);
       setHardCap(hardcap);
       setMinInvestment(minInvestment);
       setMaxInvestment(maxInvestment);
-      
     };
     fetchProjectDetails();
-  }, []);
+  }, [pageParam, factoryContract, route]);
 
   const nextImage = () => {
     setCurrentImage((prevImage) => (prevImage + 1) % images.length);
@@ -345,7 +344,7 @@ const ProjectDetailPage = () => {
                         <td className="p-4 text-[#aeaeae]">
                           Token exchange rate
                         </td>
-                        <td className="p-4 text-right"></td>
+                        <td className="p-4 text-right">{tokenPrice}</td>
                       </tr>
                       <tr>
                         <td className="p-4 text-[#aeaeae]">Sale Start Time</td>
@@ -367,23 +366,23 @@ const ProjectDetailPage = () => {
                       </tr>
                       <tr>
                         <td className="p-4 text-[#aeaeae]">Softcap</td>
-                        <td className="p-4 text-right"></td>
+                        <td className="p-4 text-right">{softCap}</td>
                       </tr>
                       <tr>
                         <td className="p-4 text-[#aeaeae]">Hardcap</td>
-                        <td className="p-4 text-right">{project.hardCap}</td>
+                        <td className="p-4 text-right">{hardCap}</td>
                       </tr>
                       <tr>
                         <td className="p-4 text-[#aeaeae]">
                           Minimum investment
                         </td>
-                        <td className="p-4 text-right"></td>
+                        <td className="p-4 text-right">{minInvestment}</td>
                       </tr>
                       <tr>
                         <td className="p-4 text-[#aeaeae]">
                           Maximum investment
                         </td>
-                        <td className="p-4 text-right"></td>
+                        <td className="p-4 text-right">{maxInvestment}</td>
                       </tr>
                     </tbody>
                   </table>
