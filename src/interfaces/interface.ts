@@ -17,7 +17,7 @@ export interface DBProject extends Project {
     // startDate: Date;
     // status: Status;
     raisedAmount?: string; // bigint as string
-    isProjectSoftcapReached: boolean;
+    isProjectSoftcapReached?: boolean;
     isProjectFullyToppedUp?: boolean;
     status?: ProjectStatus;
 }

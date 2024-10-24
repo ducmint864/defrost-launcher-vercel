@@ -28,10 +28,8 @@ function InvesmentPage() {
     undefined
   );
   const [factoryContract, setFactoryContract] = useState<ethers.Contract>();
-  const projectOwnerAddress = useAddress();
-  console.log("projectOwnerAddress: " + projectOwnerAddress);
-  const chain = useChain();
   const userAddress = useAddress();
+  const chain = useChain();
 
   useEffect(() => {
     if (!chain) {
@@ -56,7 +54,7 @@ function InvesmentPage() {
     const fetchProjects = async () => {
       try {
         const response = await axios.post("/api/myProject", {
-          address: projectOwnerAddress,
+          address: userAddress,
         });
         const projects: DBProject[] = response.data.projectsInfo;
         console.log(projects);
@@ -100,10 +98,14 @@ function InvesmentPage() {
         console.error("Error fetching projects:", error);
       }
     };
-    if (projectOwnerAddress) {
+    if (userAddress) {
       fetchProjects();
     }
-  }, [projectOwnerAddress, factoryContract]);
+  }, [userAddress, factoryContract]);
+
+  const handleRedeem = async (e: any, project: DBProject) => {
+    e.preventDefault();
+  }
 
   const displayedEndedProjects = showMoreEnded
     ? endedProjects
@@ -125,7 +127,7 @@ function InvesmentPage() {
           <div className="flex items-center flex-grow space-x-4 p-3">
             <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
               <Image
-                src={JSON.parse(project.projectLogoImageUrl[0])}
+                src={project.projectLogoImageUrl[0]}
                 alt={project.projectTitle}
                 width={52}
                 height={52}
@@ -152,13 +154,16 @@ function InvesmentPage() {
               </div>
               <div className="text-center">
                 <p className="font-semibold">Amount</p>
-                <p>{project.raisedAmount}</p>
+                <p>{project.raisedAmount?.toString()}</p>
               </div>
             </div>
           </div>
           <div className="ml-auto">
-            <Button className="bg-neutral text-white px-4 py-2 rounded-full transition duration-300 hover:shadow-lg hover:bg-opacity-80">
-              Withdraw
+            <Button
+              className="bg-neutral text-white px-4 py-2 rounded-full transition duration-300 hover:shadow-lg hover:bg-opacity-80"
+              onClick={(e) => handleRedeem(e, project)}
+            >
+              Redeem token
             </Button>
           </div>
         </div>
@@ -193,7 +198,7 @@ function InvesmentPage() {
           <div className="flex items-center flex-grow space-x-4 p-3">
             <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
               <Image
-                src={JSON.parse(project.projectLogoImageUrl[0])}
+                src={project.projectLogoImageUrl[0]}
                 alt={project.projectTitle}
                 width={52}
                 height={52}
@@ -220,7 +225,7 @@ function InvesmentPage() {
               </div>
               <div className="text-center">
                 <p className="font-semibold">Amount</p>
-                <p>{project.raisedAmount}</p>
+                <p>{project.raisedAmount?.toString()}</p>
               </div>
             </div>
           </div>

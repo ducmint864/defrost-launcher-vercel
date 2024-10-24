@@ -14,7 +14,7 @@ import { useChain } from "@thirdweb-dev/react";
 import { chainConfig } from "@/config";
 import { ethers } from "ethers";
 import { ProjectPoolABI, ProjectPoolFactoryABI } from "@/abi";
-import { DBProject, Status } from "@/interfaces/interface";
+import { DBProject, ProjectStatus } from "@/interfaces/interface";
 
 function LaunchpadPage() {
   const [projectList, setProjectList] = useState([]);
@@ -112,11 +112,11 @@ function LaunchpadPage() {
         }
 
         const upcomingProjects = projectsWithDetails.filter(
-          (project: DBProject) => project.status === Status.Upcoming
+          (project: DBProject) => project.status === "upcoming"
         );
 
         const otherProjects = projectsWithDetails.filter(
-          (project: DBProject) => project.status !== Status.Upcoming
+          (project: DBProject) => project.status !== "upcoming"
         );
 
         setUpcomingProjects(upcomingProjects);

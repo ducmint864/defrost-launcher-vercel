@@ -23,13 +23,17 @@ import { getProjectPoolContract } from "@/utils/contracts";
 function MyProjectPage() {
   const [showMoreEnded, setShowMoreEnded] = useState<boolean>(false);
   const [showMorePending, setShowMorePending] = useState<boolean>(false);
-  const [availableProjects, setAvailableProjects] = useState<DBProject[]>([]);
+  // const [availableProjects, setAvailableProjects] = useState<DBProject[]>([]);
   const [endedProjects, setEndedProjects] = useState<DBProject[]>([]);
   const [pendingProjects, setPendingProjects] = useState<DBProject[]>([]);
   const [factoryContract, setFactoryContract] = useState<ethers.Contract>();
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [isCallingContract, setIsCallingContract] = useState<boolean>(false);
-  const [toastVisible, setToastVisible] = useState<boolean>(false);
+  const [txSuccessToastVisible, setTxSuccessToastVisible] = useState<boolean>(false);
+  const [txErrorToastVisible, setTxErrorToastVisible] = useState<boolean>(false);
+  const [alertText, setAlertText] = useState<string>("");
+  const [withdrawType, setWithdrawType] = useState<1 | 2>(1);
+  const [withdrawProject, setWithdrawProject] = useState<DBProject | undefined>(undefined);
   const projectOwnerAddress = useAddress();
   const chain = useChain();
   const userAddress = useAddress();
@@ -39,6 +43,23 @@ function MyProjectPage() {
    */
   // const [projectName, setProjectName] = useState<string>("");
   // const [topUpAmount, setTopUpAmount] = useState<string>("0");
+
+  const showTxSuccessToast = async (duration?: number) => {
+    setTxSuccessToastVisible(true);
+    await new Promise(resolve => setTimeout(resolve, !!duration ? duration : 2500));
+    setTxSuccessToastVisible(false);
+  }
+
+  const showAlertWithText = (text: string) => {
+    setAlertText(text);
+    (document.getElementById("alertDialog") as HTMLDialogElement).showModal();
+  }
+
+  const showTxErrorToast = async (duration?: number) => {
+    setTxErrorToastVisible(true);
+    await new Promise(resolve => setTimeout(resolve, !!duration ? duration : 2500));
+    setTxErrorToastVisible(false);
+  }
 
   // debug-only
   useEffect(() => {
@@ -170,21 +191,64 @@ function MyProjectPage() {
       const txRec = await projectTokenContract.transfer(poolAddr, BigInt(topUpAmount));
       console.trace(`ERC20 transfer() finished with receipt: ${txRec}`);
 
-      setToastVisible(true);
-      await new Promise(resolve => {
-        setTimeout(resolve, 2500);
-      })
-      setToastVisible(false);
+      await showTxSuccessToast();
 
       let updatedProject = pendingProjects.find(p => p.projectID === project.projectID);
       updatedProject!.isProjectFullyToppedUp = true;
     } catch (err) {
+      showTxErrorToast();
       console.error(`error when calling ERC20.transfer():\n${err}`);
     } finally {
       setIsCallingContract(false);
     }
   }
 
+  const handleRefund = async (e: any, project: DBProject) => {
+    showAlertWithText("Coming soon!");
+  }
+
+  const makeWithdrawTransaction = async (e?: any) => {
+    e.preventDefault();
+
+    console.trace(`Boutta make withdraw tx. project ID is: ${withdrawProject?.projectID}`);
+    setIsCallingContract(true);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    console.trace(`metamask provided signer with address ${await signer.getAddress()}`);
+    const poolAddr = await factoryContract!.getProjectPoolAddress(withdrawProject?.projectID);
+    console.trace(`got poolAddr: ${poolAddr}`);
+    const poolContract = new ethers.Contract(
+      poolAddr,
+      ProjectPoolABI,
+      provider
+    );
+    console.trace("connected to to poolContract");
+
+    if (withdrawType === 1) {
+      try {
+        console.trace("calling withdrawFund()");
+        const resp = await poolContract.withdrawFund();
+        console.trace(`contract call withdrawFund() succeed! here is the tx resp:\n${resp}`);
+        showTxSuccessToast();
+      } catch (err) {
+        console.error(`Error when sending withdrawFund() tx:\n${err}`);
+        showTxErrorToast();
+      }
+    } else if (withdrawType === 2) {
+      console.trace("calling slpxWithdrawFund()");
+      showAlertWithText("Coming soon!");
+      return;
+    }
+
+    setIsCallingContract(false);
+    (document.getElementById("withdrawDialog") as HTMLDialogElement).showModal();
+  }
+
+  const handleWithdraw = async (e: any, project: DBProject) => {
+    e.preventDefault();
+    (document.getElementById("withdrawDialog") as HTMLDialogElement).showModal();
+    console.trace(`setWithdrawProject to ${project}`);
+  }
 
   const displayedEndedProjects = showMoreEnded
     ? endedProjects
@@ -195,84 +259,138 @@ function MyProjectPage() {
 
   return (
     <div className="relative flex flex-col justify-start items-start min-h-screen bg-primary px-14">
-      {/* Top Up modal (hidden on page load) */}
-      {/* <dialog id="TopUpModal" className="modal">
-        <div className="modal-box">
-          <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-          </form>
-          <h2 className="font-bold text-lg">Top Up project</h2>
-          <table className="p-4 mx-auto my-auto">
-            <tr>
-              <td className="font-bold">Project name</td>
-              <td className="">{projectName}</td>
-            </tr>
-            <tr>
-              <td className="font-bold">Top Up amount</td>
-              <td className="">{topUpAmount}</td>
-            </tr>
-          </table>
-          <p className="py-4"></p>
-          <button className="text-white bg-gradient-to-r from-bg-accent to-bg-primary">Continue</button>
+
+      {/* this modal is hidden unless we call modal.showModal() */}
+      <dialog id="alertDialog" className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box bg-primary text-primary-content">
+          <h3 className="font-bold text-lg">Alert</h3>
+          <p id="alertText" className="py-4">{alertText}</p>
+          <div className="modal-action">
+            <form method="dialog">
+              {/* if there is a button in form, it will close the modal */}
+              <button className="btn hover:text-black">Close</button>
+            </form>
+          </div>
         </div>
-      </dialog> */}
+      </dialog>
+
+      {/* Withdraw dialog (hidden by default) */}
+      <dialog id="withdrawDialog" className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box bg-primary text-primary-content">
+          <h3 className="font-bold text-lg">Choose withdraw token</h3>
+          {/* <p id="" className="py-4">{alertText}</p> */}
+          <div className="flex w-full mt-10 mb-10 p-4">
+            <div className={`card bg-secondary rounded-box grid h-20 flex-grow place-items-center backdrop-blur-sm
+              hover:cursor-pointer select-none
+              shadow-lg ${withdrawType == 1
+                ? "font-bold brightness-100 border-dashed border-t-4 border-indigo-500"
+                : "brightness-75"}`}
+              onClick={() => setWithdrawType(1)}
+            >
+              <img
+                src="https://www.stakingrewards.com/_next/image?url=https%3A%2F%2Fstorage.googleapis.com%2Fstakingrewards-static%2Fimages%2Fassets%2Fproduction%2Fbifrost-voucher-astr_logo.png%3Fv%3D1717150606436&w=3840&q=75"
+                width={24}
+                height={24}
+              >
+              </img>
+              Voucher asset
+            </div>
+            <div className="divider divider-horizontal">OR</div>
+            <div className={`card bg-secondary rounded-box grid h-20 flex-grow  backdrop-blur-sm 
+            hover:cursor-pointer select-none
+            shadow-lg place-items-center ${withdrawType == 2
+                ? "font-bold brightess-100 border-dashed border-t-4 border-indigo-500"
+                : "brightness-75"}`}
+              onClick={() => setWithdrawType(2)}
+            >
+              <img
+                src="https://s2.coinmarketcap.com/static/img/coins/200x200/12885.png"
+                width={24}
+                height={24}
+              >
+              </img>
+              Normal asset
+            </div>
+          </div>
+          <div className="modal-action">
+            <form method="dialog" className="gap-x-3">
+              {/* if there is a button in form, it will close the modal */}
+              <button className="btn btn-ghost ml-4 my-auto">Close</button>
+              <button
+                className="btn btn-outline hover:text-black btn-success mx-auto my-auto"
+                onClick={(e) => makeWithdrawTransaction()}
+              >
+                Continue
+              </button>
+            </form>
+          </div>
+        </div>
+      </dialog >
 
       <div className="mt-20 mb-6 text-2xl font-bold text-white">
         Ended Project {isFetching
           ? <span className="loading loading-spinner display-block ml-3 loading-xs text-white mx-auto my-auto"></span>
           : ""}
       </div>
-      {displayedEndedProjects.map((project) => (
-        <div
-          key={project.id}
-          className="w-full bg-secondary rounded-lg shadow-lg p-4 text-white flex items-center mt-5"
-        >
-          <div className="flex items-center flex-grow space-x-4 p-3">
-            <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
-              <img
-                src={project.projectLogoImageUrl[0]}
-                alt={project.projectTitle}
-                width={52}
-                height={52}
-                className="object-cover object-center w-full h-full"
-              />
-            </div>
-            <div className="w-48">
-              <h3 className="text-xl font-bold">{project.projectTitle}</h3>
-              <p className="text-sm">{project.shortDescription}</p>
-            </div>
+      {
+        displayedEndedProjects.map((project) => (
+          <div
+            key={project.id}
+            className="w-full bg-secondary rounded-lg shadow-lg p-4 text-white flex items-center mt-5"
+          >
+            <div className="flex items-center flex-grow space-x-4 p-3">
+              <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
+                <img
+                  src={project.projectLogoImageUrl[0]}
+                  alt={project.projectTitle}
+                  width={52}
+                  height={52}
+                  className="object-cover object-center w-full h-full"
+                />
+              </div>
+              <div className="w-48">
+                <h3 className="text-xl font-bold">{project.projectTitle}</h3>
+                <p className="text-sm">{project.shortDescription}</p>
+              </div>
 
-            <div className="flex space-x-20 p-5">
-              <div className="text-center">
-                <p className="font-semibold">End Date</p>
-                <p>
-                  {format(new Date(project.endDate), "dd/MM/yyyy HH:mm:ss")}
-                </p>
+              <div className="flex space-x-20 p-5">
+                <div className="text-center">
+                  <p className="font-semibold">End Date</p>
+                  <p>
+                    {format(new Date(project.endDate), "dd/MM/yyyy HH:mm:ss")}
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold">Start Date</p>
+                  <p>
+                    {format(new Date(project.startDate), "dd/MM/yyyy HH:mm:ss")}
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold">Raised amount</p>
+                  <p>{project.raisedAmount!.toString()}</p>
+                </div>
               </div>
-              <div className="text-center">
-                <p className="font-semibold">Start Date</p>
-                <p>
-                  {format(new Date(project.startDate), "dd/MM/yyyy HH:mm:ss")}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="font-semibold">Raised amount</p>
-                <p>{project.raisedAmount!.toString()}</p>
-              </div>
+
             </div>
-          </div>
-          <div className="ml-auto">
-            {project.isProjectSoftcapReached === true
-              ? <button className="mr-4 rounded-lg btn btn-success">
-                Withdraw fund
-              </button>
-              : <button className="mr-4 rounded-lg btn btn-ghost">
-                Refund
-              </button>
-            }
-          </div>
-        </div>
-      ))
+            <div className="ml-auto">
+              {project.isProjectSoftcapReached === true
+                ? <button
+                  className="mr-4 rounded-lg btn btn-success"
+                  onClick={(e) => handleWithdraw(e, project)}
+                >
+                  Withdraw fund
+                </button>
+                : <button
+                  className="mr-4 rounded-lg btn btn-ghost"
+                  onClick={(e) => handleRefund(e, project)}
+                >
+                  Refund
+                </button>
+              }
+            </div>
+          </div >
+        ))
       }
 
       <div className="mt-4 flex justify-center w-full">
@@ -298,62 +416,63 @@ function MyProjectPage() {
           ? <span className="loading loading-spinner loading-xs ml-3 text-white display-block mx-auto my-auto"></span>
           : ""}
       </div>
-      {displayedPendingProjects.map((project) => (
-        <div
-          key={project.id}
-          className="w-full bg-secondary rounded-lg shadow-lg p-4 text-white flex items-center mt-5"
-        >
-          <div className="flex items-center flex-grow space-x-4 p-3">
-            <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
-              <img
-                src={project.projectLogoImageUrl[0]}
-                alt={project.projectTitle}
-                width={52}
-                height={52}
-                className="object-cover object-center w-full h-full"
-              />
-            </div>
-            <div className="w-48">
-              <h3 className="text-xl font-bold">{project.projectTitle}</h3>
-              <p className="text-sm">{project.shortDescription}</p>
-            </div>
+      {
+        displayedPendingProjects.map((project) => (
+          <div
+            key={project.id}
+            className="w-full bg-secondary rounded-lg shadow-lg p-4 text-white flex items-center mt-5"
+          >
+            <div className="flex items-center flex-grow space-x-4 p-3">
+              <div className="w-14 h-14 rounded-full overflow-hidden mr-5">
+                <img
+                  src={project.projectLogoImageUrl[0]}
+                  alt={project.projectTitle}
+                  width={52}
+                  height={52}
+                  className="object-cover object-center w-full h-full"
+                />
+              </div>
+              <div className="w-48">
+                <h3 className="text-xl font-bold">{project.projectTitle}</h3>
+                <p className="text-sm">{project.shortDescription}</p>
+              </div>
 
-            <div className="flex space-x-20 p-5">
-              <div className="text-center">
-                <p className="font-semibold">End Date</p>
-                <p>
-                  {format(new Date(project.endDate), "dd/MM/yyyy HH:mm:ss")}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="font-semibold">Start Date</p>
-                <p>
-                  {format(new Date(project.startDate), "dd/MM/yyyy HH:mm:ss")}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="font-semibold">Raised amount</p>
-                <p>{project.raisedAmount!.toString()}</p>
+              <div className="flex space-x-20 p-5">
+                <div className="text-center">
+                  <p className="font-semibold">End Date</p>
+                  <p>
+                    {format(new Date(project.endDate), "dd/MM/yyyy HH:mm:ss")}
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold">Start Date</p>
+                  <p>
+                    {format(new Date(project.startDate), "dd/MM/yyyy HH:mm:ss")}
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold">Raised amount</p>
+                  <p>{project.raisedAmount!.toString()}</p>
+                </div>
               </div>
             </div>
+            <div className="ml-auto">
+              {project.isProjectFullyToppedUp !== true
+                ? <button
+                  className="btn btn-outline rounded-lg mr-4 text-white"
+                  onClick={(e) => handleTopUp(e, project)}
+                >
+                  {
+                    isCallingContract
+                      ? <span className="loading loading-spinner ml-3 loading-xs text-white mr-2"></span>
+                      : "Top Up"
+                  }
+                </button>
+                : <></>
+              }
+            </div>
           </div>
-          <div className="ml-auto">
-            {project.isProjectFullyToppedUp !== true
-              ? <button
-                className="btn btn-outline rounded-lg mr-4 text-white"
-                onClick={(e) => handleTopUp(e, project)}
-              >
-                Top Up {
-                  isCallingContract
-                    ? <span className="loading loading-spinner display-block ml-3 loading-xs text-white mx-auto my-auto"></span>
-                    : <></>
-                }
-              </button>
-              : <></>
-            }
-          </div>
-        </div>
-      ))
+        ))
       }
 
       <div className="mt-4 mb-4 flex justify-center w-full">
@@ -374,10 +493,37 @@ function MyProjectPage() {
         )}
       </div>
 
-      {/* hidden alert */}
+      {/* hidden toast */}
       <div className="toast toast-end">
-        <div id="txSuccessAlert" className={`alert alert-success ${toastVisible ? "" : "hidden"} `}>
-          <span>Transaction sent successful</span>
+        <div id="txSuccessToast" role="alert" className={`alert alert-success ${txSuccessToastVisible ? "" : "hidden"} `}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 shrink-0 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Success! Your transaction was processed</span>
+        </div>
+      </div>
+      <div className="toast toast-end">
+        <div id="txErrorToast" role="alert" className={`alert alert-error ${txErrorToastVisible ? "" : "hidden"} `}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 shrink-0 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>An error occurred! Your transaction did not succeed</span>
         </div>
       </div>
     </div >
