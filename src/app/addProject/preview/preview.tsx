@@ -68,7 +68,8 @@ const PreviewPage = () => {
   const [alertText, setAlertText] = useState<string>("");
   const [factoryAddress, setFactoryAddress] = useState<string | undefined>(undefined);
   const [txHashWatching, setTxHashWatching] = useState<string | null>(null);
-  const [isSendingHTTPRequest, setIsSendingHTTPRequest] = useState<boolean>(false);
+  const [isSendingHTTPRequest, setIsSendingHTTPRequest] =
+    useState<boolean>(false);
 
 
   const formDataVerifyToken = useSelector((state: any) => {
@@ -201,7 +202,9 @@ const PreviewPage = () => {
       if (eventListenerError) {
         console.trace("Lmao, eventListenerError");
         showAlertWithText(`Contract event error occurred`);
-        console.error(`Co event from smart contract due to error:\n${eventListenerError}`)
+        console.error(
+          `Co event from smart contract due to error:\n${eventListenerError}`
+        );
       }
 
       if (poolCreatedEvt && !eventListenerError) {
@@ -210,8 +213,8 @@ const PreviewPage = () => {
         console.debug(`eventData = ${poolCreatedEvt}`);
         console.debug(`eventListenerError = ${eventListenerError}`);
 
-        const wantedEvent = poolCreatedEvt.find(evt => {
-          return evt.transaction.transactionHash === txHashWatching
+        const wantedEvent = poolCreatedEvt.find((evt) => {
+          return evt.transaction.transactionHash === txHashWatching;
         });
 
         if (!wantedEvent) {
@@ -242,7 +245,7 @@ const PreviewPage = () => {
           console.error(`error while calling POST api:\n${err}`);
           if (err instanceof AxiosError) {
             if (err.response) {
-              console.error(`error status code: ${err.response.statusText}`)
+              console.error(`error status code: ${err.response.statusText}`);
             }
             showAlertWithText("Transaction finished but failed to be saved");
           }
@@ -256,13 +259,12 @@ const PreviewPage = () => {
       isWaitingForPoolCreated = false;
       eventListenerError = undefined;
       setIsSendingHTTPRequest(false);
-    }
+    };
 
     justDoIt();
 
     // cleanup
     return cleanup;
-
   }, [txHashWatching]);
 
   const showAlertWithText = (text: string) => {
@@ -567,7 +569,6 @@ const PreviewPage = () => {
       </div>
     </div>
   );
-
 };
 
 export default PreviewPage;
