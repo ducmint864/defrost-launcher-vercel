@@ -9,6 +9,10 @@ import axios from "axios";
 import { useRouter, useParams } from "next/navigation";
 import { DBProject } from "@/interfaces/interface";
 import { format } from "date-fns";
+import { useChain } from "@thirdweb-dev/react";
+import { chainConfig } from "@/config";
+import { ethers } from "ethers";
+import { ProjectPoolFactoryABI } from "@/abi";
 
 // const tokenSaleData = [
 //   {
@@ -58,7 +62,38 @@ const ProjectDetailPage = () => {
   const [activeTab, setActiveTab] = useState<Key>("description");
   const [projectDetails, setProjectDetails] = useState<DBProject[]>([]);
   const [images, setImages] = useState<string[]>([]);
+  const [factoryAddress, setFactoryAddress] = useState<string | undefined>(
+    undefined
+  );
+  const [factoryContract, setFactoryContract] = useState<ethers.Contract>();
+  const [ softCap, setSoftCap] = useState<number>(0);
+  const [ hardCap, setHardCap] = useState<number>(0);
+  const [ minInvestment, setMinInvestment] = useState<number>(0);
+  const [ maxInvestment, setMaxInvestment] = useState<number>(0);
+
+
+
   const route = useRouter();
+  const chain = useChain();
+
+  useEffect(() => {
+    if (!chain) {
+      return;
+    }
+
+    const address: string =
+      chainConfig[chain.chainId.toString() as keyof typeof chainConfig]
+        ?.contracts?.ProjectPoolFactory?.address;
+
+    setFactoryAddress(address);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const factoryContract = new ethers.Contract(
+      address,
+      ProjectPoolFactoryABI,
+      provider
+    );
+    setFactoryContract(factoryContract);
+  }, [chain]);
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -74,7 +109,34 @@ const ProjectDetailPage = () => {
         setImages(images);
         console.log(projectDetail);
         setProjectDetails(projectDetail);
+      }else{
+        route.push('/404')
       }
+      
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const poolAddress = await factoryContract!.getProjectPoolAddress(
+        projectDetail.projectID
+      );
+
+      const contract = new ethers.Contract(
+        poolAddress,
+        ProjectPoolFactoryABI,
+        provider
+      );
+
+      const tokenPrice = contract!.getPricePerToken();
+      console.log(tokenPrice);
+
+      const softcap = contract!.getProjectSoftCapAmount();
+      const hardcap = contract!.getHardCapAmount();
+      const minInvestment = contract!.getProjectMinInvest();
+      const maxInvestment = contract!.getProjectMaxInvest();
+
+      setSoftCap(softcap);
+      setHardCap(hardcap);
+      setMinInvestment(minInvestment);
+      setMaxInvestment(maxInvestment);
+      
     };
     fetchProjectDetails();
   }, []);
