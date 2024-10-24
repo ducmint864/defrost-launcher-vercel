@@ -10,7 +10,7 @@ import {
   useContractRead,
 } from "@thirdweb-dev/react";
 import { DBProject } from "@/interfaces/interface";
-import { ProjectStatus } from "@prisma/client";
+import { ProjectStatus } from "@/interfaces/interface";
 import { format } from "date-fns";
 import { Signer, ethers } from "ethers";
 import { chainConfig } from "@/config";
@@ -117,10 +117,10 @@ function MyProjectPage() {
         }
 
         const ended = projects.filter(
-          (project: DBProject) => project.status === ProjectStatus.ended
+          (project: DBProject) => project.status === "ended"
         );
         const pending = projects.filter(
-          (project: DBProject) => project.status === ProjectStatus.pending
+          (project: DBProject) => project.status === "pending"
         );
         console.debug(`ended project len: ${ended.length}`);
         console.debug(`pending project len: ${pending.length}`);
