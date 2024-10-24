@@ -4,13 +4,13 @@ import Image from "next/image";
 import { Tabs, Tab } from "@nextui-org/react";
 import { Key } from "react";
 import { Button } from "@nextui-org/react";
-import { useSelector } from "react-redux";
 import axios from "axios";
 import { useRouter, useParams } from "next/navigation";
 import { DBProject } from "@/interfaces/interface";
 import { format } from "date-fns";
 import {
   useChain,
+  useAddress,
 } from "@thirdweb-dev/react";
 import { chainConfig } from "@/config";
 import { ethers } from "ethers";
@@ -30,9 +30,11 @@ const ProjectDetailPage = () => {
   const [minInvestment, setMinInvestment] = useState<bigint>(BigInt(0));
   const [maxInvestment, setMaxInvestment] = useState<bigint>(BigInt(0));
   const [vAsssetDecimals, setVAssetDecimals] = useState<number | undefined>(undefined);
+  const [userWhitelisted, setUserWhitelisted] = useState<boolean>(false);
 
   const route = useRouter();
   const chain = useChain();
+  const userAddress = useAddress();
 
   useEffect(() => {
     if (!poolContract) {
@@ -65,6 +67,26 @@ const ProjectDetailPage = () => {
     getVAssetDecimals();
 
   }, [poolContract, chain]);
+
+  /**
+   * @dev check if user has invested in project on poolContract mount
+   */
+  useEffect(() => {
+    console.trace(`fetching user's whitelist status`);
+
+    const checkUserWhitelisted = async () => {
+      if (!poolContract) {
+        console.trace("nevermind, poolContract is not ready");
+        return;
+      }
+      const isWhitelisted: boolean = await poolContract.isWhitelisted();
+      console.debug(`is user whitelisted? : ${isWhitelisted}`);
+      setUserWhitelisted(isWhitelisted);
+      console.trace(`call setUserWhitelisted()`);
+    }
+
+    checkUserWhitelisted();
+  }, [poolContract]);
 
   useEffect(() => {
     if (!chain) {
@@ -176,6 +198,20 @@ const ProjectDetailPage = () => {
     setIsFullscreen(!isFullscreen);
   };
 
+  const handleWhitelist = async (e?: any) => {
+    if (e) {
+      e?.preventDefault();
+    }
+
+    const { projectId } = pageParam;
+    if (!projectId) {
+      console.trace(`projectId when switching page is empty`);
+      return;
+    }
+    console.debug(`project id is ${projectId}`);
+    route.push(`/whitelist/${projectId}`);
+  }
+
   return (
     <div className="flex justify-center items-center bg-primary min-h-screen ">
       <div
@@ -267,9 +303,23 @@ const ProjectDetailPage = () => {
                 </p>
                 <p className="text-gray-400 mt-8">{project.shortDescription}</p>
 
-                <Button className="bg-neutral hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full mt-auto w-full">
-                  Whitelist
-                </Button>
+
+                {
+                  userWhitelisted === true
+                    ? <button
+                      className="btn btn-active btn-primary"
+                      onClick={handleInvest}
+                    >
+                      Invest
+                    </button>
+
+                    : <button
+                      className="btn btn-outline"
+                      onClick={handleWhitelist}
+                    >
+                      Default
+                    </button>
+                }
               </div>
             </div>
           </div>
@@ -432,8 +482,9 @@ const ProjectDetailPage = () => {
             </div>
           )}
         </div>
-      ))}
-    </div>
+      ))
+      }
+    </div >
   );
 };
 
