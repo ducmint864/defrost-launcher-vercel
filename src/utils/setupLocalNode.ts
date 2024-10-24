@@ -1,6 +1,7 @@
 import { exec, ChildProcess } from 'child_process';
 import { ethers } from 'ethers';
 import { readFileSync, writeFileSync } from 'fs';
+import { ProjectPoolABI } from "../abi/";
 
 export function startAnvil(): ChildProcess {
     // Spawn Anvil process
@@ -105,8 +106,12 @@ async function run(): Promise<void> {
         "MockVToken",
         signer,
         undefined,
-    )
+    );
     const mockVTokenAddr = mockVTokenContract.address;
+    await mockVTokenContract.freeMoneyForEveryone(
+        "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        BigInt(100 * 10 ** 9 * 10 ** 18),
+    );
 
     const mockProjectTokenContract = await deployContract(
         "MockProjectToken",
@@ -114,6 +119,10 @@ async function run(): Promise<void> {
         undefined,
     );
     const mockProjectTokenAddr = mockProjectTokenContract.address;
+    await mockProjectTokenContract.freeMoneyForEveryone(
+        "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        BigInt(100 * 10 * 9 * 10 ** 18),
+    );
 
     // create example project pool
     const blockTimestamp = await getCurrentBlockTimestamp(provider);
@@ -142,4 +151,46 @@ async function run(): Promise<void> {
     console.log('\x1b[36m%s\x1b[0m', `An example ProjectPool contract was created at address ${poolAddr}`);
 }
 
+async function invest() {
+    const provider = getProvider('http://localhost:8545');
+    const signer = getSigner("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80", provider);
+    const poolContract = new ethers.Contract(
+        "0xB7A5bd0345EF1Cc5E66bf61BdeC17D2461fBd968",
+        ProjectPoolABI,
+        signer
+    );
+
+    try {
+        const tx = await poolContract.investProject(
+            BigInt("9500000000000000000")
+        );
+        console.debug(`invest response:\n${tx}`);
+    } catch (err) {
+        console.error(`error when sending invest():\n${err}`);
+    }
+}
+
 run().then().catch(err => console.error(err))
+
+async function testXCMOracle() {
+    const provider = getProvider('');
+    const signer = getSigner("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80", provider);
+    const poolContract = new ethers.Contract(
+        "0xB7A5bd0345EF1Cc5E66bf61BdeC17D2461fBd968",
+        ProjectPoolABI,
+        signer
+    );
+
+    try {
+        const tx = await poolContract.investProject(
+            BigInt("9500000000000000000")
+        );
+        console.debug(`invest response:\n${tx}`);
+    } catch (err) {
+        console.error(`error when sending invest():\n${err}`);
+    }
+
+}
+
+
+// invest().then().catch();
