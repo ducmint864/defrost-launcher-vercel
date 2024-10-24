@@ -31,6 +31,28 @@ export function convertNumToOnChainFormat(
     return toString ? result.toString() : result;
 }
 
+export function convertNumToOffchainFormat(
+    num: bigint,
+    onchainDecimals: number,
+): string {
+    if (!num || !onchainDecimals) {
+        console.error("num or onChainDecimals is undefined");
+        return "";
+    }
+
+    const divisor = BigInt(10 ** onchainDecimals);
+    const result = num / divisor;
+    const remainder = num % divisor;
+
+    // Handling fractional part by appending it to the result if remainder exists
+    if (remainder === BigInt(0)) {
+        return result.toString();
+    } else {
+        const fractionPart = remainder.toString().padStart(onchainDecimals, '0');
+        return `${result}.${fractionPart}`;
+    }
+}
+
 // Test cases
 // console.log(countDecimals(123.4567));    // Output: 4
 // console.log(countDecimals(123));         // Output: 0
@@ -42,3 +64,12 @@ export function convertNumToOnChainFormat(
 // console.log(convertNumToOnChainFormat(10, 18));
 // console.log(convertNumToOnChainFormat(0.0069, 18));
 // console.log(convertNumToOnChainFormat(0.5 / 100, 4));
+
+// Test cases for convertNumToOffchainFormat
+// console.log(convertNumToOffchainFormat(BigInt(100000), 2)); // Expected output: "1000"
+// console.log(convertNumToOffchainFormat(BigInt(1234567890123456789), 18)); // Expected output: "1234567890"
+// console.log(convertNumToOffchainFormat(BigInt(5000000000000000), 4)); // Expected output: "500000"
+// console.log(convertNumToOffchainFormat(BigInt(123456789), 0)); // Expected output: "123456789"
+// console.log(convertNumToOffchainFormat(BigInt(0), 5)); // Expected output: "0"
+// console.log(convertNumToOffchainFormat(BigInt(123456), 3)); // Expected output: "123"
+// console.log(convertNumToOffchainFormat(BigInt(999999999), 9)); // Expected output: "1"

@@ -9,82 +9,71 @@ import axios from "axios";
 import { useRouter, useParams } from "next/navigation";
 import { DBProject } from "@/interfaces/interface";
 import { format } from "date-fns";
-import { useChain } from "@thirdweb-dev/react";
+import {
+  useChain,
+} from "@thirdweb-dev/react";
 import { chainConfig } from "@/config";
 import { ethers } from "ethers";
 import { ProjectPoolABI, ProjectPoolFactoryABI } from "@/abi";
-
-// const tokenSaleData = [
-//   {
-//     id: 1,
-//     title: "Token exchange rate",
-//     key: "tokenExchangeRate", // Kết nối với trường 'tokenExchangeRate'
-//   },
-//   {
-//     id: 2,
-//     title: "Sale Start Time",
-//     key: "startDate", // Kết nối với trường 'startDate'
-//   },
-//   {
-//     id: 3,
-//     title: "Sale End Time",
-//     key: "endDate", // Kết nối với trường 'endDate'
-//   },
-//   // {
-//   //   id: 4,
-//   //   title: "Amount token release",
-//   //   key: "amountTokenRelease", // Kết nối với trường 'amountTokenRelease'
-//   // },
-//   {
-//     id: 4,
-//     title: "Softcap",
-//     key: "softcap", // Kết nối với trường 'softcap'
-//   },
-//   {
-//     id: 5,
-//     title: "Hardcap",
-//     key: "hardcap", // Kết nối với trường 'hardcap'
-//   },
-//   {
-//     id: 6,
-//     title: "Minimum investment",
-//     key: "minInvestment", // Kết nối với trường 'minInvestment'
-//   },
-//   {
-//     id: 7,
-//     title: "Maximum investment",
-//     key: "maxInvestment", // Kết nối với trường 'maxInvestment'
-//   },
-// ];
+import { convertNumToOffchainFormat } from "@/utils/decimals";
 
 const ProjectDetailPage = () => {
   const [currentImage, setCurrentImage] = useState(0);
   const [activeTab, setActiveTab] = useState<Key>("description");
   const [projectDetails, setProjectDetails] = useState<DBProject[]>([]);
   const [images, setImages] = useState<string[]>([]);
-  const [factoryAddress, setFactoryAddress] = useState<string | undefined>(
-    undefined
-  );
   const [factoryContract, setFactoryContract] = useState<ethers.Contract>();
-  const [tokenPrice, setTokenPrice] = useState<number>(0);
-  const [softCap, setSoftCap] = useState<number>(0);
-  const [hardCap, setHardCap] = useState<number>(0);
-  const [minInvestment, setMinInvestment] = useState<number>(0);
-  const [maxInvestment, setMaxInvestment] = useState<number>(0);
+  const [poolContract, setPoolContract] = useState<ethers.Contract | undefined>(undefined);
+  const [tokenPrice, setTokenPrice] = useState<bigint>(BigInt(0));
+  const [softCap, setSoftCap] = useState<bigint>(BigInt(0));
+  const [hardCap, setHardCap] = useState<bigint>(BigInt(0));
+  const [minInvestment, setMinInvestment] = useState<bigint>(BigInt(0));
+  const [maxInvestment, setMaxInvestment] = useState<bigint>(BigInt(0));
+  const [vAsssetDecimals, setVAssetDecimals] = useState<number | undefined>(undefined);
 
   const route = useRouter();
   const chain = useChain();
 
   useEffect(() => {
-    if (!chain) {
+    if (!poolContract) {
+      console.trace(`poolContract is not ready`);
       return;
     }
 
+    console.trace(`chain mounted: ${chain}`);
+    if (!chain) {
+      console.trace("chain is not ready");
+      return;
+    }
+
+    const getVAssetDecimals = async () => {
+      const vAssetAddress = await poolContract.getAcceptedVAsset();
+      console.trace(`vAssetAddress is: ${vAssetAddress}`);
+      if (!vAssetAddress) {
+        console.trace("vAssetDecimals is empty");
+        return;
+      }
+      const chainId = (chain.chainId).toString() as keyof typeof chainConfig;
+      const vAsset = chainConfig[chainId].vAssets.find(asset => asset.address === vAssetAddress);
+      console.debug(`vAsset from config is : ${vAsset}`);
+      const decimals = vAsset?.decimals;
+      console.debug(`decimals is ${decimals}`);
+      setVAssetDecimals(decimals);
+      console.trace("call setVAssetDecimals()");
+    }
+
+    getVAssetDecimals();
+
+  }, [poolContract, chain]);
+
+  useEffect(() => {
+    if (!chain) {
+      return;
+    }
     const address: string =
       chainConfig[chain.chainId.toString() as keyof typeof chainConfig]
         ?.contracts?.ProjectPoolFactory?.address;
 
-    setFactoryAddress(address);
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     console.log("Provider: " + provider);
     const factoryContract = new ethers.Contract(
@@ -97,6 +86,7 @@ const ProjectDetailPage = () => {
   }, [chain]);
 
   const pageParam = useParams();
+
   useEffect(() => {
     const fetchProjectDetails = async () => {
       console.log(pageParam);
@@ -116,7 +106,7 @@ const ProjectDetailPage = () => {
         route.push("/404");
       }
 
-      const provider = new ethers.providers.Web3Provider(window.ethereum);      
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
       const projectDetailId = BigInt(projectDetail[0].projectID);
       console.log("Project detail id: " + projectDetailId);
       console.log("Factory contract: " + factoryContract);
@@ -127,8 +117,7 @@ const ProjectDetailPage = () => {
       const poolAddress = await factoryContract!.getProjectPoolAddress(
         projectDetailId
       );
-      console.log("Pool address: " + poolAddress);
-
+      console.log("Got pool address: " + poolAddress);
 
       const code = await provider.getCode(poolAddress);
       if (code === "0x") {
@@ -137,30 +126,39 @@ const ProjectDetailPage = () => {
       }
       console.log("Code: " + code);
 
-
-      const contract = new ethers.Contract(
+      const poolContract = new ethers.Contract(
         poolAddress,
         ProjectPoolABI,
         provider
       );
-      console.log("Contract: " + contract);
 
-      const tokenPrice = await contract!.getPricePerToken(); //chua co
-      console.log(tokenPrice);
+      console.log("Got pool contract: " + poolContract);
 
-      const softcap = await contract!.getProjectSoftCapAmount();
-      const hardcap = await contract!.getHardCapAmount();
-      const minInvestment = await contract!.getProjectMinInvest();
-      const maxInvestment = await contract!.getProjectMaxInvest();
+      const tokenPrice = await poolContract!.getPricePerToken(); //chua co
+      console.log(`tokenPrice is: ${tokenPrice}`);
 
-      setTokenPrice(tokenPrice);
-      setSoftCap(softcap);
-      setHardCap(hardcap);
-      setMinInvestment(minInvestment);
-      setMaxInvestment(maxInvestment);
+      const softcap = await poolContract!.getProjectSoftCapAmount();
+      const hardcap = await poolContract!.getProjectHardCapAmount();
+      const minInvestment = await poolContract!.getProjectMinInvest();
+      const maxInvestment = await poolContract!.getProjectMaxInvest();
+
+      console.log(`softCap is: ${softCap}`);
+      console.log(`hardCap is: ${hardCap}`);
+      console.log(`minInvestment is: ${minInvestment}`);
+      console.log(`maxInvestment is: ${maxInvestment}`);
+
+      setTokenPrice(BigInt(tokenPrice));
+      setSoftCap(BigInt(softcap));
+      setHardCap(BigInt(hardcap));
+      setMinInvestment(BigInt(minInvestment));
+      setMaxInvestment(BigInt(maxInvestment));
+      console.trace(`setPoolContract to ${poolContract}`);
+      setPoolContract(poolContract);
+      console.trace("set vars complete");
     };
+
     fetchProjectDetails();
-  }, [pageParam, factoryContract, route]);
+  }, [factoryContract]);
 
   const nextImage = () => {
     setCurrentImage((prevImage) => (prevImage + 1) % images.length);
@@ -177,18 +175,6 @@ const ProjectDetailPage = () => {
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
   };
-
-  // const handleSubmit = async () => {
-  //   console.log(combinedData);
-  //   console.log(combinedData.generalDetailData[0]);
-  //   console.log(combinedData.generalDetailData.selectedCoin);
-  //   console.log(combinedData.promotionData[2]);
-
-  //   const response = await axios.post("/api/addProject", combinedData);
-  //   if (response.data.success) {
-  //     route.push("/myProject");
-  //   }
-  // };
 
   return (
     <div className="flex justify-center items-center bg-primary min-h-screen ">
@@ -299,8 +285,8 @@ const ProjectDetailPage = () => {
                 title={
                   <span
                     className={`${activeTab === "description"
-                        ? "text-white border-b-2 border-blue-500"
-                        : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
+                      ? "text-white border-b-2 border-blue-500"
+                      : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
                       } pb-[11px]`}
                   >
                     Description
@@ -312,8 +298,8 @@ const ProjectDetailPage = () => {
                 title={
                   <span
                     className={`${activeTab === "tokensale"
-                        ? "text-white border-b-2 border-blue-500"
-                        : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
+                      ? "text-white border-b-2 border-blue-500"
+                      : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
                       } pb-[11px]`}
                   >
                     Token Sale
@@ -363,7 +349,11 @@ const ProjectDetailPage = () => {
                         <td className="p-4 text-[#aeaeae]">
                           Token exchange rate
                         </td>
-                        <td className="p-4 text-right">{tokenPrice}</td>
+                        <td className="p-4 text-right">{
+                          !!tokenPrice && !!vAsssetDecimals
+                            ? convertNumToOffchainFormat(tokenPrice, vAsssetDecimals)
+                            : "NaN"
+                        }</td>
                       </tr>
                       <tr>
                         <td className="p-4 text-[#aeaeae]">Sale Start Time</td>
@@ -385,23 +375,39 @@ const ProjectDetailPage = () => {
                       </tr>
                       <tr>
                         <td className="p-4 text-[#aeaeae]">Softcap</td>
-                        <td className="p-4 text-right">{softCap}</td>
+                        <td className="p-4 text-right">{
+                          !!softCap && vAsssetDecimals
+                            ? convertNumToOffchainFormat(softCap, vAsssetDecimals!)
+                            : ""
+                        }</td>
                       </tr>
                       <tr>
                         <td className="p-4 text-[#aeaeae]">Hardcap</td>
-                        <td className="p-4 text-right">{hardCap}</td>
+                        <td className="p-4 text-right">{
+                          !!hardCap && !!vAsssetDecimals
+                            ? convertNumToOffchainFormat(hardCap, vAsssetDecimals)
+                            : "NaN"
+                        }</td>
                       </tr>
                       <tr>
                         <td className="p-4 text-[#aeaeae]">
                           Minimum investment
                         </td>
-                        <td className="p-4 text-right">{minInvestment}</td>
+                        <td className="p-4 text-right">{
+                          !!minInvestment && !!vAsssetDecimals
+                            ? convertNumToOffchainFormat(minInvestment, vAsssetDecimals)
+                            : "NaN"
+                        }</td>
                       </tr>
                       <tr>
                         <td className="p-4 text-[#aeaeae]">
                           Maximum investment
                         </td>
-                        <td className="p-4 text-right">{maxInvestment}</td>
+                        <td className="p-4 text-right">{
+                          !!maxInvestment && !!vAsssetDecimals
+                            ? convertNumToOffchainFormat(maxInvestment, vAsssetDecimals)
+                            : "NaN"
+                        }</td>
                       </tr>
                     </tbody>
                   </table>
