@@ -159,6 +159,7 @@ function MyProjectPage() {
         const pending = projects.filter(
           (project: DBProject) => project.status === "pending"
         );
+
         console.debug(`ended project len: ${ended.length}`);
         console.debug(`pending project len: ${pending.length}`);
         console.debug(`project len: ${projects.length}`);
