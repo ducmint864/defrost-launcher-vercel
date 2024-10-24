@@ -163,8 +163,8 @@ function LaunchpadPage() {
     route.push("./addProject/verifyToken");
   };
 
-  const handleChooseProject = () => {
-    route.push("./projectDetail/1");
+  const handleChooseProject = (projectId: number) => {
+    route.push(`./projectDetail/${projectId}`);
   };
 
   return (
@@ -191,7 +191,8 @@ function LaunchpadPage() {
               <div
                 key={project.id}
                 className="w-full p-2"
-                onClick={handleChooseProject}
+                onClick={() => {handleChooseProject(project.projectID!)}}
+                
               >
                 <div className="h-96 rounded-lg bg-secondary p-4 text-white flex flex-col justify-between transition-transform transform hover:-translate-y-2 duration-300">
                   <div>
@@ -273,11 +274,12 @@ function LaunchpadPage() {
                 <tr
                   key={project.id}
                   className="hover:border-2 hover:border-neutral"
+                  onClick={() => {handleChooseProject(project.projectID!)}}
                 >
                   <td className="p-4">{project.projectTitle}</td>
                   <td className="p-4">{project.description}</td>
                   {/* <td className="p-4">{project.participants}</td> */}
-                  <td className="p-4">{project.raisedAmount}</td>
+                  <td className="p-4">{project.raisedAmount?.toString()}</td>
                   <td className="p-4">
                     {new Date(project.endDate).toLocaleDateString()}
                   </td>
