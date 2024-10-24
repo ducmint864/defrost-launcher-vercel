@@ -1,27 +1,23 @@
-export enum Status {
-  Upcoming = "upcoming",
-  Pending = "pending",
-  Ended = "ended",
-}
+import { Project } from "@prisma/client";
 
-export interface DBProject {
-  id: number;
-  projectID: string;
-  projectName: string;
-  projectOwnerAddress: string;
-  description: string;
-  shortDescription: string;
-  projectImageUrls: string[];
-  txnHashCreated: string;
-  projectTitle: string;
-  projectLogoImageUrl: string[];
-  endDate: Date;
-  startDate: Date;
-  status: Status;
-  raisedAmount: string;
-  tokenPrice: string;
-  hardCap: string;
-  softcap: string;
-  minInvestment: string;
-  maxInvestment: string;
+export type ProjectStatus = "ended" | "upcoming" | "pending";
+
+export interface DBProject extends Project {
+    // id: number;
+    // projectID: string;
+    // projectName: string;
+    // projectOwnerAddress: string;
+    // description: string;
+    // shortDescription: string;
+    // projectImageUrls: string[];
+    // txnHashCreated: string;
+    // projectTitle: string;
+    // projectLogoImageUrl: string[];
+    // endDate: Date;
+    // startDate: Date;
+    // status: Status;
+    raisedAmount?: string; // bigint as string
+    isProjectSoftcapReached: boolean;
+    isProjectFullyToppedUp?: boolean;
+    status?: ProjectStatus;
 }

@@ -39,18 +39,18 @@ model Launchpad {
 }
 
 model Project {
-  id                  String        @id @default(uuid())
-  projectID           Int?          @unique
+  id                  String   @id @default(uuid())
+  projectID           Int?     @unique
   projectOwnerAddress String?
   description         String
   shortDescription    String
   projectImageUrls    String[]
-  txnHashCreated      String?       @unique
+  txnHashCreated      String?  @unique
   projectTitle        String
   projectLogoImageUrl String[]
-  endDate             DateTime      @default(now())
-  startDate           DateTime      @default(now())
-  status              ProjectStatus @default(pending)
+  endDate             DateTime @default(now())
+  startDate           DateTime @default(now())
+  // status              ProjectStatus @default(pending)
 }
 
 model OTP {
@@ -77,8 +77,8 @@ enum TaskType {
   share
 }
 
-enum ProjectStatus {
-  pending
-  ended
-  upcoming
-}
+// enum ProjectStatus {
+//   pending
+//   ended
+//   upcoming
+// }

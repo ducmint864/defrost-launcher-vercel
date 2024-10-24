@@ -9,7 +9,7 @@ import {
   useContract,
   useContractRead,
 } from "@thirdweb-dev/react";
-import { DBProject, Status } from "@/interfaces/interface";
+import { DBProject, ProjectStatus } from "@/interfaces/interface";
 import { format } from "date-fns";
 import getMyProjectInfo from "@/utils/getMyProjectInfo";
 import { getProjectPoolContract } from "@/utils/contracts";
@@ -88,10 +88,10 @@ function InvesmentPage() {
         }
 
         const ended = projectsWithDetails.filter(
-          (project: DBProject) => project.status === Status.Ended
+          (project: DBProject) => project.status === "ended"
         );
         const pending = projectsWithDetails.filter(
-          (project: DBProject) => project.status === Status.Pending
+          (project: DBProject) => project.status === "pending"
         );
 
         setEndedProjects(ended);

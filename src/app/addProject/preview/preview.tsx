@@ -17,6 +17,7 @@ import {
 } from "@thirdweb-dev/react";
 import { chainConfig } from "@/config";
 import { ProjectPoolFactoryABI } from "@/abi";
+import { convertNumToOnChainFormat, countDecimals } from "@/utils/decimals";
 
 const tokenSaleData = [
   {
@@ -231,7 +232,7 @@ const PreviewPage = () => {
         try {
           const response = await axios.post("/api/addProject", combinedData);
           if (response.status === 200) {
-            showAlertWithText("Transaction succeed!");
+            showAlertWithText("Success! Your transaction was processed");
             cleanup();
             route.push("/myProject");
           }
@@ -271,7 +272,7 @@ const PreviewPage = () => {
     if (!createProjectError) {
       return;
     }
-    showAlertWithText(`Cannot create project due to error`);
+    showAlertWithText(`Error occurred! Could not create project`);
     console.error(`Cannot create project due to error:\n${createProjectError}`);
   }, [createProjectError]);
 
@@ -317,22 +318,20 @@ const PreviewPage = () => {
       `factory contract address is ${factoryContract?.getAddress()}`
     );
 
-    const mult = BigInt(10 ** VTDecimals);
-
     const resp = await callCreateProject({
       args: [
         formDataVerifyToken, //verifyToken
-        (BigInt(formDataPromotion.tokenExchangeRate) * mult).toString(), //tokenExchangeRate
+        convertNumToOnChainFormat(Number(formDataPromotion.tokenExchangeRate), VTDecimals), //tokenExchangeRate
         new Date(formDataPromotion.startDate).getTime() / 1000, //startDate
         new Date(formDataPromotion.endDate).getTime() / 1000, //endDate
-        (BigInt(formDataPromotion.minInvestment) * mult).toString(), //minInvestment
-        (BigInt(formDataPromotion.maxInvestment) * mult).toString(), //maxInvestment
-        (BigInt(formDataPromotion.hardcap) * mult).toString(), //hardcap
-        (BigInt(formDataPromotion.softcap) * mult).toString(), //softcap
-        (BigInt(formDataPromotion.reward) * BigInt(10 ** 4)).toString(), //reward
-        formDataGeneralDetail.selectedCoin, //selectedVToken
-      ],
-    });
+        convertNumToOnChainFormat(Number(formDataPromotion.minInvestment), VTDecimals), //minInvestment
+        convertNumToOnChainFormat(Number(formDataPromotion.maxInvestment), VTDecimals), //maxInvestment
+        convertNumToOnChainFormat(Number(formDataPromotion.hardcap), VTDecimals), //hardcap
+        convertNumToOnChainFormat(Number(formDataPromotion.softcap), VTDecimals), //softcap
+        convertNumToOnChainFormat(Number(formDataPromotion.reward) / 100, 4), //reward percentage
+        formDataGeneralDetail.selectedCoin //selectedVToken
+      ]
+    })
 
     if (createProjectError) {
       console.error(
@@ -439,9 +438,8 @@ const PreviewPage = () => {
                   alt={`Thumbnail ${index + 1}`}
                   width={100}
                   height={100}
-                  className={`cursor-pointer rounded-lg object-cover ${
-                    currentImage === index ? "ring-4 ring-blue-500" : ""
-                  }`}
+                  className={`cursor-pointer rounded-lg object-cover ${currentImage === index ? "ring-4 ring-blue-500" : ""
+                    }`}
                   onClick={() => setCurrentImage(index)}
                 />
               ))}
@@ -475,11 +473,10 @@ const PreviewPage = () => {
               key="description"
               title={
                 <span
-                  className={`${
-                    activeTab === "description"
+                  className={`${activeTab === "description"
                       ? "text-white border-b-2 border-blue-500"
                       : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
-                  } pb-[11px]`}
+                    } pb-[11px]`}
                 >
                   Description
                 </span>
@@ -489,11 +486,10 @@ const PreviewPage = () => {
               key="tokensale"
               title={
                 <span
-                  className={`${
-                    activeTab === "tokensale"
+                  className={`${activeTab === "tokensale"
                       ? "text-white border-b-2 border-blue-500"
                       : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
-                  } pb-[11px]`}
+                    } pb-[11px]`}
                 >
                   Token Sale
                 </span>
