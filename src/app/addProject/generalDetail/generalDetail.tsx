@@ -184,7 +184,7 @@ const GeneralDetail = () => {
               //   className={`flex items-center cursor-pointer transition ease-in-out duration-300 ${selectedCoin === "BNB" ? "brightness-100" : "brightness-50"
               //     } hover:brightness-75`}
               // >
-              <button
+              <Button
                 key={idx}
                 className={`btn text-accent rounded-full ${
                   selectedCoinIdx === idx
@@ -205,7 +205,7 @@ const GeneralDetail = () => {
                   {vAsset.symbol}
                 </span>
                 {/* </div> */}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
