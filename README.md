@@ -1,6 +1,9 @@
 # ❄ DEFROST LAUNCHER - A Decentralized Launchpad 🚀
 
- <!-- Replace with your actual banner image URL -->
+<h3 align="center">DEFROST LAUNCHER</h3>
+<p align="center">
+Defrost Launcher is a platform for facilitating Initial DEX Offerings (IDOs) on decentralized exchanges.
+</p>
 
 <p align="center">
   <img src="https://i.pinimg.com/736x/9b/25/85/9b2585e8d357db63f6900494ae65fd5c.jpg" alt="logo-white" width="120" height="120"/>
