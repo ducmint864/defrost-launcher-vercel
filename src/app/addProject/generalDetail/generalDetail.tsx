@@ -162,13 +162,13 @@ const GeneralDetail = () => {
               <Button
                 key={idx}
                 className={`btn text-accent rounded-full mb-2 ${selectedCoinIdx === idx
-                    ? "bg-gradient-to-r from-cyan-500 to-accent w-32 mr-4"
-                    : "bg-gray w-32 mr-4"
+                  ? "bg-gradient-to-r from-cyan-500 to-accent w-32 mr-4"
+                  : "bg-gray w-32 mr-4"
                   }`}
                 onClick={() => handleSelectCoin(vAsset.address, idx)}
               >
                 <Image
-                  src="https://w7.pngwing.com/pngs/268/1013/png-transparent-ethereum-eth-hd-logo-thumbnail.png"
+                  src="https://www.stakingrewards.com/_next/image?url=https%3A%2F%2Fstorage.googleapis.com%2Fstakingrewards-static%2Fimages%2Fassets%2Fproduction%2Fbifrost-voucher-astr_logo.png%3Fv%3D1717150606436&w=3840&q=75"
                   alt={`${vAsset.name} logo`}
                   width={24}
                   height={24}
