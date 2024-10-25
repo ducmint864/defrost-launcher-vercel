@@ -1,4 +1,4 @@
-# ❄ DEFROST LAUNCHER - A Decentralized Launchpad 🚀
+# ❄ DEFROST LAUNCHER - Decentralized Launchpad 🚀
 
 <h3 align="center">DEFROST LAUNCHER</h3>
 <p align="center">
