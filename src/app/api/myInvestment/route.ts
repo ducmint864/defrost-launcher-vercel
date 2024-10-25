@@ -18,7 +18,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
             }
         });
 
-        console.log(investmentsMade);
 
         investmentsMade.forEach((investment) => {
             console.log(`
@@ -38,6 +37,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 status: status,
             }
         })
+        console.log(investedProjects);
 
         return NextResponse.json({ investedProjects }, { status: 200 });
     } catch (error) {

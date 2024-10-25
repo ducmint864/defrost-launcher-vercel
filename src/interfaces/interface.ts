@@ -22,4 +22,6 @@ export interface DBProject extends Project {
     status?: ProjectStatus;
     hardCap?: string;
     softCap?: string;
+    rewardRate?: string;
+    isRedeemed?: boolean;
 }

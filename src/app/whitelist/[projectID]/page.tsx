@@ -23,7 +23,6 @@ export default function Whitelist({ params }: { params: { projectID: string } })
   // Wallet-related states
   const router = useRouter();
   const address = useAddress();
-  const chain = useChain();
   const projectID = params.projectID;
   const poolContract = getProjectPoolContract(projectID);
   const vTokenContract = getVTokenContract(poolContract!);
@@ -692,7 +691,7 @@ export default function Whitelist({ params }: { params: { projectID: string } })
                   className="px-4 py-2 bg-[#2dd4bf] hover:bg-[#388c82] text-[#0d473f] rounded-md"
                   onClick={handleSubmitWhitelist}
                 >
-                  {isCallingJoinWhitelist
+                  {isCallingJoinWhitelist || isCallingApprove
                     ? <span className="loading loading-spinner text-success"></span>
                     : <span>Continue</span>
                   }

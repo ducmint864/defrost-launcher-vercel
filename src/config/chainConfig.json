@@ -22,6 +22,12 @@
         "address": "0xfffFffff00000000000000010000000000000010",
         "decimals": 18
       }
+    ],
+    "rpcNodes": [
+      {
+        "provider": "Alchemy",
+        "url": "https://alchemy.exapmle.org"
+      }
     ]
   },
   "592": {
@@ -52,6 +58,12 @@
         "symbol": "vDOT",
         "address": "0x0000",
         "decimals": 18
+      }
+    ],
+    "rpcNodes": [
+      {
+        "provider": "",
+        "url": ""
       }
     ]
   },
@@ -97,6 +109,16 @@
         "address": "0x0000",
         "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvWgkOiR1hhHPj-S4ECiQOSEVwsPVFYBcWEOBYslnHs9DWI3Ne2y_zh7NnD9HVn49zn60&usqp=CAU",
         "decimals": 18
+      }
+    ],
+    "rpcNodes": [
+      {
+        "provider": "Foundry",
+        "url": "http://127.0.0.1:8545"
+      },
+      {
+        "provider": "Hardhat",
+        "url": "http://127.0.0.1:8545"
       }
     ]
   }

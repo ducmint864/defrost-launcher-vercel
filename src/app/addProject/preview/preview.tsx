@@ -18,6 +18,7 @@ import {
 import { chainConfig } from "@/config";
 import { ProjectPoolFactoryABI } from "@/abi";
 import { convertNumToOnChainFormat, countDecimals } from "@/utils/decimals";
+import { FaPen } from "react-icons/fa";
 
 const tokenSaleData = [
   {
@@ -296,11 +297,6 @@ const PreviewPage = () => {
       return;
     }
 
-    // if (PTConnErr) {
-    //   console.error(`Failed to connect project token contract:\n${PTConnErr}`);
-    //   return;
-    // }
-
     console.log("Success Smartcontract");
 
     if (VTDecimalsReadErr) {
@@ -309,17 +305,11 @@ const PreviewPage = () => {
       return;
     }
 
-    // if (PTDecimalsReadErr) {
-    //   showAlertWithText(`Failed to retrieve information about project token`);
-    //   console.error(PTDecimalsReadErr);
-    // }
-
     console.trace(`VTDecimals is ${VTDecimals}`)
     console.debug(`factoryAddress is : ${factoryAddress}`);
     console.debug(`user address is :${userAddress}`);
 
     console.debug(`factory contract address is ${factoryContract?.getAddress()}`);
-
     const resp = await callCreateProject({
       args: [
         formDataVerifyToken, //verifyToken
@@ -454,8 +444,16 @@ const PreviewPage = () => {
                 {combinedData.generalDetailData.shortDescription}
               </p>
 
-              <Button className="bg-neutral hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full mt-auto w-full">
-                Whitelist
+              <Button
+                className="bg-neutral hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full mt-auto w-full"
+                onClick={() => route.push("/addProject/generalDetail")}
+              >
+                <span className="flex flex-row gap-x-2 my-auto">
+                  <FaPen className="mt-0.5" />
+                  <span>
+                    Edit info
+                  </span>
+                </span>
               </Button>
             </div>
           </div>
@@ -509,13 +507,13 @@ const PreviewPage = () => {
           {activeTab === "tokensale" && (
             <div>
               <h2 className="text-2xl font-semibold mb-5">
-                Token Sale Content
+                Token sale info
               </h2>
               <div className="rounded-[15px] bg-[#18181B]">
-                <table className="w-full border-collapse rounded-[15px] text-white">
+                <table className="backdrop-blur-sm shadow-lg w-full border-collapse rounded-[15px] text-white">
                   <thead>
                     <tr className="bg-[#27272A] text-left text-sm text-[#aeaeae]">
-                      <th className="p-4 rounded-tl-[15px]">Token Sale</th>
+                      <th className="p-4 rounded-tl-[15px] text-[#00FFFF]">Token Sale</th>
                       <th className="p-4 rounded-tr-[15px]"></th>
                     </tr>
                   </thead>
@@ -557,7 +555,7 @@ const PreviewPage = () => {
           </div>
         )}
         <Button
-          className="mt-2 mb-8 bg-neutral text-[#ffffff] py-2 px-4 rounded-full"
+          className="font-bold text-lg mt-2 mb-8 bg-neutral text-[#ffffff] py-2 px-4 rounded-full"
           disabled={isCallingCreateProject === true || txHashWatching !== null}
           onClick={handleSubmit}
         >
@@ -565,7 +563,7 @@ const PreviewPage = () => {
             || isCallingCreateProject === true
             || isSendingHTTPRequest === true)
             ? <span className="loading loading-dots loading-md"></span>
-            : "verify"}
+            : "Continue"}
         </Button>
       </div>
     </div>

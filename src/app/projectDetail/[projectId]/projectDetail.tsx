@@ -11,7 +11,6 @@ import { format } from "date-fns";
 import {
   useChain,
   useAddress,
-  useContract,
 } from "@thirdweb-dev/react";
 import { chainConfig } from "@/config";
 import { ethers } from "ethers";
@@ -30,6 +29,7 @@ const ProjectDetailPage = () => {
   const [images, setImages] = useState<string[]>([]);
   const [factoryContract, setFactoryContract] = useState<ethers.Contract>();
   const [poolContract, setPoolContract] = useState<ethers.Contract | undefined>(undefined);
+  const [poolAddress, setPoolAddress] = useState<string | undefined>(undefined);
   const [tokenPrice, setTokenPrice] = useState<bigint>(BigInt(0));
   const [softCap, setSoftCap] = useState<bigint>(BigInt(0));
   const [hardCap, setHardCap] = useState<bigint>(BigInt(0));
@@ -39,12 +39,14 @@ const ProjectDetailPage = () => {
   const [vAssetAddress, setVAssetAddress] = useState<string | undefined>(undefined);
   const [userWhitelisted, setUserWhitelisted] = useState<boolean>(false);
   const [userDepositedAmount, setUserDepositedAmount] = useState<bigint>(BigInt(0));
+  const [isProjectOwner, setIsProjectOwner] = useState<boolean>(false);
   const [txSuccessToastVisible, setTxSuccessToastVisible] =
     useState<boolean>(false);
   const [txErrorToastVisible, setTxErrorToastVisible] =
     useState<boolean>(false);
   const [alertText, setAlertText] = useState<string>("");
   const [isSendingTx, setIsSendingTx] = useState<boolean>(false);
+  const [isProjectFullyToppedUp, setIsProjectFullyToppedUp] = useState<boolean>(false);
 
   const route = useRouter();
   const chain = useChain();
@@ -163,35 +165,37 @@ const ProjectDetailPage = () => {
 
     console.trace('fetching project info');
     const fetchProjectDetails = async () => {
-      console.log(pageParam);
       const { projectId } = pageParam;
-      console.log(projectId);
+      console.log("Project id: " + projectId);
+
       const response = await axios.post("/api/projectDetail", projectId);
       console.log("Respnse data: " + response.data);
-      const projectDetail = response.data.projectDetailsData;
-      if (projectDetail) {
-        const images = projectDetail[0].projectImageUrls;
-        setImages(images);
-        console.log("This is image" + images);
+      const { projectDetailsData } = response.data;
 
-        console.log(projectDetail);
-        setProjectDetails(projectDetail);
+      if (projectDetailsData) {
+        const images = projectDetailsData[0].projectImageUrls;
+        setImages(images);
+        // console.log("This is image" + images);
+
+        console.log(projectDetailsData);
+        setProjectDetails(projectDetailsData);
       } else {
         route.push("/404");
       }
 
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const projectDetailId = BigInt(projectDetail[0].projectID);
-      console.log("Project detail id: " + projectDetailId);
       console.log("Factory contract: " + factoryContract);
       if (!factoryContract) {
         console.log("Factory contract is not ready");
         return;
       }
+      console.trace(`WHAT THE FUCK, THIS IS PROJECTID: ${projectDetailsData[0].projectID}`);
       const poolAddress = await factoryContract!.getProjectPoolAddress(
-        projectDetailId
+        BigInt(projectDetailsData[0].projectID)
       );
       console.log("Got pool address: " + poolAddress);
+      setPoolAddress(poolAddress);
+      console.trace(`call setPoolAddress()`);
 
       const code = await provider.getCode(poolAddress);
       if (code === "0x") {
@@ -216,12 +220,15 @@ const ProjectDetailPage = () => {
       const minInvestment = await poolContract!.getProjectMinInvest();
       const maxInvestment = await poolContract!.getProjectMaxInvest();
       const depositedAmount = await poolContract!.getUserDepositAmount(userAddress);
+      const isFullyToppedUp = await poolContract!.isProjectFullyToppedUp()
+      const projectOwner = await poolContract.getProjectOwner();
 
       console.log(`softCap is: ${softCap}`);
       console.log(`hardCap is: ${hardCap}`);
       console.log(`minInvestment is: ${minInvestment}`);
       console.log(`maxInvestment is: ${maxInvestment}`);
       console.log(`depositedAmount is: ${depositedAmount}`);
+      console.log(`user is projectOwner?: ${projectOwner === userAddress}`);
 
       setTokenPrice(BigInt(tokenPrice));
       setSoftCap(BigInt(softcap));
@@ -229,6 +236,8 @@ const ProjectDetailPage = () => {
       setMinInvestment(BigInt(minInvestment));
       setMaxInvestment(BigInt(maxInvestment));
       setUserDepositedAmount(BigInt(depositedAmount));
+      setIsProjectOwner(projectOwner === userAddress);
+      setIsProjectFullyToppedUp(isFullyToppedUp);
 
       console.trace(`setPoolContract to ${poolContract}`);
       setPoolContract(poolContract);
@@ -320,6 +329,8 @@ const ProjectDetailPage = () => {
           projectId: pageParam.projectId,
           userAddress: userAddress,
           amount: onchainAmount,
+          chainId: chain?.chainId.toString(),
+          poolAddress: poolAddress,
         })
       });
       if (!resp.ok) {
@@ -329,6 +340,7 @@ const ProjectDetailPage = () => {
       }
 
       console.log("successfully saved invest event");
+      (document.getElementById("InvestBtn") as HTMLInputElement).disabled = true;
       showTxSuccessToast();
     } catch (err) {
       showTxErrorToast();
@@ -362,7 +374,7 @@ const ProjectDetailPage = () => {
         id="investDialog"
         className="modal modal-bottom sm:modal-middle"
       >
-        <div className="modal-box bg-primary text-primary-content backdrop-blur-lg shadow-sm">
+        <div className="modal-box bg-primary text-primary-content backdrop-blur-xl shadow-lg">
           <h3 className="font-bold text-lg">Choose investment amount</h3>
           {/* <p id="" className="py-4">{alertText}</p> */}
           <div className="flex flex-col w-full mt-10 mb-5 p-4 gap-y-4">
@@ -397,7 +409,7 @@ const ProjectDetailPage = () => {
               <kbd className="kbd kbd-sm bg-pink-400 text-white">⌘</kbd>
               <kbd className="kbd kbd-sm bg-accent text-white">K</kbd>
             </label>
-            <p id="investAmountAlert" className="my-auto ml-4 text-red-600 font-bold" >&nbsp;</p>
+            <p id="investAmountAlert" className="select-none my-auto ml-4 text-red-600 font-bold" >&nbsp;</p>
             <div id="optionContainer" className="flex flex-row gap-x-2 mt-2">
               <div
                 id="minimumOpt"
@@ -408,9 +420,16 @@ const ProjectDetailPage = () => {
                   e.preventDefault();
                   const thisOpt = document.getElementById("minimumOpt");
                   const maximumOptBtn = document.getElementById("maximumOpt");
-                  maximumOptBtn?.classList.remove("brightness-125");
+
+                  // Reset brightness classes
+                  maximumOptBtn?.classList.remove("brightness-75", "brightness-125");
+                  thisOpt?.classList.remove("brightness-125");
+
+                  // Set the new brightness classes
                   maximumOptBtn?.classList.add("brightness-75");
                   thisOpt?.classList.add("brightness-125");
+                  console.debug(`thisOpt is ${thisOpt}`);
+
                   let amtTillMinInvest: bigint;
                   if (userDepositedAmount > minInvestment) {
                     amtTillMinInvest = BigInt(0);
@@ -437,9 +456,16 @@ const ProjectDetailPage = () => {
                   e.preventDefault();
                   const thisOpt = document.getElementById("maximumOpt");
                   const minimumOptBtn = document.getElementById("minimumOpt");
-                  minimumOptBtn?.classList.remove("brightness-125");
+
+                  // Reset brightness classes
+                  minimumOptBtn?.classList.remove("brightness-75", "brightness-125");
+                  thisOpt?.classList.remove("brightness-125");
+
+                  // Set the new brightness classes
                   minimumOptBtn?.classList.add("brightness-75");
                   thisOpt?.classList.add("brightness-125");
+                  console.debug(`thisOpt is ${thisOpt}`);
+
                   let investAmtLeft: bigint;
                   if (userDepositedAmount > maxInvestment) {
                     investAmtLeft = BigInt(0);
@@ -495,7 +521,7 @@ const ProjectDetailPage = () => {
         style={{
           // backgroundImage: `url('https://i.pinimg.com/736x/4d/79/b4/4d79b4275d26861880c4dea267ecbfd2.jpg')`,
 
-        backgroundImage: `url('https://www.hdwallpapers.in/download/dragon_dark_blue_background_4k_hd_horizon_forbidden_west-3840x2160.jpg')`,
+          backgroundImage: `url('https://www.hdwallpapers.in/download/dragon_dark_blue_background_4k_hd_horizon_forbidden_west-3840x2160.jpg')`,
         }}
       ></div>
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-gray-900 to-primary opacity-70"></div>
@@ -581,21 +607,20 @@ const ProjectDetailPage = () => {
                     {project.projectTitle}
                   </p>
                   <p className="text-gray-400 mt-8">{project.shortDescription}</p>
-
-
                   {
                     userWhitelisted === true
                       ? <button
+                        id="InvestBtn"
                         className="btn btn-info mt-5 mx-auto w-full"
                         onClick={handleInvest}
-                        disabled={userDepositedAmount >= maxInvestment}
+                        disabled={userDepositedAmount >= maxInvestment || isProjectOwner === true}
                       >
                         INVEST
                       </button>
-
                       : <button
                         className="btn btn-info mt-5 w-full"
                         onClick={handleWhitelist}
+                        disabled={userWhitelisted || !isProjectFullyToppedUp || isProjectOwner}
                       >
                         JOIN WHITELIST
                       </button>
@@ -656,7 +681,7 @@ const ProjectDetailPage = () => {
                     <table className="w-full border-collapse rounded-[15px] text-white">
                       <thead>
                         <tr className="bg-[#27272A] text-left text-sm text-[#aeaeae]">
-                          <th className="p-4 rounded-tl-[15px]">Token Sale</th>
+                          <th className="p-4 rounded-tl-[15px] text-[#00FFFF]">Token Sale</th>
                           <th className="p-4 rounded-tr-[15px]"></th>
                         </tr>
                       </thead>

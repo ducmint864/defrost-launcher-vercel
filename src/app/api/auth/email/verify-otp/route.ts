@@ -35,9 +35,28 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'cannot update email verification state' }, { status: 500 });
         }
 
+        const res = await prismaClient.$executeRaw`
+            update "Launchpad" set "totalUniqueUsers" = "totalUniqueUsers" + 1
+        `;
+        console.debug(`result of updating totalUniqueUsers col. in launchpad table:\n${res}`);
+
         return NextResponse.json({ message: `valid OTP ${OTP}` }, { status: 200 });
     } catch (error) {
         console.error('error verifying email: ', error);
         return NextResponse.json({ error: 'error verifying email' }, { status: 500 });
     }
 }
+
+// export async function GET(req: Request) {
+//     try {
+//         const res = await prismaClient.$executeRaw`
+//             update "Launchpad" set "totalUniqueUsers" = "totalUniqueUsers" + 1
+//         `;
+        
+//         console.debug(`result of updating launchpad table:\n${res}`);
+//         return NextResponse.json({ success: true }, { status: 200 });
+//     } catch (err) {
+//         console.error('error verifying email: ', err);
+//         return NextResponse.json({ success: false }, { status: 500 });
+//     }
+// }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prismaClient } from "@/*";
+import { convertNumToOnChainFormat } from "@/utils/decimals";
 
 export async function POST(req: NextRequest, res: NextResponse) {
     const body = await req.json();
@@ -53,7 +54,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 projectID: eventData.projectId as number,
                 txnHashCreated: eventData.txnHashCreated as string,
                 projectOwnerAddress: eventData.projectOwner as string,
-                // status: "pending",
             },
         });
         if (!project) {

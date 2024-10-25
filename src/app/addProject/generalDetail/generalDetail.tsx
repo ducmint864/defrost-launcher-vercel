@@ -8,7 +8,6 @@ import { updateGeneralDetailPageData } from "@/lib/store/formSlice";
 import { useRouter } from "next/navigation";
 import { useChain } from "@thirdweb-dev/react";
 import { chainConfig } from "@/config";
-// import { setServers } from "dns/promises";
 
 const GeneralDetail = () => {
   const [projectTitle, setProjectTitle] = useState<string>("");
@@ -16,7 +15,7 @@ const GeneralDetail = () => {
   const [longDescription, setLongDescription] = useState<string>("");
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null); // address of the vAsset that is selected
   const [selectedCoinIdx, setSelectedCoinIdx] = useState<number>(0);
-  const [imageByteArrays, setImageByteArrays] = useState<Uint8Array[]>([]);
+  const [imageByteArrays, setImageByteArrays] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const fileInputRefLogo = useRef<HTMLInputElement | null>(null);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
@@ -186,11 +185,10 @@ const GeneralDetail = () => {
               // >
               <button
                 key={idx}
-                className={`btn text-accent rounded-full ${
-                  selectedCoinIdx === idx
-                    ? "bg-gradient-to-r from-cyan-500 to-accent"
-                    : "bg-gray"
-                }`}
+                className={`btn text-accent rounded-full ${selectedCoinIdx === idx
+                  ? "bg-gradient-to-r from-cyan-500 to-accent"
+                  : "bg-gray"
+                  }`}
                 onClick={() => handleSelectCoin(vAsset.address, idx)}
               >
                 <Image

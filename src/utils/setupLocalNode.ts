@@ -110,7 +110,7 @@ async function run(): Promise<void> {
     const mockVTokenAddr = mockVTokenContract.address;
     await mockVTokenContract.freeMoneyForEveryone(
         "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        BigInt(100 * 10 ** 9 * 10 ** 18),
+        BigInt(1000 * (10 ** 9) * 10 ** 18),
     );
 
     const mockProjectTokenContract = await deployContract(
@@ -121,7 +121,7 @@ async function run(): Promise<void> {
     const mockProjectTokenAddr = mockProjectTokenContract.address;
     await mockProjectTokenContract.freeMoneyForEveryone(
         "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-        BigInt(100 * 10 * 9 * 10 ** 18),
+        BigInt(1000 * (10 ** 9) * 10 ** 18),
     );
 
     // create example project pool
@@ -130,25 +130,25 @@ async function run(): Promise<void> {
     // wait 2 secs
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    const tx = await factoryContract.createProjectPool(
-        mockProjectTokenAddr,
-        BigInt(10 * (10 ** await mockVTokenContract.decimals())), // 1 project token = 10 vTokens
-        BigInt(startTime), // start time
-        BigInt(startTime + (60 * 60)), // end time = start time + 60 minutes
-        BigInt(1 * (10 ** await mockVTokenContract.decimals())), // min invest is 1 vTokens
-        BigInt(10 * (10 ** await mockVTokenContract.decimals())), // max invest is 10 vTokens
-        BigInt(1000 * (10 ** await mockProjectTokenContract.decimals())), // hard cap is 1000 vTokens
-        BigInt(100 * (10 ** await mockProjectTokenContract.decimals())), // soft cap is 1000 vTokens
-        BigInt(50), // 0.5%,
-        mockVTokenAddr,
-    );
+    // const tx = await factoryContract.createProjectPool(
+    //     mockProjectTokenAddr,
+    //     BigInt(10 * (10 ** await mockVTokenContract.decimals())), // 1 project token = 10 vTokens
+    //     BigInt(startTime), // start time
+    //     BigInt(startTime + (60 * 60)), // end time = start time + 60 minutes
+    //     BigInt(1 * (10 ** await mockVTokenContract.decimals())), // min invest is 1 vTokens
+    //     BigInt(10 * (10 ** await mockVTokenContract.decimals())), // max invest is 10 vTokens
+    //     BigInt(1000 * (10 ** await mockProjectTokenContract.decimals())), // hard cap is 1000 vTokens
+    //     BigInt(100 * (10 ** await mockProjectTokenContract.decimals())), // soft cap is 1000 vTokens
+    //     BigInt(50), // 0.5%,
+    //     mockVTokenAddr,
+    // );
 
-    const waitTx = await tx.wait();
+    // const waitTx = await tx.wait();
     // console.log(waitTx);
-    const poolAddr = await factoryContract.getProjectPoolAddress(1);
+    // const poolAddr = await factoryContract.getProjectPoolAddress(1);
 
     console.log('\x1b[36m%s\x1b[0m', `ProjectPoolFactory contract deployed to ${factoryAddr}`);
-    console.log('\x1b[36m%s\x1b[0m', `An example ProjectPool contract was created at address ${poolAddr}`);
+    // console.log('\x1b[36m%s\x1b[0m', `An example ProjectPool contract was created at address ${poolAddr}`);
 }
 
 async function invest() {

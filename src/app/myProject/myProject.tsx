@@ -19,7 +19,6 @@ import { IERC20ABI, ProjectPoolABI, ProjectPoolFactoryABI } from "@/abi";
 function MyProjectPage() {
   const [showMoreEnded, setShowMoreEnded] = useState<boolean>(false);
   const [showMorePending, setShowMorePending] = useState<boolean>(false);
-  // const [availableProjects, setAvailableProjects] = useState<DBProject[]>([]);
   const [endedProjects, setEndedProjects] = useState<DBProject[]>([]);
   const [pendingProjects, setPendingProjects] = useState<DBProject[]>([]);
   const [factoryContract, setFactoryContract] = useState<ethers.Contract>();
@@ -92,6 +91,7 @@ function MyProjectPage() {
   useEffect(() => {
     console.log(`factory contract is ${factoryContract}`);
     if (!factoryContract) {
+      console.log(`nevermind, factory contract is not ready`);
       return;
     }
     console.log(`project owner address is ${projectOwnerAddress}`);
@@ -119,6 +119,11 @@ function MyProjectPage() {
 
         for (const project of projects) {
           console.trace(`fetching info for project ${project.projectID}`);
+          console.log(`projectID here is fine: ${project.projectID}`);
+          console.log(`factory address is : ${factoryContract.address}`);
+          console.log(`current chain id is: ${chain?.chainId}`);
+          const currentProjectId = await factoryContract.getCurrentProjectId();
+          console.log(`currentProjectId is: ${currentProjectId}`);
           const poolAddress = await factoryContract!.getProjectPoolAddress(
             project.projectID
           );

@@ -52,7 +52,7 @@ const Promotion = () => {
           {" "}
           <div className="my-6 w-full flex flex-col p-8">
             <span className="label-text text-gray-600 text-md">
-              The rate at which tokens are exchanged for currency
+              The rate at which 1 project token will be converted to voucher tokens
             </span>
             <label className="m-2 input input-bordered flex items-center gap-2 mb-10">
               <p>Exchange rate&nbsp;</p>

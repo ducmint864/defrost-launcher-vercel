@@ -46,7 +46,7 @@ function VerifyToken() {
       <div className="  rounded-lg shadow-md text-center max-w-md w-full font-sans">
         <h2 className="text-xl font-semibold mb-4 text-white">Add Token</h2>
         <p className="text-gray-500 mb-6">
-          Paste your token URL so we can verify that you own this
+          Paste your project's token address so we can verify that you own this
         </p>
         <input
           type="text"
