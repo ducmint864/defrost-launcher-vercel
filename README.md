@@ -1,8 +1,10 @@
-# ❄ DEFROST LAUNCHPAD 🚀
+# ❄ DEFROST LAUNCHER 🚀
 
  <!-- Replace with your actual banner image URL -->
 
-<img src="https://i.pinimg.com/736x/9b/25/85/9b2585e8d357db63f6900494ae65fd5c.jpg" alt="logo-white" width="120" height="120"/>
+<p align="center">
+  <img src="https://i.pinimg.com/736x/9b/25/85/9b2585e8d357db63f6900494ae65fd5c.jpg" alt="logo-white" width="120" height="120"/>
+</p>
 
 ## Table of Contents 🏆
 - [Introduction](#introduction)
@@ -23,7 +25,10 @@
 
 Whether you're an investor looking to support innovative projects or a developer seeking funding for your crypto venture, Defrost Launchpad provides the tools and incentives to foster growth and success in the decentralized ecosystem.
 
-<img src="https://i.pinimg.com/736x/9b/25/85/9b2585e8d357db63f6900494ae65fd5c.jpg" alt="logo-white" width="120" height="120"/>
+<p align="center">
+  <img src="https://i.pinimg.com/736x/9b/25/85/9b2585e8d357db63f6900494ae65fd5c.jpg" alt="logo-white" width="120" height="120"/>
+</p>
+
 
 ## Features ☕
 
@@ -32,7 +37,6 @@ Whether you're an investor looking to support innovative projects or a developer
 - **Attractive Rewards**: Earn generous rewards by funding potential crypto projects, enhancing your investment portfolio.
 - **User-Friendly Interface**: Intuitive design ensures a smooth user experience for both investors and project creators.
 - **Secure Transactions**: Robust security measures protect your assets and data throughout the funding process.
-- **Community Governance**: Participate in decision-making processes to shape the future of the platform.
 
 ## How It Works 🛠️
 
@@ -116,12 +120,24 @@ Follow these steps to set up the project locally:
     ```
 Access the Application Open http://localhost:3000 in your browser.
 
-
 ## Team Core 🎮
-1. ## [notlongfen](https://github.com/notlongfen) 
-2. ## [ducmint864](https://github.com/ducmint864)
-3. ## [nguyenkhanh0209](https://github.com/nguyenkhanh0209)
-4. ## [Trong-tra](https://github.com/Trong-tra)
+
+1. **[notlongfen](https://github.com/notlongfen)**  
+   Full Stack & Blockchain Developer  
+   A dynamic developer with a deep focus on smart contracts and decentralized applications. Notlongfen is committed to building secure, scalable blockchain solutions that elevate user experience and ecosystem functionality.
+
+2. **[ducmint864](https://github.com/ducmint864)**  
+   Full Stack & Blockchain Developer  
+   Specializing in seamless front-end and back-end integration, Ducmint864 crafts efficient and user-centric applications. Their approach ensures that complex blockchain interactions are accessible, intuitive, and responsive for all users.
+
+3. **[nguyenkhanh0209](https://github.com/nguyenkhanh0209)**  
+   Full Stack & Blockchain Developer  
+   With expertise in end-to-end application development and data integrity, NguyenKhanh0209 focuses on building reliable, scalable architectures. Their contributions ensure our platform's backend remains robust, secure, and capable of supporting our decentralized projects.
+
+4. **[Trong-tra](https://github.com/Trong-tra)**  
+   Full Stack & Blockchain Developer  
+   A strategic thinker with a keen eye on cross-chain compatibility and decentralized finance applications. Trong-tra leverages deep technical knowledge to drive the platform’s growth, ensuring seamless blockchain interactions across networks.
+
 
 <!-- ## Contributing 🌟
 
