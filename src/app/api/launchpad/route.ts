@@ -30,7 +30,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     });
 
     return NextResponse.json(
-      { investedProjects, launchpadData },
+      { projectList: investedProjects, launchpadData },
       { status: 200 }
     );
   } catch (error) {

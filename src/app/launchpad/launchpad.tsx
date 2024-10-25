@@ -11,6 +11,7 @@ import { chainConfig } from "@/config";
 import { ethers } from "ethers";
 import { ProjectPoolABI, ProjectPoolFactoryABI } from "@/abi";
 import { DBProject, DBLaunchpad } from "@/interfaces/interface";
+import { log } from "console";
 
 function LaunchpadPage() {
   const [projectList, setProjectList] = useState([]);
@@ -65,6 +66,8 @@ function LaunchpadPage() {
     const fetchProjectsList = async () => {
       try {
         const response = await axios.post("/api/launchpad");
+        console.log(response.data);
+
         const projectList = response.data.projectList;
         const launchpadData = response.data.launchpadData;
         setProjectList(projectList);
@@ -130,7 +133,7 @@ function LaunchpadPage() {
       <div className="relative p-5 font-sans w-full max-w-4xl z-10">
         <div className="mb-10 mt-5">
           <span className="text-lg text-neutral">IDO Project</span>
-          <div className="flex flex-col md:flex-row items-center justify-between mb-4 mt-5">
+          <div className="flex flex-row items-center justify-between mb-4 mt-5">
             <h2 className="text-2xl md:text-3xl font-bold text-white">
               Upcoming IDO
             </h2>
@@ -166,7 +169,9 @@ function LaunchpadPage() {
                     <p>{project.description}</p>
                     <p className="mt-4">
                       Fundraise Goal:
-                      <span className="font-bold">{project.hardCap}</span>
+                      <span className="font-bold">
+                        {project.hardCap?.toString()}
+                      </span>
                     </p>
                   </div>
                   <button className="mt-4 bg-neutral text-[#ffffff] py-2 px-4 rounded-lg">
