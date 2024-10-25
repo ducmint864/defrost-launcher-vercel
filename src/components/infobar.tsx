@@ -20,10 +20,10 @@ const InfoBar = () => {
   return (
     <div className="mt-10 text-sm font-bold">
       <div className="flex justify-center items-center w-full">
-        <div className="flex flex-col md:flex-row divide-y md:divide-x w-full max-w-4xl border rounded-full shadow-lg">
+        <div className="flex flex-col md:flex-row divide-y md:divide-x w-full max-w-4xl shadow-lg">
           {/* General Details Button */}
           <button
-            className="w-full md:w-1/3 text-center py-4 px-6 bg-white md:rounded-l-full md:rounded-t-none rounded-t-full transition duration-300 hover:bg-gray-100"
+            className="w-full md:w-1/3 text-center py-4 px-6 bg-white rounded-t-full md:rounded-t-none md:rounded-l-full  transition duration-300 hover:bg-gray-100"
             onClick={toGeneralDetails}
           >
             GENERAL DETAILS

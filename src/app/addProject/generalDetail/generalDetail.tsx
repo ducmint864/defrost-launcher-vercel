@@ -149,7 +149,10 @@ const GeneralDetail = () => {
 
   return (
     <div className="flex justify-center min-h-screen bg-primary px-4">
-      <div className="w-full lg:w-3/5 mx-auto">
+      {/* <div className="absolute left-3 top-20 w-[600px] h-[600px] bg-[#0047FF] rounded-full opacity-10 blur-3xl animate-pulse z-0"></div>
+      <div className="absolute right-3 bottom-10 w-[600px] h-[600px] bg-[#0047FF] rounded-full opacity-10 blur-3xl animate-pulse z-0"></div> */}
+
+      <div className="w-full lg:w-3/5 mx-auto z-10">
         <div className="mt-12 mb-6 text-2xl font-bold text-white">
           Choose accepted asset
         </div>
@@ -161,7 +164,7 @@ const GeneralDetail = () => {
                 className={`btn text-accent rounded-full mb-2 ${
                   selectedCoinIdx === idx
                     ? "bg-gradient-to-r from-cyan-500 to-accent w-32 mr-4"
-                    : "bg-gray w-32"
+                    : "bg-gray w-32 mr-4"
                 }`}
                 onClick={() => handleSelectCoin(vAsset.address, idx)}
               >
