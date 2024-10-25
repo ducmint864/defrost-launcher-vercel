@@ -21,9 +21,9 @@
 
 ## Introduction 📕
 
-**Defrost Launcher** is a cutting-edge decentralized platform designed to empower the crypto community by enabling users to fund promising crypto projects seamlessly. Leveraging the robust capabilities of Bifrost, Defrost Launchpad offers unparalleled cross-chain interoperability, ensuring a smooth and secure funding experience across multiple blockchain networks.
+**Defrost Launcher** is a cutting-edge decentralized platform designed to empower the crypto community by enabling users to fund promising crypto projects seamlessly. Leveraging the robust capabilities of Bifrost, Defrost Launcher offers unparalleled cross-chain interoperability, ensuring a smooth and secure funding experience across multiple blockchain networks.
 
-Whether you're an investor looking to support innovative projects or a developer seeking funding for your crypto venture, Defrost Launchpad provides the tools and incentives to foster growth and success in the decentralized ecosystem.
+Whether you're an investor looking to support innovative projects or a developer seeking funding for your crypto venture, Defrost Launcher provides the tools and incentives to foster growth and success in the decentralized ecosystem.
 
 <p align="center">
   <img src="https://i.pinimg.com/736x/9b/25/85/9b2585e8d357db63f6900494ae65fd5c.jpg" alt="logo-white" width="120" height="120"/>
@@ -50,17 +50,17 @@ Whether you're an investor looking to support innovative projects or a developer
 
 ## How It Works 🛠️
 
-1. **Explore Projects**
-   - Browse through a curated list of promising crypto projects seeking funding.
-   
-2. **Fund Projects**
-   - Select a potential project to fund and choose your preferred cryptocurrency supported by Bifrost.
-   
-3. **Earn Rewards**
-   - Receive attractive rewards based on your investment and the project's success.
-   
-4. **Cross-chain Asset Management**
-   - Utilize Bifrost's interoperability to manage and transfer assets across different blockchain networks effortlessly.
+1. **Explore High-Potential Projects**  
+   - Browse through a carefully curated list of innovative crypto projects vetted for growth potential and quality. Our platform presents only the most promising projects, enabling you to make well-informed investment choices.
+
+2. **Invest in Projects with Flexibility**  
+   - Select your preferred project and choose from a variety of supported cryptocurrencies, enabled by Bifrost’s multi-chain compatibility. Each project provides transparent funding options, giving you the confidence to invest on your terms.
+
+3. **Earn Rewards & Share in Project Success**  
+   - Receive attractive rewards based on your investment level and the project’s performance. Our platform's reward structure is designed to maximize your returns, allowing you to benefit as projects achieve their milestones.
+
+4. **Effortless Cross-Chain Asset Management**  
+   - Leverage Bifrost’s interoperability for seamless asset management and transfers across different blockchain networks. Our platform provides flexible, cross-chain transactions, ensuring you can manage and move assets with ease and security.
 
 <!-- ![Workflow Diagram](https://your-repo-url.com/workflow.png) Replace with your actual workflow diagram URL -->
 
@@ -76,9 +76,9 @@ Whether you're an investor looking to support innovative projects or a developer
 
 ## Demo 🎥
 
-Check out our live demo to see Defrost Launchpad in action!
+Check out our live demo to see Defrost Launcher in action!
 
-👉 [Live Demo](https://defrost-launchpad-demo.com) <!-- Replace with actual demo link -->
+👉 [Live Demo](https://defrost-launcher-demo.com) <!-- Replace with actual demo link -->
 
 ![Demo GIF](https://your-repo-url.com/demo.gif) <!-- Replace with actual demo GIF URL -->
 
@@ -89,7 +89,7 @@ Follow these steps to set up the project locally:
 1. **Clone the Repository**
    ```sh
    git clone
-   cd defrost-launchpad
+   cd defrost-launcher
     ```
 
 2. **Install Dependencies**
@@ -184,15 +184,15 @@ Distributed under the MIT License. See `LICENSE` for more information. -->
 
 <!-- ## Contact 📧
 
-- **Project Link**: [Defrost Launchpad](
+- **Project Link**: [Defrost Launcher](
 - **Email**: [
-- **Discord**: [Defrost Launchpad](https://discord.com/invite/defrost-launchpad)
-- **Twitter**: [@defrost-launchpad](https://twitter.com/defrost-launchpad)
-- **LinkedIn**: [Defrost Launchpad](https://www.linkedin.com/company/defrost-launchpad) -->
+- **Discord**: [Defrost Launcher](https://discord.com/invite/defrost-launcher)
+- **Twitter**: [@defrost-launcher](https://twitter.com/defrost-launcher)
+- **LinkedIn**: [Defrost Launcher](https://www.linkedin.com/company/defrost-launcher) -->
 
 ---
 
-Made with ❤️ by Defrost Launchpad
+Made with ❤️ by Defrost Launcher Team
 
 
 
