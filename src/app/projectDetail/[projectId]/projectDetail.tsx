@@ -559,7 +559,7 @@ const ProjectDetailPage = () => {
 
       {projectDetails.map((project) => (
         <div
-          className="relative w-full lg:w-3/5 flex flex-col text-white mt-28"
+          className="relative w-full lg:w-3/5 flex flex-col text-white mt-28 p-4"
           key={project.id}
         >
           <div className="flex items-center text-left mb-8">

@@ -3,10 +3,6 @@ import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-// import image1 from "../../../public/images/bg1.jpg";
-// import image2 from "../../../public/images/bg2.jpg";
-// import image3 from "../../../public/images/bg3.jpg";
-// import image4 from "../../../public/images/bg4.jpg";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -14,7 +10,7 @@ import { useChain } from "@thirdweb-dev/react";
 import { chainConfig } from "@/config";
 import { ethers } from "ethers";
 import { ProjectPoolABI, ProjectPoolFactoryABI } from "@/abi";
-import { DBProject, ProjectStatus } from "@/interfaces/interface";
+import { DBProject } from "@/interfaces/interface";
 
 function LaunchpadPage() {
   const [projectList, setProjectList] = useState([]);
@@ -69,21 +65,11 @@ function LaunchpadPage() {
     const fetchProjectsList = async () => {
       try {
         const response = await axios.post("/api/launchpad");
-        console.log("Long ne: " + response);
-
         const projectList = response.data.projectList;
-
-        console.log(projectList);
-
         const launchpadData = response.data.launchpadData;
-
-        console.log(launchpadData);
-
         setProjectList(projectList);
         setLaunchpadData(launchpadData);
 
-        // Dùng for...of để xử lý tuần tự
-        console.log("len:" + projectList.length);
         const projectsWithDetails = [];
 
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -92,7 +78,6 @@ function LaunchpadPage() {
           const poolAddress = await factoryContract!.getProjectPoolAddress(
             project.projectID
           );
-          // const signer = provider.getSigner();
           const contract = new ethers.Contract(
             poolAddress,
             ProjectPoolABI,
@@ -115,54 +100,19 @@ function LaunchpadPage() {
           (project: DBProject) => project.status === "upcoming"
         );
 
-        console.log("Upcoming project" + upcomingProjects);
-
         const otherProjects = projectsWithDetails.filter(
           (project: DBProject) => project.status !== "upcoming"
         );
 
-        console.log("Other project" + otherProjects);
-
         setUpcomingProjects(upcomingProjects);
         setOtherProjects(otherProjects);
-
-        //     const ended = projectsWithDetails.filter(
-        //       (project: DBProject) => project.status === Status.Ended
-        //     );
-        //     const pending = projectsWithDetails.filter(
-        //       (project: DBProject) => project.status === Status.Pending
-        //     );
-
-        //     setEndedProjects(ended);
-        //     setPendingProjects(pending);
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
     };
-    // if (projectOwnerAddress) {
-    // }
     fetchProjectsList();
   }, [factoryContract]);
 
-  // useEffect(() => {
-  //   const fetchProjectList = async () => {
-
-  //     const response = await axios.post("/api/launchpad");
-
-  //     const projectList = response.data.projectList;
-
-  //     console.log(projectList);
-
-  //     const launchpadData = response.data.launchpadData;
-
-  //     console.log(launchpadData);
-
-  //     setProjectList(projectList);
-  //     setLaunchpadData(launchpadData);
-
-  //   }
-  //   fetchProjectList();
-  // }, [])
   const handleClick = () => {
     route.push("./addProject/verifyToken");
   };
@@ -177,13 +127,15 @@ function LaunchpadPage() {
 
       <div className="absolute right-0 top-0 w-[300px] h-[300px] bg-[#0047FF] rounded-full opacity-10 blur-3xl animate-pulse z-0"></div>
 
-      <div className="relative p-5 font-sans w-200 max-w-4xl  z-10">
+      <div className="relative p-5 font-sans w-full max-w-4xl z-10">
         <div className="mb-10 mt-5">
           <span className="text-lg text-neutral">IDO Project</span>
-          <div className="flex items-center justify-between mb-4 mt-5">
-            <h2 className="text-3xl font-bold text-white">Upcoming IDO</h2>
+          <div className="flex flex-col md:flex-row items-center justify-between mb-4 mt-5">
+            <h2 className="text-2xl md:text-3xl font-bold text-white">
+              Upcoming IDO
+            </h2>
             <button
-              className="bg-neutral shadow-lg shadow-blue-500/50 py-1 px-4 rounded-lg  text-[#fefefe] transition duration-300 ease-in-out hover:bg-[#203e6a] hover:text-[#fefefe] hover:shadow-lg hover:shadow-blue-200"
+              className="bg-neutral shadow-lg shadow-blue-500/50 py-1 px-4 rounded-lg text-[#fefefe] transition duration-300 ease-in-out hover:bg-[#203e6a] hover:text-[#fefefe] hover:shadow-lg hover:shadow-blue-200 mt-3 md:mt-0"
               onClick={handleClick}
             >
               Add Project
@@ -195,8 +147,9 @@ function LaunchpadPage() {
               <div
                 key={project.id}
                 className="w-full p-2"
-                onClick={() => {handleChooseProject(project.projectID!)}}
-                
+                onClick={() => {
+                  handleChooseProject(project.projectID!);
+                }}
               >
                 <div className="h-96 rounded-lg bg-secondary p-4 text-white flex flex-col justify-between transition-transform transform hover:-translate-y-2 duration-300">
                   <div>
@@ -215,10 +168,6 @@ function LaunchpadPage() {
                       Fundraise Goal:{" "}
                       <span className="font-bold">{project.hardCap}</span>
                     </p>
-                    {/* <p>
-                      Max allocation:{" "}
-                      <span className="font-bold">{project.maxAllocation}</span>
-                    </p> */}
                   </div>
                   <button className="mt-4 bg-neutral text-[#ffffff] py-2 px-4 rounded-lg">
                     TOKEN SALE
@@ -232,15 +181,11 @@ function LaunchpadPage() {
         {/* Funded Projects Section */}
         {upcomingProjects.map((project) => (
           <div className="mb-6" key={project.id}>
-            <div className="flex items-center justify-between mb-10">
-              <h2 className="text-xl font-bold text-white">
-                Funded Projects:{" "}
-              </h2>
-              <div className="flex justify-between flex-1">
+            <div className="flex flex-col md:flex-row items-center justify-between mb-10">
+              <h2 className="text-xl font-bold text-white">Funded Projects:</h2>
+              <div className="flex flex-wrap justify-between w-full md:flex-1">
                 <div className="bg-gradient-to-r from-[#153E52] to-[#0A0B0D] via-[#0A0B0D] border border-[#25607E] p-4 rounded-lg flex-1 mx-2 text-right">
-                  <span className="text-[#2DACDC] block">
-                    Funded Projects:{" "}
-                  </span>
+                  <span className="text-[#2DACDC] block">Funded Projects:</span>
                   <span className="font-bold text-white block">113</span>
                 </div>
                 <div className="bg-gradient-to-r from-[#555B3D] to-[#0A0B0D] via-[#0A0B0D] border border-[#737D37] p-4 rounded-lg flex-1 mx-2 text-right">
@@ -250,7 +195,7 @@ function LaunchpadPage() {
                   <span className="font-bold text-white block">30,294</span>
                 </div>
                 <div className="bg-gradient-to-r from-[#754b4b] to-[#0A0B0D] via-[#0A0B0D] border border-[#745734] p-4 rounded-lg flex-1 mx-2 text-right">
-                  <span className="text-[#c97f7f] block">Raised Capital: </span>
+                  <span className="text-[#c97f7f] block">Raised Capital:</span>
                   <span className="font-bold text-white block">
                     $41,582,502.04
                   </span>
@@ -261,15 +206,14 @@ function LaunchpadPage() {
         ))}
 
         {/* Table Section */}
-        <div className=" rounded-[15px] bg-[#18181B]">
-          <table className="w-full border-collapse rounded-[15px] text-white">
+        <div className="rounded-[15px] bg-[#18181B] overflow-hidden">
+          <table className="w-full border-collapse text-white">
             <thead>
               <tr className="bg-[#27272A] text-left text-sm text-[#aeaeae]">
-                <th className="p-4 rounded-tl-[15px]">Project Name</th>
+                <th className="p-4">Project Name</th>
                 <th className="p-4">Type</th>
-                {/* <th className="p-4">Participants</th> */}
                 <th className="p-4">Raised Fund</th>
-                <th className="p-4 rounded-tr-[15px]">End Date</th>
+                <th className="p-4">End Date</th>
               </tr>
             </thead>
 
@@ -277,12 +221,13 @@ function LaunchpadPage() {
               {otherProjects.map((project) => (
                 <tr
                   key={project.id}
-                  className="hover:border-2 hover:border-neutral"
-                  onClick={() => {handleChooseProject(project.projectID!)}}
+                  className="hover:bg-[#303030] cursor-pointer"
+                  onClick={() => {
+                    handleChooseProject(project.projectID!);
+                  }}
                 >
                   <td className="p-4">{project.projectTitle}</td>
                   <td className="p-4">{project.description}</td>
-                  {/* <td className="p-4">{project.participants}</td> */}
                   <td className="p-4">{project.raisedAmount?.toString()}</td>
                   <td className="p-4">
                     {new Date(project.endDate).toLocaleDateString()}

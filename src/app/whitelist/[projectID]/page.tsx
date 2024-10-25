@@ -644,13 +644,13 @@ export default function Whitelist({
                   <label className="block mb-2 font-bold text-lg text-[#c8cbd0]">
                     Connect your social accounts for identity verification:
                   </label>
-                  <div className="flex  justify-center gap-2 ">
+                  <div className="flex flex-wrap justify-center gap-2">
                     {socialConnects.map((social) => (
                       <button
                         key={social.name}
                         type="button"
                         onClick={() => handleSocialConnect(social.name)}
-                        className="flex items-center text-[#c8cbd0] justify-center p-2 border rounded-full hover:text-black hover:bg-gray-100 transition-colors w-[200px]"
+                        className="flex items-center text-[#c8cbd0] justify-center p-2 border rounded-full hover:text-black hover:bg-gray-100 transition-colors w-[130px]"
                       >
                         <Image
                           src={social.icon}
