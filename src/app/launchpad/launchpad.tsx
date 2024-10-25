@@ -10,11 +10,11 @@ import { useChain } from "@thirdweb-dev/react";
 import { chainConfig } from "@/config";
 import { ethers } from "ethers";
 import { ProjectPoolABI, ProjectPoolFactoryABI } from "@/abi";
-import { DBProject } from "@/interfaces/interface";
+import { DBProject, DBLaunchpad } from "@/interfaces/interface";
 
 function LaunchpadPage() {
   const [projectList, setProjectList] = useState([]);
-  const [launchpadData, setLaunchpadData] = useState({});
+  const [launchpadData, setLaunchpadData] = useState<DBLaunchpad[]>([]);
   const [factoryAddress, setFactoryAddress] = useState<string | undefined>(
     undefined
   );
@@ -179,25 +179,29 @@ function LaunchpadPage() {
         </div>
 
         {/* Funded Projects Section */}
-        {upcomingProjects.map((project) => (
+        {launchpadData.map((project) => (
           <div className="mb-6" key={project.id}>
             <div className="flex flex-col md:flex-row items-center justify-between mb-10">
               <h2 className="text-xl font-bold text-white">Funded Projects:</h2>
               <div className="flex flex-wrap justify-between w-full md:flex-1">
                 <div className="bg-gradient-to-r from-[#153E52] to-[#0A0B0D] via-[#0A0B0D] border border-[#25607E] p-4 rounded-lg flex-1 mx-2 text-right">
                   <span className="text-[#2DACDC] block">Funded Projects:</span>
-                  <span className="font-bold text-white block">113</span>
+                  <span className="font-bold text-white block">
+                    {project.totalFundedProjects}
+                  </span>
                 </div>
                 <div className="bg-gradient-to-r from-[#555B3D] to-[#0A0B0D] via-[#0A0B0D] border border-[#737D37] p-4 rounded-lg flex-1 mx-2 text-right">
                   <span className="text-[#8c955c] block">
                     Unique Participants:
                   </span>
-                  <span className="font-bold text-white block">30,294</span>
+                  <span className="font-bold text-white block">
+                    {project.totalUniqueUsers}
+                  </span>
                 </div>
                 <div className="bg-gradient-to-r from-[#754b4b] to-[#0A0B0D] via-[#0A0B0D] border border-[#745734] p-4 rounded-lg flex-1 mx-2 text-right">
                   <span className="text-[#c97f7f] block">Raised Capital:</span>
                   <span className="font-bold text-white block">
-                    $41,582,502.04
+                    {project.totalRaisedAmount}
                   </span>
                 </div>
               </div>
