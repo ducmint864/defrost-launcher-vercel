@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import logo from "../../public/Logo/DL_Logo.png";
 import {
   RectangleStackIcon,
   CommandLineIcon,
@@ -10,6 +11,7 @@ import {
 import { DollarCircleOutlined } from "@ant-design/icons";
 import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import axios from "axios";
+import Image from "next/image";
 
 interface NavItemProps {
   children: React.ReactNode;
@@ -110,8 +112,9 @@ export function Navbar({
     >
       <div className="container mx-auto flex items-center justify-between py-2 ">
         <Link href="/" passHref>
-          <span className="text-lg font-bold text-white inline-block transition-transform transform hover:-translate-y-1 duration-300">
-            Defrost Launcher
+          <span className="flex items-center text-lg font-bold text-white  transition-transform transform hover:-translate-y-1 duration-300">
+            <Image src={logo} alt="logo" width={32} height={32} />
+            <span className="ml-2">Defrost Launcher</span>
           </span>
         </Link>
         <ul className="ml-10 hidden items-center gap-6 lg:flex text-white">
@@ -139,7 +142,7 @@ export function Navbar({
         </button>
       </div>
       {open && (
-        <div className="container mx-auto mt-4 rounded-lg bg-white px-6 py-5">
+        <div className="container mx-auto mt-2 rounded-lg bg-white px-6 py-5 mb-5">
           <ul className="flex flex-col gap-4 text-gray-900">
             {NAV_MENU.map(({ name, icon: Icon, href }) => (
               <NavItem key={name} href={href}>

@@ -61,17 +61,16 @@ const SwapPage = () => {
 
   return (
     <div className="flex justify-center min-h-screen bg-primary">
-      <div className="mt-14 w-3/5 mx-auto">
+      <div className="mt-14 w-11/12 md:w-3/5 mx-auto">
         <div className="border rounded-xl bg-white shadow-lg">
-          <h1 className="pl-7 pt-4 pb-4 text-2xl font-semibold border-b-2">
+          <h1 className="pl-7 pt-4 pb-4 text-xl md:text-2xl font-semibold border-b-2">
             Swap
           </h1>
 
-          {/* Swap part */}
-          <div className="pl-16 pt-10 text-lg ">
+          <div className="pl-4 md:pl-16 pt-10 text-lg ">
             Pay
             <div className="flex justify-center">
-              <div className="relative border border-[#EEEEEE] rounded-full w-3/5 h-12 shadow-sm">
+              <div className="relative border border-[#EEEEEE] rounded-full w-full md:w-3/5 h-12 shadow-sm">
                 <div className="flex items-center absolute left-0 pt-2 pl-5">
                   <Image
                     src={selectedTokenPay.icon}
@@ -124,16 +123,14 @@ const SwapPage = () => {
                 </div>
               </div>
             </div>
-            {/* Receive part */}
             <div className="flex flex-col items-center">
-              {/* animate-bounce duration-1000 */}
               <span className="pt-8 ">
                 <MdOutlineSwapVert />
               </span>
             </div>
             Receive
             <div className="flex justify-center">
-              <div className="relative border border-[#EEEEEE] rounded-full w-3/5 h-12 shadow-sm">
+              <div className="relative border border-[#EEEEEE] rounded-full w-full md:w-3/5 h-12 shadow-sm">
                 <div className="flex items-center absolute left-0 pt-2 pl-5">
                   <Image
                     src={selectedTokenReceive.icon}
@@ -189,7 +186,7 @@ const SwapPage = () => {
                 Swap
               </Button>
             </div>
-            <div className="border bg-[#f1f1f1] rounded-xl p-5 mr-16 mb-10">
+            <div className="border bg-[#f1f1f1] rounded-xl p-5 mx-4 md:mx-0 md:mr-16 mb-10">
               <div className="flex justify-between pl-5 pr-5">
                 <span>Price</span>
                 <span>5 DOT</span>
