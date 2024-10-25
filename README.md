@@ -1,4 +1,4 @@
-# ❄ DEFROST LAUNCHER 🚀
+# ❄ DEFROST LAUNCHER - A Decentralized Launchpad 🚀
 
  <!-- Replace with your actual banner image URL -->
 
@@ -21,7 +21,7 @@
 
 ## Introduction 📕
 
-**Defrost Launchpad** is a cutting-edge decentralized platform designed to empower the crypto community by enabling users to fund promising crypto projects seamlessly. Leveraging the robust capabilities of Bifrost, Defrost Launchpad offers unparalleled cross-chain interoperability, ensuring a smooth and secure funding experience across multiple blockchain networks.
+**Defrost Launcher** is a cutting-edge decentralized platform designed to empower the crypto community by enabling users to fund promising crypto projects seamlessly. Leveraging the robust capabilities of Bifrost, Defrost Launchpad offers unparalleled cross-chain interoperability, ensuring a smooth and secure funding experience across multiple blockchain networks.
 
 Whether you're an investor looking to support innovative projects or a developer seeking funding for your crypto venture, Defrost Launchpad provides the tools and incentives to foster growth and success in the decentralized ecosystem.
 
@@ -32,11 +32,21 @@ Whether you're an investor looking to support innovative projects or a developer
 
 ## Features ☕
 
-- **Decentralized Platform**: Eliminate intermediaries and take control of your funding and investment decisions.
-- **Cross-chain Interoperability**: Seamlessly interact with multiple blockchain networks using Bifrost's advanced features.
-- **Attractive Rewards**: Earn generous rewards by funding potential crypto projects, enhancing your investment portfolio.
-- **User-Friendly Interface**: Intuitive design ensures a smooth user experience for both investors and project creators.
-- **Secure Transactions**: Robust security measures protect your assets and data throughout the funding process.
+- **Decentralized Fundraising**: With Defrost Launcher, we facilitate seamless and secure Initial DEX Offerings (IDOs), allowing projects to raise funds directly from the community without intermediaries.
+
+- **Multi-Chain Support**: Our platform is integrated with **Bifrost technology**, enabling support for multiple blockchain networks. This functionality allows projects to leverage diverse assets from different networks, enhancing flexibility and reach for project owners and investors alike.
+
+- **Double Staking with vAssets**: Thanks to **Bifrost's SLPX**, users can take advantage of our **vAsset** system by locking their assets and earning rewards based on the amount of tokens they have locked. These rewards are distributed in the form of the corresponding project tokens for the investments made. While their tokens are locked, users retain the ability to utilize them for various activities within the ecosystem, including staking and trading. This innovative feature empowers users to maximize their earnings while maintaining liquidity, transforming their locked assets into versatile tools for growth.
+
+- **Enhanced Parachains Volume**: By utilizing **vAssets**, our platform contributes to increasing the transaction volume within the Parachains ecosystem. As users lock their assets in vAssets, they actively participate in more transactions, boosting overall activity. This heightened engagement not only enhances the liquidity of the ecosystem but also drives greater visibility and growth for projects on Parachains, reinforcing a vibrant and dynamic network.
+
+- **Flexibility for Project Owners**: Project owners enjoy the flexibility of choosing between withdrawing vAssets or receiving the corresponding native assets of those vAssets, thanks to the implementation of **Bifrost's SLXP**. This adaptability allows project owners to strategize their asset management according to their needs, ensuring they can respond effectively to market conditions while maximizing the potential of their fundraising efforts.
+
+- **Custom Project Pool Launch**: Our IDO platform acts as a contract factory, enabling project owners to create custom project pool contracts tailored to their specific needs. With full ownership of these contracts, project owners can ensure transparency and build trust with investors, as all terms and conditions are clearly defined and managed within their dedicated pools.
+
+- **Custom Project Pool Launch**: Our IDO platform serves as a robust contract factory, empowering project owners to create highly customizable project pool contracts tailored to their specific needs and goals. Project owners have the flexibility to select their preferred vAsset across Parachains ecosystem. With complete ownership of these custom contracts, project owners can ensure transparency and foster trust with investors, as all terms and conditions are clearly outlined and managed within their dedicated pools. This level of customization not only enhances the fundraising experience but also aligns project objectives with investor expectations, paving the way for successful project launches and ongoing engagement.
+
+- **Enhanced Security**: We prioritize security in our contract design, ensuring fairness for both project owners and investors. Funds raised in the project pool are only accessible to the owner after the designated project pool timeframe has concluded, at which point they can withdraw the vAssets raised. Investors receive their project tokens in return, guaranteeing a structured and secure transaction process that protects the interests of all parties involved.
 
 ## How It Works 🛠️
 
