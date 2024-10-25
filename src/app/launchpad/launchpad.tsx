@@ -165,7 +165,7 @@ function LaunchpadPage() {
                     </h3>
                     <p>{project.description}</p>
                     <p className="mt-4">
-                      Fundraise Goal:{" "}
+                      Fundraise Goal:
                       <span className="font-bold">{project.hardCap}</span>
                     </p>
                   </div>
