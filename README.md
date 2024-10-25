@@ -9,6 +9,8 @@ Defrost Launcher is a platform for facilitating Initial DEX Offerings (IDOs) on 
   <img src="https://i.pinimg.com/736x/9b/25/85/9b2585e8d357db63f6900494ae65fd5c.jpg" alt="logo-white" width="120" height="120"/>
 </p>
 
+---
+
 ## Table of Contents 🏆
 - [Introduction](#introduction)
 - [Features](#features)
