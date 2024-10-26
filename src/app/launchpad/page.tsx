@@ -4,9 +4,9 @@ import LaunchpadPage from "./launchpad";
 
 const Launchpad = () => {
   return (
-    <div style={{ backgroundColor: "#16202B" }}>
+    <div className="h-screen bg-primary">
       <Navbar />
-      <div style={{ paddingTop: "60px" }}>
+      <div style={{ paddingTop: "50px" }}>
         <LaunchpadPage />
       </div>
     </div>

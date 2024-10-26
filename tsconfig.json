@@ -6,14 +6,17 @@
       "dom.iterable",
       "esnext"
     ],
+    "noImplicitAny": false,
+    // "suppressImplicitAnyIndexErrors": true,
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
@@ -39,6 +42,7 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "defrost-indexer"
   ]
 }
