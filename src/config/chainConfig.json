@@ -6,7 +6,7 @@
     "testnet": true,
     "contracts": {
       "SLPX": {
-        "address": ""
+        "address": "0x2fD8bbF5dc8b342C09ABF34f211b3488e2d9d691"
       },
       "ProjectPoolFactory": {
         "address": "0x394CB962c36fC28ECF01833F0CD1b74FC291e9AB"
