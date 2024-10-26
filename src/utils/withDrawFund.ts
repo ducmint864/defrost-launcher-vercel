@@ -1,8 +1,8 @@
 import { useContractEvents, useContractWrite } from "@thirdweb-dev/react";
-import { getProjectPoolContract } from "./contracts"
+import { useGetProjectPoolContract } from "./contracts"
 
-const withDrawFund = (projectId: string) => {
-    const poolContract = getProjectPoolContract(
+const useWithDrawFund = (projectId: string) => {
+    const poolContract = useGetProjectPoolContract(
         projectId
     );
 
@@ -20,7 +20,7 @@ const withDrawFund = (projectId: string) => {
         poolContract,
         "ProjectWithDrawn"
     );
-    
+
 
 
 
@@ -28,4 +28,4 @@ const withDrawFund = (projectId: string) => {
 
 }
 
-export default withDrawFund;
+export default useWithDrawFund;

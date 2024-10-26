@@ -76,7 +76,7 @@ export function Navbar({
       }
     };
     checkProjectOwner();
-  }, []);
+  }, [userAddress]);
 
   useEffect(() => {
     window.addEventListener(
@@ -103,10 +103,9 @@ export function Navbar({
 
   return (
     <div
-      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        isScrolling ? "bg-[#0b162d] bg-opacity-100" : "bg-transparent"
-      }`}
-      // style={{ backgroundColor }}
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${isScrolling ? "bg-[#0b162d] bg-opacity-100" : "bg-transparent"
+        }`}
+    // style={{ backgroundColor }}
     >
       <div className="container mx-auto flex items-center justify-between py-2 ">
         <Link href="/" passHref>

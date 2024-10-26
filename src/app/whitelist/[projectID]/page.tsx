@@ -15,8 +15,8 @@ import {
   useContractWrite,
 } from "@thirdweb-dev/react";
 import {
-  getProjectPoolContract,
-  getVTokenContract
+  useGetProjectPoolContract,
+  useGetVTokenContract
 } from "@/utils/contracts";
 
 export default function Whitelist({ params }: { params: { projectID: string } }) {
@@ -24,8 +24,8 @@ export default function Whitelist({ params }: { params: { projectID: string } })
   const router = useRouter();
   const address = useAddress();
   const projectID = params.projectID;
-  const poolContract = getProjectPoolContract(projectID);
-  const vTokenContract = getVTokenContract(poolContract!);
+  const poolContract = useGetProjectPoolContract(projectID);
+  const vTokenContract = useGetVTokenContract(poolContract!);
 
   const {
     mutateAsync: callJoinWhitelilst,
@@ -279,7 +279,7 @@ export default function Whitelist({ params }: { params: { projectID: string } })
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ OTP, email, address }),
+        body: JSON.stringify({ OTP, email, address, }),
       });
 
       if (response.ok) {
