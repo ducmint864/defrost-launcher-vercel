@@ -1,4 +1,4 @@
-import { Project } from "@prisma/client";
+import { Launchpad, Project } from "@prisma/client";
 
 export type ProjectStatus = "ended" | "upcoming" | "pending";
 
@@ -25,3 +25,5 @@ export interface DBProject extends Project {
     rewardRate?: string;
     isRedeemed?: boolean;
 }
+
+export interface DBLaunchpad extends Launchpad { }
