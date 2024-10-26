@@ -12,7 +12,7 @@ import {
 import { BaseContract } from "ethers";
 import { SmartContract } from "@thirdweb-dev/react";
 
-export function getProjectPoolContract(projectID: number | string): SmartContract<BaseContract> | undefined {
+export function useGetProjectPoolContract(projectID: number | string): SmartContract<BaseContract> | undefined {
     // get the chain ID that user's wallet is connected
     const chainId = useChainId();
 
@@ -57,7 +57,7 @@ export function getProjectPoolContract(projectID: number | string): SmartContrac
     return poolContract;
 }
 
-export function getVTokenContract(
+export function useGetVTokenContract(
     poolContract: SmartContract<BaseContract>
 ): SmartContract<BaseContract> | undefined {
     const { data: vTokenAddr, error: poolReadErr } = useContractRead(

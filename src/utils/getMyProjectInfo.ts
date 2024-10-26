@@ -1,29 +1,29 @@
 import { chainConfig } from "@/config";
 import { useChainId, useContractRead } from "@thirdweb-dev/react";
-import { getProjectPoolContract } from "./contracts";
+import { useGetProjectPoolContract } from "./contracts";
 
-const getMyProjectInfo = (projectId: number | string) => {
-  const poolContract = getProjectPoolContract(projectId);
-  const {
-    data: raisedAmount,
-    isLoading,
-    error,
-  } = useContractRead(poolContract, "getProjectRaisedAmount");
+const useGetMyProjectInfo = (projectId: number | string) => {
+    const poolContract = useGetProjectPoolContract(projectId);
+    const {
+        data: raisedAmount,
+        isLoading,
+        error,
+    } = useContractRead(poolContract, "getProjectRaisedAmount");
 
-  const {
-    data: isProjectSoftCapReached,
-    isLoading: loading,
-    error: softCapError,
-  } = useContractRead(poolContract, "getProjectSoftCapReached");
+    const {
+        data: isProjectSoftCapReached,
+        isLoading: loading,
+        error: softCapError,
+    } = useContractRead(poolContract, "getProjectSoftCapReached");
 
-  return {
-    raisedAmount,
-    isLoading,
-    error,
-    isProjectSoftCapReached,
-    loading,
-    softCapError,
-  };
+    return {
+        raisedAmount,
+        isLoading,
+        error,
+        isProjectSoftCapReached,
+        loading,
+        softCapError,
+    };
 };
 
-export default getMyProjectInfo;
+export default useGetMyProjectInfo;

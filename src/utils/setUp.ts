@@ -168,6 +168,6 @@ async function run(): Promise<void> {
     );
 }
 
-run()
-    .then()
-    .catch((err) => console.error(err));
+// run()
+//     .then()
+//     .catch((err) => console.error(err));

@@ -1,9 +1,9 @@
 import { useContractEvents, useContractWrite } from "@thirdweb-dev/react";
-import { getProjectPoolContract } from "./contracts"
+import { useGetProjectPoolContract } from "./contracts"
 
-const refund = (projectId: string) => {
-    const poolContract = getProjectPoolContract(projectId);
-    
+const useRefund = (projectId: string) => {
+    const poolContract = useGetProjectPoolContract(projectId);
+
     if (!poolContract) {
         alert("failed to get pool contract");
         return;
@@ -22,4 +22,4 @@ const refund = (projectId: string) => {
 
 }
 
-export default refund;
+export default useRefund;
