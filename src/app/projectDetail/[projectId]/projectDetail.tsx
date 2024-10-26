@@ -14,12 +14,11 @@ import {
 } from "@thirdweb-dev/react";
 import { chainConfig } from "@/config";
 import { ethers } from "ethers";
+import { ProjectPoolABI, ProjectPoolFactoryABI, IERC20ABI } from "@/abi";
 import {
-  ProjectPoolABI,
-  ProjectPoolFactoryABI,
-  IERC20ABI,
-} from "@/abi";
-import { convertNumToOffchainFormat, convertNumToOnChainFormat } from "@/utils/decimals";
+  convertNumToOffchainFormat,
+  convertNumToOnChainFormat,
+} from "@/utils/decimals";
 import { shorten } from "@/utils/display";
 
 const ProjectDetailPage = () => {
@@ -35,8 +34,12 @@ const ProjectDetailPage = () => {
   const [hardCap, setHardCap] = useState<bigint>(BigInt(0));
   const [minInvestment, setMinInvestment] = useState<bigint>(BigInt(0));
   const [maxInvestment, setMaxInvestment] = useState<bigint>(BigInt(0));
-  const [vAsssetDecimals, setVAssetDecimals] = useState<number | undefined>(undefined);
-  const [vAssetAddress, setVAssetAddress] = useState<string | undefined>(undefined);
+  const [vAsssetDecimals, setVAssetDecimals] = useState<number | undefined>(
+    undefined
+  );
+  const [vAssetAddress, setVAssetAddress] = useState<string | undefined>(
+    undefined
+  );
   const [userWhitelisted, setUserWhitelisted] = useState<boolean>(false);
   const [userDepositedAmount, setUserDepositedAmount] = useState<bigint>(BigInt(0));
   const [isProjectOwner, setIsProjectOwner] = useState<boolean>(false);
@@ -54,7 +57,7 @@ const ProjectDetailPage = () => {
   const pageParam = useParams();
 
   /**
-   * 
+   *
    * @dev bunch of showToasts functions
    */
 
@@ -79,7 +82,6 @@ const ProjectDetailPage = () => {
     setTxErrorToastVisible(false);
   };
 
-
   useEffect(() => {
     if (!poolContract) {
       console.trace(`poolContract is not ready`);
@@ -99,18 +101,19 @@ const ProjectDetailPage = () => {
         console.trace("vAssetDecimals is empty");
         return;
       }
-      const chainId = (chain.chainId).toString() as keyof typeof chainConfig;
-      const vAsset = chainConfig[chainId].vAssets.find(asset => asset.address === vAssetAddress);
+      const chainId = chain.chainId.toString() as keyof typeof chainConfig;
+      const vAsset = chainConfig[chainId].vAssets.find(
+        (asset) => asset.address === vAssetAddress
+      );
       console.debug(`vAsset from config is : ${vAsset}`);
       const decimals = vAsset?.decimals;
       console.debug(`decimals is ${decimals}`);
       setVAssetDecimals(decimals);
       setVAssetAddress(vAsset?.address);
       console.trace("call setVAssetDecimals()");
-    }
+    };
 
     getVAssetInfo();
-
   }, [poolContract, chain]);
 
   /**
@@ -129,11 +132,13 @@ const ProjectDetailPage = () => {
         console.trace("nevermind, poolContract is not ready");
         return;
       }
-      const isWhitelisted: boolean = await poolContract.isWhitelisted(userAddress);
+      const isWhitelisted: boolean = await poolContract.isWhitelisted(
+        userAddress
+      );
       console.debug(`is user whitelisted? : ${isWhitelisted}`);
       setUserWhitelisted(isWhitelisted);
       console.trace(`call setUserWhitelisted()`);
-    }
+    };
 
     checkUserWhitelisted();
   }, [poolContract]);
@@ -159,11 +164,13 @@ const ProjectDetailPage = () => {
 
   useEffect(() => {
     if (isSendingTx) {
-      console.trace("hold'on, tx is being sent, im not gonna fetch project info");
+      console.trace(
+        "hold'on, tx is being sent, im not gonna fetch project info"
+      );
       return;
     }
 
-    console.trace('fetching project info');
+    console.trace("fetching project info");
     const fetchProjectDetails = async () => {
       const { projectId } = pageParam;
       console.log("Project id: " + projectId);
@@ -275,11 +282,11 @@ const ProjectDetailPage = () => {
     }
     console.debug(`project id is ${projectId}`);
     route.push(`/whitelist/${projectId}`);
-  }
+  };
 
   const handleInvest = async () => {
     (document.getElementById("investDialog") as HTMLDialogElement).showModal();
-  }
+  };
 
   const makeInvestTransaction = async (amount: number) => {
     if (!poolContract) {
@@ -287,22 +294,28 @@ const ProjectDetailPage = () => {
       return;
     }
 
-    const onchainAmount: string = convertNumToOnChainFormat(amount, vAsssetDecimals!) as string;
+    const onchainAmount: string = convertNumToOnChainFormat(
+      amount,
+      vAsssetDecimals!
+    ) as string;
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    console.trace(`metamask provided a signer with address: ${await signer.getAddress()}`);
+    console.trace(
+      `metamask provided a signer with address: ${await signer.getAddress()}`
+    );
 
     if (!vAssetAddress) {
-      console.trace(`cannot make ERC20 approve tx because vAssetAddress is not ready`);
+      console.trace(
+        `cannot make ERC20 approve tx because vAssetAddress is not ready`
+      );
       return;
     }
     const vAssetContract = new ethers.Contract(
       vAssetAddress,
       IERC20ABI,
-      signer,
+      signer
     );
     console.trace(`got vAsset contract: ${vAssetContract}`);
-
 
     const poolContractWithSigner = poolContract.connect(signer);
     console.trace(`got poolContractWithSigner: ${poolContractWithSigner}`);
@@ -310,10 +323,7 @@ const ProjectDetailPage = () => {
     setIsSendingTx(true);
     try {
       // require user to make ERC20 allowance to pool contract
-      await vAssetContract.approve(
-        poolContract.address,
-        onchainAmount
-      );
+      await vAssetContract.approve(poolContract.address, onchainAmount);
       console.trace(`ERC20 approve tx done`);
 
       await poolContractWithSigner.investProject(onchainAmount);
@@ -334,7 +344,9 @@ const ProjectDetailPage = () => {
         })
       });
       if (!resp.ok) {
-        console.error(`request to save invest event failed with resp:\n${resp}`);
+        console.error(
+          `request to save invest event failed with resp:\n${resp}`
+        );
         showTxErrorToast();
         return;
       }
@@ -349,7 +361,7 @@ const ProjectDetailPage = () => {
       (document.getElementById("investDialog") as HTMLDialogElement).close();
       setIsSendingTx(false);
     }
-  }
+  };
 
   return (
     <div className="flex justify-center items-center bg-primary min-h-screen ">
@@ -384,25 +396,48 @@ const ProjectDetailPage = () => {
                 width={24}
                 height={24}
               ></img>
-              <span className="text-info font-bold">Voucher asset ({shorten(convertNumToOffchainFormat(userDepositedAmount, vAsssetDecimals!))} deposited)</span>
+              <span className="text-info font-bold">
+                Voucher asset (
+                {shorten(
+                  convertNumToOffchainFormat(
+                    userDepositedAmount,
+                    vAsssetDecimals!
+                  )
+                )}{" "}
+                deposited)
+              </span>
             </p>
-            <label id="investAmountInputCont" className="input input-bordered flex items-center gap-2 bg-[#1d232a] shadow-lg">
+            <label
+              id="investAmountInputCont"
+              className="input input-bordered flex items-center gap-2 bg-[#1d232a] shadow-lg"
+            >
               <input
-                type="number" id="investAmountInput"
-                className="grow text-[#99a0ad] font-bold input-bordered input-info" placeholder="input amount"
+                type="number"
+                id="investAmountInput"
+                className="grow text-[#99a0ad] font-bold input-bordered input-info"
+                placeholder="input amount"
                 disabled={userDepositedAmount >= maxInvestment}
                 onChange={(e) => {
-                  const amount: bigint = convertNumToOnChainFormat(Number(e.target.value), vAsssetDecimals!, false) as bigint;
-                  const adjustedMinInvestment: bigint = minInvestment - userDepositedAmount; // can be negative
-                  const adjustedMaxInvestment: bigint = maxInvestment - userDepositedAmount; // can be negative
+                  const amount: bigint = convertNumToOnChainFormat(
+                    Number(e.target.value),
+                    vAsssetDecimals!,
+                    false
+                  ) as bigint;
+                  const adjustedMinInvestment: bigint =
+                    minInvestment - userDepositedAmount; // can be negative
+                  const adjustedMaxInvestment: bigint =
+                    maxInvestment - userDepositedAmount; // can be negative
                   if (amount < adjustedMinInvestment) {
                     console.debug(`invalid input amount: ${amount.toString()}`);
-                    document.getElementById("investAmountAlert")!.innerText = "MINIMUM INVESTMENT AMOUNT NOT REACHED!";
+                    document.getElementById("investAmountAlert")!.innerText =
+                      "MINIMUM INVESTMENT AMOUNT NOT REACHED!";
                   } else if (amount > adjustedMaxInvestment) {
                     console.debug(`invalid input amount: ${amount.toString()}`);
-                    document.getElementById("investAmountAlert")!.innerText = "MAXIMUM INVESTMENT AMOUNT EXCEEDED!";
+                    document.getElementById("investAmountAlert")!.innerText =
+                      "MAXIMUM INVESTMENT AMOUNT EXCEEDED!";
                   } else {
-                    document.getElementById("investAmountAlert")!.innerHTML = "&nbsp";
+                    document.getElementById("investAmountAlert")!.innerHTML =
+                      "&nbsp";
                   }
                 }}
               />
@@ -436,8 +471,14 @@ const ProjectDetailPage = () => {
                   } else {
                     amtTillMinInvest = minInvestment - userDepositedAmount;
                   }
-                  (document.getElementById("investAmountInput") as HTMLInputElement).value
-                    = convertNumToOffchainFormat(amtTillMinInvest, vAsssetDecimals!);
+                  (
+                    document.getElementById(
+                      "investAmountInput"
+                    ) as HTMLInputElement
+                  ).value = convertNumToOffchainFormat(
+                    amtTillMinInvest,
+                    vAsssetDecimals!
+                  );
                 }}
               >
                 <img
@@ -472,8 +513,14 @@ const ProjectDetailPage = () => {
                   } else {
                     investAmtLeft = maxInvestment - userDepositedAmount;
                   }
-                  (document.getElementById("investAmountInput") as HTMLInputElement).value
-                    = convertNumToOffchainFormat(investAmtLeft, vAsssetDecimals!);
+                  (
+                    document.getElementById(
+                      "investAmountInput"
+                    ) as HTMLInputElement
+                  ).value = convertNumToOffchainFormat(
+                    investAmtLeft,
+                    vAsssetDecimals!
+                  );
                 }}
               >
                 <div className="flex flex-row gap-x-0 justify-center">
@@ -491,7 +538,7 @@ const ProjectDetailPage = () => {
                 Maximum amount
               </div>
             </div>
-          </div>
+          </div >
           <div className="modal-action">
             <form method="dialog" className="gap-x-3">
               {/* if there is a button in form, it will close the modal */}
@@ -500,16 +547,24 @@ const ProjectDetailPage = () => {
                 className="btn btn-outline hover:text-black btn-success mx-auto my-auto"
                 onClick={(e) => {
                   e.preventDefault();
-                  const investAmt: number = Number((document.getElementById("investAmountInput") as HTMLInputElement).value);
-                  console.trace(`retrieved investAmt from input field: ${investAmt}`);
+                  const investAmt: number = Number(
+                    (
+                      document.getElementById(
+                        "investAmountInput"
+                      ) as HTMLInputElement
+                    ).value
+                  );
+                  console.trace(
+                    `retrieved investAmt from input field: ${investAmt}`
+                  );
                   makeInvestTransaction(investAmt);
                 }}
               >
-                {
-                  isSendingTx
-                    ? <span className="loading loading-spinner display-block loading-xs text-white mx-auto my-auto"></span>
-                    : "Continue"
-                }
+                {isSendingTx ? (
+                  <span className="loading loading-spinner display-block loading-xs text-white mx-auto my-auto"></span>
+                ) : (
+                  "Continue"
+                )}
               </button>
             </form>
           </div>
@@ -640,8 +695,8 @@ const ProjectDetailPage = () => {
                   title={
                     <span
                       className={`${activeTab === "description"
-                        ? "text-white border-b-2 border-blue-500"
-                        : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
+                          ? "text-white border-b-2 border-blue-500"
+                          : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
                         } pb-[11px]`}
                     >
                       Description
@@ -653,8 +708,8 @@ const ProjectDetailPage = () => {
                   title={
                     <span
                       className={`${activeTab === "tokensale"
-                        ? "text-white border-b-2 border-blue-500"
-                        : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
+                          ? "text-white border-b-2 border-blue-500"
+                          : "text-gray-600 hover:text-gray-300 transition-colors duration-200"
                         } pb-[11px]`}
                     >
                       Token Sale

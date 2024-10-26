@@ -94,7 +94,13 @@ export async function POST(req: Request) {
             },
         });
         // const projectName = await  // TODO: get project name from projectID
-        const projectName = `[name of project with ID ${projectID}]`;
+
+        const project = await prismaClient.project.findUnique({
+            where: {
+                projectID: Number(projectID)
+            }
+        });
+        const projectName = project.projectTitle
 
         // Email options
         const mailOptions = {

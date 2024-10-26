@@ -13,7 +13,7 @@ const GeneralDetail = () => {
   const [projectTitle, setProjectTitle] = useState<string>("");
   const [shortDescription, setShortDescription] = useState<string>("");
   const [longDescription, setLongDescription] = useState<string>("");
-  const [selectedCoin, setSelectedCoin] = useState<string | null>(null); // address of the vAsset that is selected
+  const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
   const [selectedCoinIdx, setSelectedCoinIdx] = useState<number>(0);
   const [imageByteArrays, setImageByteArrays] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -23,17 +23,13 @@ const GeneralDetail = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const route = useRouter();
   const dispatch = useDispatch();
-  const updateData = useSelector((state: any) => {
-    console.log(state);
-    return state.form.generalDetailData;
-  });
+  const updateData = useSelector((state: any) => state.form.generalDetailData);
   const [vAssets, setVAssets] = useState<Record<string, any>[]>([]);
   const chain = useChain();
 
-  // Hàm chuyển base64 thành byte array
   const base64ToByteArray = (base64: string) => {
     const base64String = base64.split(",")[1];
-    const binaryString = window.atob(base64String); // Giải mã base64 thành chuỗi nhị phân
+    const binaryString = window.atob(base64String);
     const len = binaryString.length;
     const bytes = new Uint8Array(len);
     for (let i = 0; i < len; i++) {
@@ -42,33 +38,22 @@ const GeneralDetail = () => {
     return bytes;
   };
 
-  // Chuyển đổi byte array thành định dạng chuỗi vd "{14, 26, 50, ...}"
   const formatByteArray = (byteArray: Uint8Array) => {
     return `{${Array.from(byteArray).join(", ")}}`;
   };
 
-  // updat vAssets when user switch chain
   useEffect(() => {
     if (!chain) {
       return;
     }
-
     const chainId: number = chain.chainId;
     const vAssets =
       chainConfig[chainId.toString() as keyof typeof chainConfig].vAssets;
     setSelectedCoin(vAssets[0].address);
-    console.debug(`selected vToken is ${vAssets[0].address}`);
     setVAssets(vAssets);
   }, [chain]);
 
   const handleSelectCoin = (coinAddr: string, idx: number) => {
-    if (!coinAddr) {
-      console.error("Address of selected vAsset is empty");
-      alert("Address of selected vAsset is empty");
-      return;
-    }
-    console.log(`selected coin is ${vAssets.at(selectedCoinIdx)?.name}`);
-
     setSelectedCoinIdx(idx);
     setSelectedCoin(coinAddr);
   };
@@ -78,7 +63,7 @@ const GeneralDetail = () => {
     if (!files) return;
 
     const imageUrls: string[] = [];
-    const byteArrays: string[] = []; // Sử dụng string[] để lưu trữ định dạng byte array
+    const byteArrays: string[] = [];
 
     const promises = Array.from(files).map((file) => {
       return new Promise<void>((resolve) => {
@@ -88,21 +73,19 @@ const GeneralDetail = () => {
             const base64 = reader.result as string;
             imageUrls.push(base64);
 
-            // Chuyển base64 thành byte array và lưu vào mảng byteArrays
             const byteArray = base64ToByteArray(base64);
             const formattedByteArray = formatByteArray(byteArray);
-            byteArrays.push(formattedByteArray); // Lưu định dạng byte array thành chuỗi
+            byteArrays.push(formattedByteArray);
           }
           resolve();
         };
-        reader.readAsDataURL(file); // Đọc file dưới dạng base64
+        reader.readAsDataURL(file);
       });
     });
 
     Promise.all(promises).then(() => {
       setSelectedImages(imageUrls);
-      setImageByteArrays(byteArrays); // Lưu mảng các byte array đã định dạng
-      console.log("Formatted Byte Arrays:", byteArrays);
+      setImageByteArrays(byteArrays);
     });
   };
 
@@ -111,7 +94,7 @@ const GeneralDetail = () => {
     if (!files) return;
 
     const imageUrls: string[] = [];
-    const byteArrays: string[] = []; // Sử dụng string[] để lưu trữ định dạng byte array
+    const byteArrays: string[] = [];
 
     const promises = Array.from(files).map((file) => {
       return new Promise<void>((resolve) => {
@@ -121,22 +104,19 @@ const GeneralDetail = () => {
             const base64 = reader.result as string;
             imageUrls.push(base64);
 
-            // Chuyển base64 thành byte array và lưu vào mảng byteArrays
             const byteArray = base64ToByteArray(base64);
             const formattedByteArray = formatByteArray(byteArray);
-            byteArrays.push(formattedByteArray); // Lưu định dạng byte array thành chuỗi
+            byteArrays.push(formattedByteArray);
           }
           resolve();
         };
-        reader.readAsDataURL(file); // Đọc file dưới dạng base64
+        reader.readAsDataURL(file);
       });
     });
 
-    // Sau khi tất cả ảnh được đọc
     Promise.all(promises).then(() => {
       setSelectedLogo(imageUrls);
-      setImageByteArrays(byteArrays); // Lưu mảng các byte array đã định dạng
-      console.log("Formatted Byte Arrays:", byteArrays); // Bạn có thể kiểm tra byte arrays trong console
+      setImageByteArrays(byteArrays);
     });
   };
 
@@ -152,7 +132,6 @@ const GeneralDetail = () => {
     }
   };
 
-  //REDUX GLOBAL STATE
   const handleSubmit = () => {
     const formDatas = {
       selectedCoin,
@@ -164,36 +143,32 @@ const GeneralDetail = () => {
     };
     setIsLoading(true);
     dispatch(updateGeneralDetailPageData(formDatas));
-    console.log(updateData);
-    console.trace("Boutta navigate to promotion page");
     setIsLoading(false);
     route.push("/addProject/promotion");
   };
+
   return (
-    <div className="flex justify-center min-h-screen bg-primary">
-      <div className="w-3/5 mx-auto">
+    <div className="flex justify-center min-h-screen bg-primary px-4">
+      {/* <div className="absolute left-3 top-20 w-[600px] h-[600px] bg-[#0047FF] rounded-full opacity-10 blur-3xl animate-pulse z-0"></div>
+      <div className="absolute right-3 bottom-10 w-[600px] h-[600px] bg-[#0047FF] rounded-full opacity-10 blur-3xl animate-pulse z-0"></div> */}
+
+      <div className="w-full lg:w-3/5 mx-auto z-10">
         <div className="mt-12 mb-6 text-2xl font-bold text-white">
           Choose accepted asset
         </div>
         <div className="border border-black rounded-2xl h-auto mb-12 bg-white p-2">
-          <div className="flex items-center ml-3 mr-3 space-x-7 mb-4 mt-4">
+          <div className="flex flex-wrap items-center ml-3 mb-4 mt-4">
             {vAssets.map((vAsset, idx) => (
-              // <div
-              //   onClick={() => handleSelectCoin(vAsset.address, idx)}
-              //   className={`flex items-center cursor-pointer transition ease-in-out duration-300 ${selectedCoin === "BNB" ? "brightness-100" : "brightness-50"
-              //     } hover:brightness-75`}
-              // >
-              <button
+              <Button
                 key={idx}
-                className={`btn text-accent rounded-full ${selectedCoinIdx === idx
-                  ? "bg-gradient-to-r from-cyan-500 to-accent"
-                  : "bg-gray"
+                className={`btn text-accent rounded-full mb-2 ${selectedCoinIdx === idx
+                  ? "bg-gradient-to-r from-cyan-500 to-accent w-32 mr-4"
+                  : "bg-gray w-32 mr-4"
                   }`}
                 onClick={() => handleSelectCoin(vAsset.address, idx)}
               >
                 <Image
-                  // src={`${vAsset.icon}`}
-                  src="https://w7.pngwing.com/pngs/268/1013/png-transparent-ethereum-eth-hd-logo-thumbnail.png"
+                  src="https://www.stakingrewards.com/_next/image?url=https%3A%2F%2Fstorage.googleapis.com%2Fstakingrewards-static%2Fimages%2Fassets%2Fproduction%2Fbifrost-voucher-astr_logo.png%3Fv%3D1717150606436&w=3840&q=75"
                   alt={`${vAsset.name} logo`}
                   width={24}
                   height={24}
@@ -202,8 +177,7 @@ const GeneralDetail = () => {
                 <span className="text-black text-lg font-normal">
                   {vAsset.symbol}
                 </span>
-                {/* </div> */}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -212,7 +186,7 @@ const GeneralDetail = () => {
           General Detail
         </div>
 
-        <div className="border border-black rounded-2xl h-auto mb-12 bg-white p-4 ">
+        <div className="border border-black rounded-2xl h-auto mb-12 bg-white p-4">
           <div className="flex items-center">
             <label className="cursor-pointer flex items-center space-x-2">
               <CiImageOn className="w-8 h-8" />
@@ -307,7 +281,7 @@ const GeneralDetail = () => {
               onChange={(e) => setShortDescription(e.target.value)}
             />
             <textarea
-              className="border border-black rounded-2xl  h-[200px] text-lg pl-5 w-full resize-y textarea "
+              className="border border-black rounded-2xl h-[200px] text-lg pl-5 w-full resize-y textarea"
               placeholder="Long Description"
               onChange={(e) => setLongDescription(e.target.value)}
             />
