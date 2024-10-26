@@ -135,63 +135,6 @@ const Promotion = () => {
             </label>
 
             <div>
-              <span className="label-text text-gray-600 text-md">
-                The minimum fundraising goal for the project to be considered
-                successful.
-              </span>
-              <label className="m-2 input input-bordered flex items-center gap-2">
-                <p className="w-40">
-                  Soft cap&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                </p>
-                <input
-                  placeholder="Enter softcap"
-                  type="number"
-                  className="grow border-none focus:outline-none focus:ring-0 w-full"
-                  onChange={(e) => setSoftcap(e.target.value)}
-                />
-                <div className="label">
-                  <span className="label-text-alt text-gray-500">vTokens</span>
-                </div>
-              </label>
-            </div>
-
-            <div>
-              <span className="label-text text-gray-600 text-md">
-                The maximum fundraising goal for the project.
-              </span>
-              <label className="m-2 input input-bordered flex items-center gap-2">
-                <p className="w-40">Hard cap&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-                <input
-                  placeholder="Enter hardcap"
-                  type="number"
-                  className="grow border-none focus:outline-none focus:ring-0 w-full"
-                  onChange={(e) => setHardcap(e.target.value)}
-                />
-                <div className="label">
-                  <span className="label-text-alt text-gray-500">vTokens</span>
-                </div>
-              </label>
-            </div>
-
-            <div>
-              <span className="text-gray-600 text-md">
-                The minimum amount a user can invest in this project.
-              </span>
-              <label className="m-2 input input-bordered flex items-center gap-2">
-                <p className="w-40">Min invest&nbsp;&nbsp;&nbsp;&nbsp;</p>
-                <input
-                  placeholder="Enter minimum investment"
-                  type="number"
-                  className="grow border-none focus:outline-none focus:ring-0 w-full"
-                  onChange={(e) => setMinInvestment(e.target.value)}
-                />
-                <div className="label">
-                  <span className="label-text-alt text-gray-500">vTokens</span>
-                </div>
-              </label>
-            </div>
-
-            <div>
               <span className="text-gray-600 text-md">
                 The maximum amount a user can invest in this project.
               </span>
