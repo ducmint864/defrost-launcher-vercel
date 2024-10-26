@@ -1,4 +1,4 @@
-# ❄ DEFROST LAUNCHER - Decentralized Launchpad 🚀
+# ❄ DEFROST LAUNCHER 🚀
 
 <h3 align="center">DEFROST LAUNCHER</h3>
 <p align="center">
@@ -6,7 +6,7 @@ Defrost Launcher is a platform for facilitating Initial DEX Offerings (IDOs) on 
 </p>
 
 <p align="center">
-  <img src="https://i.pinimg.com/736x/9b/25/85/9b2585e8d357db63f6900494ae65fd5c.jpg" alt="logo-white" width="120" height="120"/>
+    <img src="https://i.pinimg.com/736x/fe/9d/38/fe9d3827959516de0885ef81d51202c7.jpg" alt="logo-white" width="150" height="150"/>
 </p>
 
 ---
@@ -31,7 +31,7 @@ Defrost Launcher is a platform for facilitating Initial DEX Offerings (IDOs) on 
 Whether you're an investor looking to support innovative projects or a developer seeking funding for your crypto venture, Defrost Launcher provides the tools and incentives to foster growth and success in the decentralized ecosystem.
 
 <p align="center">
-  <img src="https://i.pinimg.com/736x/9b/25/85/9b2585e8d357db63f6900494ae65fd5c.jpg" alt="logo-white" width="120" height="120"/>
+  <img src="https://i.pinimg.com/736x/fe/9d/38/fe9d3827959516de0885ef81d51202c7.jpg" alt="logo-white" width="150" height="150"/>
 </p>
 
 
