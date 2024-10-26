@@ -83,7 +83,7 @@ Whether you're an investor looking to support innovative projects or a developer
 
 Check out our live demo to see Defrost Launcher in action!
 
-👉 [Live Demo](https://defrost-launcher-demo.com) <!-- Replace with actual demo link -->
+👉 [Live Demo](https://youtu.be/XiIP5ktAKu8?si=hQfhgTFY4VAAa4hm) <!-- Replace with actual demo link -->
 
 ![Demo GIF](https://your-repo-url.com/demo.gif) <!-- Replace with actual demo GIF URL -->
 
