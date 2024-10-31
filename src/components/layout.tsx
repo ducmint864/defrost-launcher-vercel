@@ -35,7 +35,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         walletConnect(),
       ]}
       supportedChains={[Astar, AstarZkevm, AstarZkyoto, AstarShibuya, Moonbeam, Moonriver, MoonbaseAlpha, LocalChain]}
-      activeChain={LocalChain}
+      activeChain={Astar}
       clientId={process.env.THIRDWEB_CLIENT_ID!}
     >
       <ThemeProvider>{children}</ThemeProvider>;

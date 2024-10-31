@@ -18,7 +18,7 @@ function Hero() {
     <div
       className={`relative min-h-screen w-full bg-cover bg-no-repeat  overflow-hidden`}
       style={{
-        backgroundImage: `url('https://www.hdwallpapers.in/download/dragon_dark_blue_background_4k_hd_horizon_forbidden_west-3840x2160.jpg')`,
+        backgroundImage: `url('https://4kwallpapers.com/images/wallpapers/nebulae-cosmic-stars-dark-blue-dark-background-digital-5120x2880-3926.jpg')`,
       }}
     >
       {/* Overlay Gradient */}

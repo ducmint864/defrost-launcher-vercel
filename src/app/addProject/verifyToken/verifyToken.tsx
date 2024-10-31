@@ -26,7 +26,7 @@ function VerifyToken() {
 
     try {
       console.log("Token Verified");
-      router.push("./addProject/generalDetail");
+      router.push("/addProject/generalDetail");
     } catch (error) {
       console.log(error);
     }
